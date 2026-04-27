@@ -65,6 +65,15 @@ public class HomeController {
         return "redirect:/signup.html";
     }
 
+    //회원가입 로직
+    @PostMapping("/signup")
+    public String signup(@RequestParam String email, @RequestParam String password, Model model) {
+        homeService.join(email,password);
+        log.info("회원가입 컨트롤러 지나가요~");
+        model.addAttribute("email", email);
+        model.addAttribute("password", password);
+        return "redirect:/signup.html";
+    }
 
 
 }

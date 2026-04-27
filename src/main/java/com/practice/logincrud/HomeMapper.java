@@ -6,4 +6,6 @@ import org.apache.ibatis.annotations.Mapper;
 public interface HomeMapper {
 
     User findUserLogin(String userId);
+
+    void insertMember(User user);
 }

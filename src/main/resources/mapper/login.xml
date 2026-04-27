@@ -8,4 +8,9 @@
         FROM member
         WHERE email = #{userId}
     </select>
+
+    <insert id="insertMember" parameterType="com.practice.logincrud.HomeMapper">
+        INSERT INTO member(email, password)
+        values (#{email}, #{password});
+    </insert>
 </mapper>

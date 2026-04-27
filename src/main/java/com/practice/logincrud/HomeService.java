@@ -18,5 +18,11 @@ public class HomeService {
         return user.getPassword().equals(userPw);
     }
 
-
+    //회원가입
+    public void join(String email, String password) {
+        User user = new User();
+        user.setEmail(email);
+        user.setPassword(password);
+        homeMapper.insertMember(user);
+    }
 }
