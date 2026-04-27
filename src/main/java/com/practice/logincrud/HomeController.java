@@ -25,6 +25,7 @@ public class HomeController {
         return "redirect:/main.html";
     }
 
+    //로그인
     @PostMapping("/login")
     public String login(HttpSession httpSession, @RequestParam String userId, @RequestParam String userPw) {
         boolean success = homeService.userLogin(userId, userPw);
@@ -40,6 +41,7 @@ public class HomeController {
         }
     }
 
+    //로그아웃
     @GetMapping("/logout")
     public String logout(HttpSession httpSession) {
         String userId = (String) httpSession.getAttribute("userId");
@@ -56,6 +58,13 @@ public class HomeController {
         response.put("userId", userId != null ? userId : "로그인 안 함");
         return response;
     }
+
+    //회원가입 페이지 이동
+    @GetMapping("/join")
+    public String join() {
+        return "redirect:/signup.html";
+    }
+
 
 
 }
