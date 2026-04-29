@@ -20,4 +20,11 @@
         WHERE email = #{email}
     </select>
 
+
+    <update id="UpdateUser" parameterType="com.practice.logincrud.User">
+        update member
+        set email = #{email},
+            password = #{password}
+        where email = #{UpdateUser}
+    </update>
 </mapper>

@@ -27,11 +27,13 @@ public class HomeController {
 
     //로그인
     @PostMapping("/login")
-    public String login(HttpSession httpSession, @RequestParam String userId, @RequestParam String userPw) {
-        boolean success = homeService.userLogin(userId, userPw);
+    public String login(HttpSession httpSession, @RequestParam(required = false) String email, @RequestParam(required = false) String password) {
+        log.info("login email: {}", email);
+        log.info("login password: {}", password);
+        boolean success = homeService.userLogin(email, password);
 
         if (success) {
-            httpSession.setAttribute("userId", userId);
+            httpSession.setAttribute("email", email);
             log.info("로그인 성공");
             return "redirect:/success.html";
         } else {
@@ -44,18 +46,18 @@ public class HomeController {
     //로그아웃
     @GetMapping("/logout")
     public String logout(HttpSession httpSession) {
-        String userId = (String) httpSession.getAttribute("userId");
+        String email = (String) httpSession.getAttribute("email");
         httpSession.invalidate();
         log.info("로그아웃");
         return "redirect:/main.html";
     }
-
+    //이메일 중복 확인
     @GetMapping("/api/user-info")
     @ResponseBody
     public Map<String, String> getUserInfo(HttpSession session) {
-        String userId = (String) session.getAttribute("userId");
+        String email = (String) session.getAttribute("email");
         Map<String, String> response = new HashMap<>();
-        response.put("userId", userId != null ? userId : "로그인 안 함");
+        response.put("email", email != null ? email : "로그인 안 함");
         return response;
     }
 
@@ -68,17 +70,41 @@ public class HomeController {
     //회원가입 로직
     @PostMapping("/signup")
     @ResponseBody
-    public String signup(@RequestParam String email, @RequestParam String password, Model model) {
+    public String signup(@RequestParam String email, @RequestParam String password) {
        boolean result = homeService.join(email, password);
        log.info("회원가입 로직 지나가요~~");
-
        if(!result) {
            return "<script>alert('이미 사용 중인 이메일입니다.'); location.href='/signup.html';</script>";
        }else {
-           return "<script>alert('회원가입이 완료되었습니다.'); location.href='/success.html';</script>";
+           return "<script>alert('회원가입이 완료되었습니다.'); location.href='/main.html';</script>";
        }
+    }
 
+    //회원가입 수정
+    @PostMapping("/user/edit")
+    @ResponseBody
+    public String editUser(@RequestParam String email,
+                           @RequestParam String password,
+                           HttpSession httpSession) {
+        String updateUser = (String) httpSession.getAttribute("email");
+
+        //null 체크 추가
+        if (updateUser == null) {
+            return "<script>alert('로그인이 필요합니다.'); location.href='/main.html';</script>";
+        }
+
+        homeService.editUser(updateUser, email, password);
+
+        // 이메일 변경했으면 세션도 업데이트
+        if (!updateUser.equals(email)) {
+            httpSession.setAttribute("email", email);
+        }
+
+        return "<script>alert('회원정보가 수정되었습니다.'); location.href='/view.html';</script>";
     }
 
 
 }
+
+
+
