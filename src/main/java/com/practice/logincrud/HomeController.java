@@ -75,7 +75,7 @@ public class HomeController {
        if(!result) {
            return "<script>alert('이미 사용 중인 이메일입니다.'); location.href='/signup.html';</script>";
        }else {
-           return "<script>alert('회원가입이 완료되었습니다.'); location.href='/signup.html';</script>";
+           return "<script>alert('회원가입이 완료되었습니다.'); location.href='/success.html';</script>";
        }
 
     }

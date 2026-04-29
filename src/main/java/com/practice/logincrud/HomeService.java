@@ -1,6 +1,7 @@
 package com.practice.logincrud;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -9,13 +10,17 @@ public class HomeService {
     @Autowired
     HomeMapper homeMapper;
 
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
+
+    //로그인
     public boolean userLogin(String userId, String userPw) {
         User user = homeMapper.findUserLogin(userId);
 
         if (user == null) {
             return false;
         }
-        return user.getPassword().equals(userPw);
+        return passwordEncoder.matches(userPw, user.getPassword());
     }
 
     //회원가입
@@ -27,7 +32,7 @@ public class HomeService {
         }
         User user = new User();
         user.setEmail(email);
-        user.setPassword(password);
+        user.setPassword(passwordEncoder.encode(password));
         homeMapper.insertMember(user);
         return true;
 

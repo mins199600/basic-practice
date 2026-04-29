@@ -6,7 +6,7 @@
     <select id="findUserLogin" parameterType="String" resultType="com.practice.logincrud.User">
         SELECT id, email, password
         FROM member
-        WHERE email = #{userId}
+        WHERE email = #{email}
     </select>
 
     <insert id="insertMember" parameterType="com.practice.logincrud.User">
