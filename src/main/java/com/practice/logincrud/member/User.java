@@ -1,8 +1,6 @@
-package com.practice.logincrud;
+package com.practice.logincrud.member;
 
 import lombok.Data;
-
-import java.time.LocalDateTime;
 
 @Data
 public class User {
