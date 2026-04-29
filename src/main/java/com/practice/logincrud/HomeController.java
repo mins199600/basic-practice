@@ -67,12 +67,17 @@ public class HomeController {
 
     //회원가입 로직
     @PostMapping("/signup")
+    @ResponseBody
     public String signup(@RequestParam String email, @RequestParam String password, Model model) {
-        homeService.join(email,password);
-        log.info("회원가입 컨트롤러 지나가요~");
-        model.addAttribute("email", email);
-        model.addAttribute("password", password);
-        return "redirect:/signup.html";
+       boolean result = homeService.join(email, password);
+       log.info("회원가입 로직 지나가요~~");
+
+       if(!result) {
+           return "<script>alert('이미 사용 중인 이메일입니다.'); location.href='/signup.html';</script>";
+       }else {
+           return "<script>alert('회원가입이 완료되었습니다.'); location.href='/signup.html';</script>";
+       }
+
     }
 
 

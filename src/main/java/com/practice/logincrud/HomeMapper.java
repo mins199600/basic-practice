@@ -7,5 +7,6 @@ public interface HomeMapper {
 
     User findUserLogin(String userId);
 
-    void insertMember(User user);
+    void insertMember(User user);   // 회원가입 처리
+    int countByEmail(String email); // 회원가입 이메일 중복 처리
 }

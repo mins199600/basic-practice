@@ -19,10 +19,18 @@ public class HomeService {
     }
 
     //회원가입
-    public void join(String email, String password) {
+    public boolean join(String email, String password) {
+        int count = homeMapper.countByEmail(email);
+        if (count > 0) {
+
+            return false;
+        }
         User user = new User();
         user.setEmail(email);
         user.setPassword(password);
         homeMapper.insertMember(user);
+        return true;
+
     }
 }
+

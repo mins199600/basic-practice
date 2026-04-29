@@ -9,8 +9,15 @@
         WHERE email = #{userId}
     </select>
 
-    <insert id="insertMember" parameterType="com.practice.logincrud.HomeMapper">
+    <insert id="insertMember" parameterType="com.practice.logincrud.User">
         INSERT INTO member(email, password)
         values (#{email}, #{password});
     </insert>
+
+    <select id="countByEmail" parameterType="string" resultType="int">
+        SELECT COUNT(*)
+        FROM member
+        WHERE email = #{email}
+    </select>
+
 </mapper>
