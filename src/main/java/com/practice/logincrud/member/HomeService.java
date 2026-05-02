@@ -1,4 +1,4 @@
-package com.practice.logincrud.member;
+package com.practice.logincrud;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -14,13 +14,13 @@ public class HomeService {
     private BCryptPasswordEncoder passwordEncoder;
 
     //로그인
-    public boolean userLogin(String email, String password) {
-        User user = homeMapper.findUserLogin(email);
+    public boolean userLogin(String userId, String userPw) {
+        User user = homeMapper.findUserLogin(userId);
 
         if (user == null) {
             return false;
         }
-        return passwordEncoder.matches(password, user.getPassword());
+        return passwordEncoder.matches(userPw, user.getPassword());
     }
 
     //회원가입
@@ -35,6 +35,7 @@ public class HomeService {
         user.setPassword(passwordEncoder.encode(password));
         homeMapper.insertMember(user);
         return true;
+
 
     }
 
