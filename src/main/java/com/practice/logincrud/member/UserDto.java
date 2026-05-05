@@ -3,7 +3,7 @@ package com.practice.logincrud.member;
 import lombok.Data;
 
 @Data
-public class User {
+public class UserDto {
     private int id;
     private String email;
     private String password;

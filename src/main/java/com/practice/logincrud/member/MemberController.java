@@ -1,4 +1,4 @@
-package com.practice.logincrud;
+package com.practice.logincrud.member;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
@@ -15,20 +15,20 @@ import java.util.Map;
 
 @Controller
 @Slf4j
-public class HomeController {
+public class MemberController {
 
     @Autowired
-    HomeService homeService;
+    MemberService memberService;
 
-    @GetMapping("/main")
+    @GetMapping("/")
     public String home() {
-        return "redirect:/main.html";
+        return "main";
     }
 
     //로그인
     @PostMapping("/login")
     public String login(HttpSession httpSession, @RequestParam String userId, @RequestParam String userPw) {
-        boolean success = homeService.userLogin(userId, userPw);
+        boolean success = memberService.userLogin(userId, userPw);
 
         if (success) {
             httpSession.setAttribute("userId", userId);
@@ -62,20 +62,20 @@ public class HomeController {
     //회원가입 페이지 이동
     @GetMapping("/join")
     public String join() {
-        return "redirect:/signup.html";
+        return "signup";
     }
 
     //회원가입 로직
     @PostMapping("/signup")
     @ResponseBody
-    public String signup(@RequestParam String email, @RequestParam String password, Model model) {
-       boolean result = homeService.join(email, password);
+    public String signup(@RequestParam String email, @RequestParam String password) {
+       boolean result = memberService.join(email, password);
        log.info("회원가입 로직 지나가요~~");
 
        if(!result) {
-           return "<script>alert('이미 사용 중인 이메일입니다.'); location.href='/signup.html';</script>";
+           return "main";
        }else {
-           return "<script>alert('회원가입이 완료되었습니다.'); location.href='/success.html';</script>";
+           return "signup";
        }
 
     }

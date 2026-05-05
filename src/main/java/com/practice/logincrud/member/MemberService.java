@@ -1,21 +1,24 @@
-package com.practice.logincrud;
+package com.practice.logincrud.member;
 
+import com.practice.logincrud.member.MemberMapper;
+import com.practice.logincrud.member.UserDto;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
-public class HomeService {
+public class MemberService {
     
     @Autowired
-    HomeMapper homeMapper;
+    MemberMapper memberMapper;
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
     //로그인
     public boolean userLogin(String userId, String userPw) {
-        User user = homeMapper.findUserLogin(userId);
+        User user = (User) memberMapper.findUserLogin(userId);
 
         if (user == null) {
             return false;
@@ -25,29 +28,28 @@ public class HomeService {
 
     //회원가입
     public boolean join(String email, String password) {
-        int count = homeMapper.countByEmail(email);
+        int count = memberMapper.countByEmail(email);
         if (count > 0) {
 
             return false;
         }
-        User user = new User();
+        UserDto user = new UserDto();
         user.setEmail(email);
         user.setPassword(passwordEncoder.encode(password));
-        homeMapper.insertMember(user);
+        memberMapper.insertMember(user);
         return true;
-
 
     }
 
     //회원정보 수정
     public void editUser(String updateUser, String email, String password) {
         String encodedPassword = passwordEncoder.encode(password);
-        homeMapper.UpdateUser(updateUser, email, encodedPassword);
+        memberMapper.UpdateUser(updateUser, email, encodedPassword);
     }
 
     // 회원 삭제
     public void deleteUser(String email) {
-        homeMapper.deleteUser(email);
+        memberMapper.deleteUser(email);
     }
 
 }

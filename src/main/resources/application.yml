@@ -1,7 +1,12 @@
 server:
   port: 8080
 
+
+
 spring:
+  thymeleaf:
+    prefix=classpath:/templates/
+
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
     url: jdbc:mariadb://localhost:3306/easy
@@ -11,5 +16,5 @@ spring:
       maximum-pool-size: 100
 
 mybatis:
-  mapper-locations: classpath:mapper/*.xml
+  mapper-locations: classpath:mapper/member/*.xml
   type-aliases-package: com.practice.logincrud

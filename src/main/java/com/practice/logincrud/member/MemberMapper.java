@@ -4,12 +4,13 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 @Mapper
-public interface HomeMapper {
+public interface MemberMapper {
+
 
     //로그인
-    User findUserLogin(String email);
+    UserDto findUserLogin(String email);
     // 회원가입 처리
-    void insertMember(User user);
+    void insertMember(UserDto user);
     // 회원가입 이메일 중복 처리
     int countByEmail(String email);
     //회원정보 수정
