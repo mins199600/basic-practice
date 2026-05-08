@@ -1,5 +1,6 @@
 package com.practice.logincrud.member;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.User;
 import org.apache.ibatis.annotations.Param;
 import org.slf4j.Logger;
@@ -9,9 +10,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class MemberService {
 
-    private static final Logger log = LoggerFactory.getLogger(MemberService.class);
     @Autowired
     MemberMapper memberMapper;
 
