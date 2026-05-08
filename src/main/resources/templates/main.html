@@ -4,20 +4,35 @@
     <meta charset="UTF-8">
     <title>메인 페이지</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="/css/main.css">
 </head>
 <body>
-    <form action="/login" method="post">
-        <div>
-            <input type="text" name="email" placeholder="아이디">
-        </div>
-        <div>
-            <input type="password" name="password" placeholder="비밀번호">
-        </div>
-        <button type="submit">로그인</button>
 
-        <div>
-            <button><a href="/join">회원가입</a></button>
+    <div class="login-page">
+        <div class="login-card">
+            <h2 class="login-title">로그인</h2>
+            <p class="login-description">계정 정보를 확인 해주세요</p>
+
+            <form action="/login" class="login-form" method="post">
+
+                <div class="login-input-group">
+                    <label for="email" class="login-label">이메일</label>
+                    <input type="text" id="email" name="email" class="login-input" placeholder="이메일" required>
+                </div>
+
+                <div class="login-input-group">
+                    <label for="password" class="login-label">비밀번호</label>
+                    <input type="password" id="password" name="password" class="login-input" placeholder="비밀번호" required>
+                </div>
+                <button type="submit" class="login-button">로그인</button>
+
+                <a href="/join" class="join-button">
+                    회원가입
+                </a>
+            </form>
+
         </div>
-    </form>
+    </div>
+
 </body>
 </html>

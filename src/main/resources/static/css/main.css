@@ -1,0 +1,127 @@
+body {
+    margin: 0;
+    background-color: #f5f6f8;
+    font-family: Arial, sans-serif;
+}
+
+/* 로그인 페이지 전체 영역 */
+.login-page {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 로그인 카드 박스 */
+.login-card {
+    width: 420px;
+    padding: 40px;
+    background-color: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+/* 로그인 제목 */
+.login-title {
+    margin: 0;
+    text-align: center;
+    font-size: 28px;
+    font-weight: 700;
+    color: #222222;
+}
+
+/* 로그인 안내 문구 */
+.login-description {
+    margin-top: 10px;
+    margin-bottom: 30px;
+    text-align: center;
+    font-size: 14px;
+    color: #777777;
+}
+
+/* 로그인 form */
+.login-form {
+    width: 100%;
+}
+
+/* input 묶음 */
+.login-input-group {
+    margin-bottom: 18px;
+}
+
+/* label */
+.login-label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #333333;
+}
+
+/* input */
+.login-input {
+    width: 100%;
+    height: 48px;
+    padding: 0 14px;
+    border: 1px solid #dddddd;
+    border-radius: 8px;
+    font-size: 15px;
+    box-sizing: border-box;
+}
+
+.login-input:focus {
+    outline: none;
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
+}
+
+/* 로그인 버튼 */
+.login-button {
+    width: 100%;
+    height: 48px;
+    margin-top: 8px;
+    border: none;
+    border-radius: 8px;
+    background-color: #0d6efd;
+    color: white;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.login-button:hover {
+    background-color: #0b5ed7;
+}
+
+/* 회원가입 버튼 */
+.join-button {
+    display: block;
+    width: 100%;
+    height: 48px;
+    margin-top: 12px;
+    line-height: 48px;
+    text-align: center;
+    text-decoration: none;
+    border: 1px solid #bbbbbb;
+    border-radius: 8px;
+    background-color: white;
+    color: #333333;
+    font-size: 16px;
+    font-weight: 700;
+    box-sizing: border-box;
+}
+
+.join-button:hover {
+    background-color: #f1f1f1;
+    color: #333333;
+}
+
+/* 에러 메시지 */
+.error-message {
+    margin-top: 18px;
+    margin-bottom: 0;
+    text-align: center;
+    color: #dc3545;
+    font-size: 14px;
+    font-weight: 600;
+}

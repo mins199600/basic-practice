@@ -4,7 +4,6 @@ import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -33,11 +32,11 @@ public class MemberController {
         if (success) {
             httpSession.setAttribute("userId", userId);
             log.info("로그인 성공");
-            return "redirect:/success.html";
+            return "success";
         } else {
             httpSession.setAttribute("error", "아이디 또는 비밀번호가 틀렸습니다");
             log.info("로그인 실패");
-            return "redirect:/main.html";
+            return "main";
         }
     }
 
@@ -73,8 +72,10 @@ public class MemberController {
        log.info("회원가입 로직 지나가요~~");
 
        if(!result) {
+           log.info("회원가입 성공");
            return "main";
        }else {
+           log.info("회원가입 오류");
            return "signup";
        }
 

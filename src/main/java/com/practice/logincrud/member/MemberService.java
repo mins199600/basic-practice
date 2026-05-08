@@ -1,7 +1,5 @@
 package com.practice.logincrud.member;
 
-import com.practice.logincrud.member.MemberMapper;
-import com.practice.logincrud.member.UserDto;
 import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
