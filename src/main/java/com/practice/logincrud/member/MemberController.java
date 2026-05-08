@@ -65,7 +65,7 @@ public class MemberController {
 
     //회원가입 로직
     @PostMapping("/signup")
-    public String signup(@RequestParam String email, @RequestParam String password) {
+    public String signup(@RequestParam String email, @RequestParam String password, Model model) {
         boolean result = memberService.join(email, password);
         log.info("회원가입 로직 지나가요~~");
 
@@ -74,6 +74,7 @@ public class MemberController {
             return "redirect:/";
         } else {
             log.info("회원가입 오류");
+            model.addAttribute("errorMessage", "이미 사용 중인 이메일입니다.");
             return "signup";
         }
 
@@ -145,7 +146,6 @@ public class MemberController {
         redirectAttributes.addFlashAttribute("message", "회원탈퇴가 완료되었습니다.");
         return "redirect:/";
     }
-
 
 
 }

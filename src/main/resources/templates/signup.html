@@ -32,5 +32,10 @@
             </form>
         </div>
     </div>
+
+    <script th:if="${errorMessage}" th:inline="javascript">
+        alert([[${errorMessage}]]);
+    </script>
+
 </body>
 </html>
