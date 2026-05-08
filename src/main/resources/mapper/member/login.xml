@@ -3,7 +3,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.practice.logincrud.member.MemberMapper">
-    <select id="findUserLogin" parameterType="String" resultType="com.practice.logincrud.member.UserDto">
+    <select id="findUserLogin" parameterType="com.practice.logincrud.member.UserDto">
         SELECT id, email, password
         FROM member
         WHERE email = #{email}

@@ -26,13 +26,13 @@ public class MemberController {
 
     //로그인
     @PostMapping("/login")
-    public String login(HttpSession httpSession, @RequestParam String userId, @RequestParam String userPw) {
-        boolean success = memberService.userLogin(userId, userPw);
+    public String login(HttpSession httpSession, @RequestParam String email, @RequestParam String password) {
+        boolean success = memberService.userLogin(email, password);
 
         if (success) {
-            httpSession.setAttribute("userId", userId);
+            httpSession.setAttribute("email", email);
             log.info("로그인 성공");
-            return "success";
+            return "home";
         } else {
             httpSession.setAttribute("error", "아이디 또는 비밀번호가 틀렸습니다");
             log.info("로그인 실패");
@@ -43,7 +43,7 @@ public class MemberController {
     //로그아웃
     @GetMapping("/logout")
     public String logout(HttpSession httpSession) {
-        String userId = (String) httpSession.getAttribute("userId");
+        String email = (String) httpSession.getAttribute("email");
         httpSession.invalidate();
         log.info("로그아웃");
         return "redirect:/main.html";
@@ -52,9 +52,9 @@ public class MemberController {
     @GetMapping("/api/user-info")
     @ResponseBody
     public Map<String, String> getUserInfo(HttpSession session) {
-        String userId = (String) session.getAttribute("userId");
+        String email = (String) session.getAttribute("email");
         Map<String, String> response = new HashMap<>();
-        response.put("userId", userId != null ? userId : "로그인 안 함");
+        response.put("email", email != null ? email : "로그인 안 함");
         return response;
     }
 

@@ -16,7 +16,7 @@ public class MemberService {
 
     //로그인
     public boolean userLogin(String userId, String userPw) {
-        User user = (User) memberMapper.findUserLogin(userId);
+        UserDto user = memberMapper.findUserLogin(userId);
 
         if (user == null) {
             return false;
