@@ -6,7 +6,6 @@ import org.apache.ibatis.annotations.Param;
 @Mapper
 public interface MemberMapper {
 
-
     //로그인
     UserDto findUserLogin(String email);
     // 회원가입 처리

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -21,13 +21,14 @@
                 </div>
 
                 <div class="signup-input-group">
-                    <label for="password" class="signup-lable">비밀번호</label>
+                    <label for="password" class="signup-label">비밀번호</label>
+
                     <input type="password" id="password" name="password" class="signup-input" placeholder="비밀번호 입력" required>
                 </div>
 
                 <button type="submit" class="signup-submit-button">회원가입 완료</button>
 
-                <a href="/" class="signup-login-button">로그인 페이지로 이동</a>
+                <a href="/" class="signup-login-button">로그인 페이지 이동</a>
             </form>
         </div>
     </div>

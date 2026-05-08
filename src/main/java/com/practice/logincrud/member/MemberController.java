@@ -66,14 +66,13 @@ public class MemberController {
 
     //회원가입 로직
     @PostMapping("/signup")
-    @ResponseBody
     public String signup(@RequestParam String email, @RequestParam String password) {
        boolean result = memberService.join(email, password);
        log.info("회원가입 로직 지나가요~~");
 
-       if(!result) {
+       if(result) {
            log.info("회원가입 성공");
-           return "main";
+           return "redirect:/";
        }else {
            log.info("회원가입 오류");
            return "signup";
