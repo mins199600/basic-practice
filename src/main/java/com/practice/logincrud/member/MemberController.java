@@ -43,10 +43,9 @@ public class MemberController {
     //로그아웃
     @GetMapping("/logout")
     public String logout(HttpSession httpSession) {
-        String email = (String) httpSession.getAttribute("email");
         httpSession.invalidate();
         log.info("로그아웃");
-        return "redirect:/main.html";
+        return "redirect:/";
     }
 
     @GetMapping("/api/user-info")
