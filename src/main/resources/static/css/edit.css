@@ -1,0 +1,161 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #f4f6f8;
+    font-family: Arial, sans-serif;
+}
+
+/* 전체 컨테이너 */
+#myInfoContainer {
+    width: 500px;
+    margin: 60px auto;
+}
+
+/* 페이지 제목 */
+#myInfoTitle {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 28px;
+    font-weight: bold;
+    color: #333333;
+}
+
+/* 카드 공통 스타일 */
+.infoCard {
+    background-color: white;
+    border: 1px solid #dddddd;
+    border-radius: 12px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+}
+
+/* 카드 제목 영역 */
+.cardTitle {
+    background-color: #f1f3f5;
+    padding: 15px 20px;
+    font-size: 18px;
+    font-weight: bold;
+    border-bottom: 1px solid #dddddd;
+}
+
+/* 회원 탈퇴 카드 제목 */
+#deleteTitle {
+    color: #dc3545;
+}
+
+/* 카드 내용 */
+.cardContent {
+    padding: 25px 20px;
+}
+
+/* 입력 영역 */
+.inputBox {
+    margin-bottom: 18px;
+}
+
+/* 라벨 */
+.inputLabel {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 15px;
+    font-weight: bold;
+    color: #333333;
+}
+
+/* 이메일 입력창 */
+#emailInput {
+    width: 100%;
+    height: 42px;
+    padding: 0 12px;
+    border: 1px solid #cccccc;
+    border-radius: 8px;
+    font-size: 15px;
+    box-sizing: border-box;
+    background-color: #eeeeee;
+    color: #666666;
+}
+
+/* 닉네임 입력창 */
+#nicknameInput {
+    width: 100%;
+    height: 42px;
+    padding: 0 12px;
+    border: 1px solid #cccccc;
+    border-radius: 8px;
+    font-size: 15px;
+    box-sizing: border-box;
+}
+
+/* 비밀번호 입력창 */
+#passwordInput {
+    width: 100%;
+    height: 42px;
+    padding: 0 12px;
+    border: 1px solid #cccccc;
+    border-radius: 8px;
+    font-size: 15px;
+    box-sizing: border-box;
+}
+
+/* 입력창 클릭했을 때 */
+#nicknameInput:focus,
+#passwordInput:focus {
+    outline: none;
+    border-color: #198754;
+    box-shadow: 0 0 5px rgba(25, 135, 84, 0.3);
+}
+
+/* 수정 완료 버튼 */
+#editSubmitButton {
+    width: 100%;
+    height: 45px;
+    border: none;
+    border-radius: 8px;
+    background-color: #198754;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+#editSubmitButton:hover {
+    background-color: #157347;
+}
+
+/* 탈퇴 설명 문구 */
+#deleteDescription {
+    color: #777777;
+    font-size: 14px;
+    margin-bottom: 18px;
+    line-height: 1.5;
+}
+
+/* 회원 탈퇴 버튼 */
+#deleteSubmitButton {
+    width: 100%;
+    height: 45px;
+    border: none;
+    border-radius: 8px;
+    background-color: #dc3545;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#deleteSubmitButton:hover {
+    background-color: #bb2d3b;
+}
+
+/* 성공/오류 메시지 */
+#messageBox {
+    background-color: #fff3cd;
+    color: #664d03;
+    border: 1px solid #ffecb5;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 20px;
+    font-size: 14px;
+}

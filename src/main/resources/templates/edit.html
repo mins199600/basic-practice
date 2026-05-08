@@ -1,21 +1,76 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>회원정보 수정</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-
+    <title>내 정보</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+          crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="/css/edit.css">
 </head>
 <body>
-    <form action="/user/edit" method="post">
-        <div>
-            <input type="email" name="email" placeholder="변경할 이메일을 입력하세요">
+
+    <div id="myInfoContainer">
+
+        <h2 id="myInfoTitle">내 정보</h2>
+
+        <!-- 회원정보 수정 카드 -->
+        <div id="editCard" class="infoCard">
+            <div id="editTitle" class="cardTitle">회원정보 수정</div>
+
+            <div id="editContent" class="cardContent">
+
+                <form id="editForm" th:action="@{/user/edit}" method="post" th:object="${user}">
+
+                    <div id="emailBox" class="inputBox">
+                        <label id="emailLabel" class="inputLabel" for="emailInput">이메일</label>
+                        <input id="emailInput" type="email" th:field="*{email}">
+                    </div>
+
+                    <div id="nicknameBox" class="inputBox">
+                        <label id="nicknameLabel" class="inputLabel" for="nicknameInput">닉네임</label>
+                        <input id="nicknameInput" type="text" th:field="*{nickname}" placeholder="닉네임을 입력하세요">
+                    </div>
+
+                    <div id="passwordBox" class="inputBox">
+                        <label id="passwordLabel" class="inputLabel" for="passwordInput">새 비밀번호</label>
+                        <input id="passwordInput" type="password" th:field="*{password}" placeholder="변경할 비밀번호 입력하세요">
+                    </div>
+
+                    <button id="editSubmitButton" type="submit">수정 완료</button>
+
+                </form>
+
+            </div>
         </div>
-        <div>
-            <input type="password" name="password" placeholder="변경할 비밀번호를 입력하세요">
+
+        <!-- 회원 탈퇴 카드 -->
+        <div id="deleteCard" class="infoCard">
+
+            <div id="deleteTitle" class="cardTitle">
+                회원 탈퇴
+            </div>
+
+            <div id="deleteContent" class="cardContent">
+
+                <p id="deleteDescription">
+                    회원 탈퇴 시 계정 정보가 삭제됩니다.<br>
+                    삭제된 정보는 복구할 수 없습니다.
+                </p>
+
+                <form id="deleteForm" action="/user/delete" method="post">
+                    <button id="deleteSubmitButton"
+                            type="submit"
+                            onclick="return confirm('정말 탈퇴하시겠습니까?')">
+                        회원 탈퇴
+                    </button>
+                </form>
+
+            </div>
         </div>
-        <button type="submit">수정하기</button>
-    </form>
+
+    </div>
 
 </body>
 </html>

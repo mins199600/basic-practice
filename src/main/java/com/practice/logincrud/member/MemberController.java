@@ -4,10 +4,9 @@ import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -48,6 +47,7 @@ public class MemberController {
         return "redirect:/";
     }
 
+    //로그인한 사용자의 세션에 저장된 이메일을 가져와서 프론트 화면에 보여주는 api
     @GetMapping("/api/user-info")
     @ResponseBody
     public Map<String, String> getUserInfo(HttpSession session) {
@@ -66,18 +66,70 @@ public class MemberController {
     //회원가입 로직
     @PostMapping("/signup")
     public String signup(@RequestParam String email, @RequestParam String password) {
-       boolean result = memberService.join(email, password);
-       log.info("회원가입 로직 지나가요~~");
+        boolean result = memberService.join(email, password);
+        log.info("회원가입 로직 지나가요~~");
 
-       if(result) {
-           log.info("회원가입 성공");
-           return "redirect:/";
-       }else {
-           log.info("회원가입 오류");
-           return "signup";
-       }
+        if (result) {
+            log.info("회원가입 성공");
+            return "redirect:/";
+        } else {
+            log.info("회원가입 오류");
+            return "signup";
+        }
 
     }
+
+    //회원정보 수정 페이지 이동
+    @GetMapping("/edit")
+    public String edit(HttpSession session, Model model) {
+        String email = (String) session.getAttribute("email");
+        if (email == null) {
+            return "redirect:/";
+        }
+        UserDto user = memberService.findUserByEmail(email);
+        model.addAttribute("user", user);
+        return "edit";
+    }
+
+    // 회원정보 수정 처리
+    @PostMapping("/user/edit")
+    public String updateUser(@ModelAttribute UserDto userDto,
+                             HttpSession session,
+                             RedirectAttributes redirectAttributes) {
+
+        String oldEmail = (String) session.getAttribute("email");
+
+        if (oldEmail == null) {
+            return "redirect:/";
+        }
+
+        boolean result = memberService.updateUser(oldEmail, userDto);
+
+        if (!result) {
+            redirectAttributes.addFlashAttribute("message", "이미 사용 중인 이메일입니다.");
+            return "redirect:/edit";
+        }
+
+        // 이메일이 변경되었으면 세션 이메일도 새 이메일로 변경
+        session.setAttribute("email", userDto.getEmail());
+
+        redirectAttributes.addFlashAttribute("message", "회원정보가 수정되었습니다.");
+
+        return "redirect:/home";
+    }
+
+    //회원정보 수정 완료 후 홈으로 이동
+    @GetMapping("/home")
+    public String homePage(HttpSession session) {
+        String email = (String) session.getAttribute("email");
+
+        if (email == null) {
+            return "redirect:/";
+        }
+
+        return "home";
+    }
+
 
 
 }

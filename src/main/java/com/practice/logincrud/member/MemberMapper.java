@@ -13,10 +13,9 @@ public interface MemberMapper {
     // 회원가입 이메일 중복 처리
     int countByEmail(String email);
     //회원정보 수정
-    void UpdateUser(@Param("UpdateUser") String UpdateUser,
-                    @Param("email") String email,
-                    @Param("password") String password);
-    // 회원 삭제
-    void deleteUser(String email);
+    UserDto findUserByEmail(@Param("email") String email);
+    //회원정보 수정 처리 로직
+    void updateUser(@Param("oldEmail") String oldEmail,
+                    @Param("user") UserDto userDto);
 
 }

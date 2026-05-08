@@ -1,17 +1,13 @@
 package com.practice.logincrud.member;
 
-import lombok.Data;
-
-import java.time.LocalDateTime;
+import lombok.*;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserDto {
     private int id;
+    private String nickname;
     private String email;
     private String password;
-/*    private LocalDateTime regDate;
-    private String address;
-    private String detailAddress;
-    private String postcode;
-    private LocalDateTime updateDate;*/
 }

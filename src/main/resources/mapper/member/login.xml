@@ -20,13 +20,29 @@
         WHERE email = #{email}
     </select>
 
+    <select id="findUserByEmail" resultType="com.practice.logincrud.member.UserDto">
+        SELECT
+            id,
+            nickname,
+            email,
+            password
+        FROM member
+        WHERE email = #{email}
+    </select>
 
-    <update id="UpdateUser" parameterType="com.practice.logincrud.member.UserDto">
-        update member
-        set email = #{email},
-            password = #{password}
-        where email = #{UpdateUser}
+    <update id="updateUser">
+        UPDATE member
+        <set>
+            email = #{user.email},
+            nickname = #{user.nickname}
+
+            <if test="user.password != null and user.password != ''">
+                , password = #{user.password}
+            </if>
+        </set>
+        WHERE email = #{oldEmail}
     </update>
+
 
     <delete id="deleteUser" parameterType="String">
         DELETE FROM member

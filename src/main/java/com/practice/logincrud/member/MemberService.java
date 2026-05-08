@@ -39,16 +39,45 @@ public class MemberService {
 
     }
 
-    //회원정보 수정
-    public void editUser(String updateUser, String email, String password) {
-        String encodedPassword = passwordEncoder.encode(password);
-        memberMapper.UpdateUser(updateUser, email, encodedPassword);
+
+    // 회원정보 조회
+    public UserDto findUserByEmail(String email) {
+        return memberMapper.findUserByEmail(email);
     }
 
-    // 회원 삭제
-    public void deleteUser(String email) {
-        memberMapper.deleteUser(email);
+
+// 회원정보 수정
+    public boolean updateUser(String oldEmail, UserDto userDto) {
+
+        String newEmail = userDto.getEmail();
+
+        // 이메일을 변경한 경우에만 중복 검사
+        if (!oldEmail.equals(newEmail)) {
+            int count = memberMapper.countByEmail(newEmail);
+
+            if (count > 0) {
+                return false;
+            }
+        }
+
+        String password = userDto.getPassword();
+
+        if (password != null && !password.trim().isEmpty()) {
+            userDto.setPassword(passwordEncoder.encode(password));
+        } else {
+            userDto.setPassword(null);
+        }
+
+        memberMapper.updateUser(oldEmail, userDto);
+
+        return true;
     }
+
+
+
+
+    // 회원 삭제
+
 
 }
 
