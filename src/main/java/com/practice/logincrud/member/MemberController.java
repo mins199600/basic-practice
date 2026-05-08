@@ -43,7 +43,7 @@ public class MemberController {
     @GetMapping("/logout")
     public String logout(HttpSession httpSession) {
         httpSession.invalidate();
-        log.info("로그아웃");
+        log.info("로그아웃 성공");
         return "redirect:/";
     }
 
@@ -128,6 +128,22 @@ public class MemberController {
         }
 
         return "home";
+    }
+
+    //회원정보 삭제
+    @PostMapping("/user/delete")
+    public String deleteUser(HttpSession session,
+                             RedirectAttributes redirectAttributes) {
+
+        String email = (String) session.getAttribute("email");
+
+        if (email == null) {
+            return "redirect:/";
+        }
+        memberService.deleteUser(email);
+        session.invalidate();
+        redirectAttributes.addFlashAttribute("message", "회원탈퇴가 완료되었습니다.");
+        return "redirect:/";
     }
 
 

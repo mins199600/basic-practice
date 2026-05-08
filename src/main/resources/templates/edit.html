@@ -48,9 +48,7 @@
         <!-- 회원 탈퇴 카드 -->
         <div id="deleteCard" class="infoCard">
 
-            <div id="deleteTitle" class="cardTitle">
-                회원 탈퇴
-            </div>
+            <div id="deleteTitle" class="cardTitle">회원 탈퇴</div>
 
             <div id="deleteContent" class="cardContent">
 
@@ -59,12 +57,9 @@
                     삭제된 정보는 복구할 수 없습니다.
                 </p>
 
-                <form id="deleteForm" action="/user/delete" method="post">
-                    <button id="deleteSubmitButton"
-                            type="submit"
-                            onclick="return confirm('정말 탈퇴하시겠습니까?')">
-                        회원 탈퇴
-                    </button>
+                <form th:action="@{/user/delete}" id="deleteForm" method="post"
+                      onsubmit="return confirm('정말 회원탈퇴 하시겠습니까? 삭제 후 복구할 수 없습니다.');">
+                    <button id="deleteButton" type="submit">회원 탈퇴</button>
                 </form>
 
             </div>

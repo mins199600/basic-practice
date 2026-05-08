@@ -17,5 +17,6 @@ public interface MemberMapper {
     //회원정보 수정 처리 로직
     void updateUser(@Param("oldEmail") String oldEmail,
                     @Param("user") UserDto userDto);
-
+    //회원정보 삭제
+    void deleteUser(@Param("email") String email);
 }

@@ -1,13 +1,17 @@
 package com.practice.logincrud.member;
 
 import org.apache.catalina.User;
+import org.apache.ibatis.annotations.Param;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class MemberService {
-    
+
+    private static final Logger log = LoggerFactory.getLogger(MemberService.class);
     @Autowired
     MemberMapper memberMapper;
 
@@ -46,7 +50,7 @@ public class MemberService {
     }
 
 
-// 회원정보 수정
+    // 회원정보 수정
     public boolean updateUser(String oldEmail, UserDto userDto) {
 
         String newEmail = userDto.getEmail();
@@ -73,10 +77,11 @@ public class MemberService {
         return true;
     }
 
-
-
-
     // 회원 삭제
+    public void deleteUser(String email) {
+        log.info("회원 삭제 성공");
+        memberMapper.deleteUser(email);
+    }
 
 
 }

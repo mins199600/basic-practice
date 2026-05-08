@@ -43,8 +43,7 @@
         WHERE email = #{oldEmail}
     </update>
 
-
-    <delete id="deleteUser" parameterType="String">
+    <delete id="deleteUser">
         DELETE FROM member
         WHERE email = #{email}
     </delete>
