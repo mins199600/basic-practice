@@ -34,7 +34,7 @@ public class MemberController {
         if (loginMember != null) {
             httpSession.setAttribute("memberId", loginMember.getId());
             httpSession.setAttribute("email", loginMember.getEmail());
-            httpSession.setAttribute("nickName", loginMember.getNickname());
+            httpSession.setAttribute("nickName", loginMember.getNickName());
 
             log.info("로그인 성공");
             return "home";
@@ -119,23 +119,13 @@ public class MemberController {
 
         // 이메일이 변경되었으면 세션 이메일도 새 이메일로 변경
         session.setAttribute("email", userDto.getEmail());
+        session.setAttribute("nickname", userDto.getNickName());
 
         redirectAttributes.addFlashAttribute("message", "회원정보가 수정되었습니다.");
 
         return "redirect:/home";
     }
 
-    //회원정보 수정 완료 후 홈으로 이동
-    @GetMapping("/home")
-    public String homePage(HttpSession session) {
-        String email = (String) session.getAttribute("email");
-
-        if (email == null) {
-            return "redirect:/";
-        }
-
-        return "home";
-    }
 
     //회원정보 삭제
     @PostMapping("/user/delete")

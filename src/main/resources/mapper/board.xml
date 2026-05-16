@@ -27,4 +27,23 @@
                    #{memberId}
                )
     </insert>
+
+    <!-- 게시글 전체 조회 (최신순, 작성자 닉네임 포함) -->
+    <select id="findAll" resultType="com.practice.logincrud.board.BoardDto">
+        SELECT
+            b.id,
+            b.title,
+            b.content,
+            b.created_at AS createdAt,
+            b.modified_at AS modifiedAt,
+            b.view_count AS viewCount,
+            b.category,
+            b.is_notice AS isNotice,
+            b.member_id AS memberId,
+            m.nickname
+        FROM board b
+                 INNER JOIN member m ON b.member_id = m.id
+        ORDER BY b.created_at DESC
+    </select>
+
 </mapper>

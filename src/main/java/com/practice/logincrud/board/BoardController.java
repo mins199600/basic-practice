@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.List;
+
 @Controller
 @Slf4j
 @RequiredArgsConstructor
@@ -19,6 +21,20 @@ public class BoardController {
     private final BoardService boardService;
 
     //전체조회
+    @GetMapping("/home")
+    public String home(Model model, HttpSession session) {
+
+        // 세션 확인
+        Object memberId = session.getAttribute("memberId");
+        if (memberId == null) {
+            return "redirect:/";
+        }
+
+        // 게시글 전체 조회
+        List<BoardDto> boardList = boardService.findAll();
+        model.addAttribute("boardList", boardList);
+        return "home";
+    }
 
     //상세조회
 
@@ -30,9 +46,9 @@ public class BoardController {
         Object nickname = session.getAttribute("nickname");
         Object email = session.getAttribute("email");
 
-        System.out.println("memberId = " + memberId);
-        System.out.println("nickname = " + nickname);
-        System.out.println("email = " + email);
+        log.info("memberId = " + memberId);
+        log.info("nickname = " + nickname);
+        log.info("email = " + email);
 
         if (memberId == null) {
             return "redirect:/";
