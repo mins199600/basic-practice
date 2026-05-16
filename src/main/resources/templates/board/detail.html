@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${board.title}">게시글 제목</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/css/detail.css">
+</head>
+<body>
+
+<div class="detail-container">
+
+    <!-- 게시글 헤더 -->
+    <div class="detail-header">
+        <div class="category-badge" th:text="${board.category}">일반</div>
+        <h2 class="detail-title" th:text="${board.title}">게시글 제목</h2>
+    </div>
+
+    <!-- 게시글 정보 -->
+    <div class="detail-info">
+        <div class="info-item">
+            <span class="info-label">작성자:</span>
+            <span class="info-value" th:text="${board.nickName}">닉네임</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">작성일:</span>
+            <span class="info-value" th:text="${#temporals.format(board.createdAt, 'yyyy-MM-dd HH:mm')}">2026-05-16 13:00</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">조회수:</span>
+            <span class="info-value" th:text="${board.viewCount}">0</span>
+        </div>
+    </div>
+
+    <!-- 게시글 내용 -->
+    <div class="detail-content">
+        <div th:text="${board.content}">게시글 내용이 여기에 표시됩니다.</div>
+    </div>
+
+    <!-- 버튼 영역 -->
+    <div class="detail-buttons">
+        <a th:href="@{/home}" class="btn-list">목록</a>
+
+        <!-- 작성자만 보이는 버튼 -->
+        <div th:if="${isAuthor}" class="author-buttons">
+            <a th:href="@{/board/edit/{id}(id=${board.id})}" class="btn-edit">수정</a>
+            <form th:action="@{/board/delete/{id}(id=${board.id})}" method="post" style="display:inline;">
+                <button type="submit" class="btn-delete" onclick="return confirm('정말 삭제하시겠습니까?')">삭제</button>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

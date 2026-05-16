@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -37,6 +38,30 @@ public class BoardController {
     }
 
     //상세조회
+    @GetMapping("/board/view/{id}")
+    public String detail(@PathVariable Integer id, Model model, HttpSession session) {
+
+        // 세션 확인
+        Object memberId = session.getAttribute("memberId");
+        if (memberId == null) {
+            return "redirect:/";
+        }
+
+        // 게시글 조회
+        BoardDto board = boardService.findById(id);
+
+        if (board == null) {
+            return "redirect:/home";
+        }
+
+        model.addAttribute("board", board);
+
+        // 작성자 본인 확인 (수정/삭제 버튼 노출용)
+        boolean isAuthor = board.getMemberId().equals(memberId);
+        model.addAttribute("isAuthor", isAuthor);
+
+        return "board/detail";
+    }
 
     // 글쓰기 화면 이동
     @GetMapping("/board/create")

@@ -10,6 +10,7 @@ public interface BoardMapper {
     List<BoardDto> findAll();
 
     //상세조회
+    BoardDto findById(Integer id);
 
     //글쓰기
     void save(BoardDto boardDto);

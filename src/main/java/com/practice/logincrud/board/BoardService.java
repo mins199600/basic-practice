@@ -20,6 +20,9 @@ public class BoardService {
     }
 
     //상세조회
+    public BoardDto findById(Integer id) {
+        return boardMapper.findById(id);
+    }
 
     //글쓰기
     public void save(BoardDto boardDto) {

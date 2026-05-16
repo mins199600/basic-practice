@@ -46,4 +46,22 @@
         ORDER BY b.created_at DESC
     </select>
 
+    <!-- 게시글 상세 조회 -->
+    <select id="findById" resultType="com.practice.logincrud.board.BoardDto">
+        SELECT
+            b.id,
+            b.title,
+            b.content,
+            b.created_at AS createdAt,
+            b.modified_at AS modifiedAt,
+            b.view_count AS viewCount,
+            b.category,
+            b.is_notice AS isNotice,
+            b.member_id AS memberId,
+            b.file_path AS filePath,
+            m.nickname AS nickName
+        FROM board b
+                 INNER JOIN member m ON b.member_id = m.id
+        WHERE b.id = #{id}
+    </select>
 </mapper>
