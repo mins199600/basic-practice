@@ -1,0 +1,119 @@
+/* ============================= */
+/* 게시글 작성 페이지 */
+/* ============================= */
+
+.board-form-container {
+    max-width: 700px;
+    margin: 60px auto;
+}
+
+.board-form-card {
+    background-color: #ffffff;
+    border: 1px solid #e5e5e5;
+    border-radius: 18px;
+    padding: 32px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+}
+
+.form-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 28px;
+    color: #222;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.form-control {
+    width: 100%;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    padding: 10px 12px;
+    font-size: 14px;
+    transition: border-color 0.2s;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #03c75a;
+    box-shadow: 0 0 0 3px rgba(3, 199, 90, 0.1);
+}
+
+textarea.form-control {
+    resize: vertical;
+    min-height: 200px;
+}
+
+.form-button-area {
+    display: flex;
+    gap: 10px;
+    margin-top: 28px;
+}
+
+.submit-button {
+    flex: 1;
+    display: block;
+    text-align: center;
+    text-decoration: none;
+    border: 1px solid #03c75a;
+    background-color: #03c75a;
+    color: #ffffff;
+    border-radius: 8px;
+    padding: 12px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 15px;
+    transition: background-color 0.2s;
+}
+
+.submit-button:hover {
+    background-color: #02b350;
+}
+
+.cancel-button {
+    flex: 1;
+    display: block;
+    text-align: center;
+    text-decoration: none;
+    border: 1px solid #ddd;
+    background-color: #ffffff;
+    color: #333;
+    border-radius: 8px;
+    padding: 12px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 15px;
+    transition: background-color 0.2s;
+}
+
+.cancel-button:hover {
+    background-color: #f1f3f5;
+    color: #333;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+    .board-form-container {
+        max-width: 95%;
+        margin: 30px auto;
+    }
+
+    .board-form-card {
+        padding: 24px;
+        border-radius: 14px;
+    }
+
+    .form-title {
+        font-size: 20px;
+    }
+}

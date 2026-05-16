@@ -20,13 +20,18 @@ public class MemberService {
     private BCryptPasswordEncoder passwordEncoder;
 
     //로그인
-    public boolean userLogin(String userId, String userPw) {
-        UserDto user = memberMapper.findUserLogin(userId);
+    public UserDto userLogin(String email, String password) {
+        UserDto user = memberMapper.findUserLogin(email);
 
         if (user == null) {
-            return false;
+            return null;
         }
-        return passwordEncoder.matches(userPw, user.getPassword());
+
+        if (passwordEncoder.matches(password, user.getPassword())) {
+            return user;  // 로그인 성공 → user 반환
+        }
+
+        return null;  // 비밀번호 불일치
     }
 
     //회원가입

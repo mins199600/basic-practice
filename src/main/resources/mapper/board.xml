@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.practice.logincrud.board.BoardMapper">
+    <insert id="save" parameterType="com.practice.logincrud.board.BoardDto">
+        INSERT INTO board (
+            title,
+            content,
+            created_at,
+            modified_at,
+            view_count,
+            category,
+            is_notice,
+            file_path,
+            member_id
+        )
+        VALUES (
+                   #{title},
+                   #{content},
+                   NOW(),
+                   NOW(),
+                   0,
+                   #{category},
+                   0,
+                   NULL,
+                   #{memberId}
+               )
+    </insert>
+</mapper>

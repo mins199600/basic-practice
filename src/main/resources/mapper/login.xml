@@ -3,11 +3,13 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.practice.logincrud.member.MemberMapper">
-    <select id="findUserLogin" parameterType="com.practice.logincrud.member.UserDto">
-        SELECT id, email, password
+    <select id="findUserLogin" parameterType="String" resultType="com.practice.logincrud.member.UserDto">
+        SELECT id, email, password, nickname
         FROM member
         WHERE email = #{email}
     </select>
+
+
 
     <insert id="insertMember" parameterType="com.practice.logincrud.member.UserDto">
         INSERT INTO member(email, password)

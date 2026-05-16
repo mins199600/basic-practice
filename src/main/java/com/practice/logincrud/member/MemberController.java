@@ -25,11 +25,17 @@ public class MemberController {
 
     //로그인
     @PostMapping("/login")
-    public String login(HttpSession httpSession, @RequestParam String email, @RequestParam String password) {
-        boolean success = memberService.userLogin(email, password);
+    public String login(HttpSession httpSession,
+                        @RequestParam String email,
+                        @RequestParam String password) {
 
-        if (success) {
-            httpSession.setAttribute("email", email);
+        UserDto loginMember = memberService.userLogin(email, password);
+
+        if (loginMember != null) {
+            httpSession.setAttribute("memberId", loginMember.getId());
+            httpSession.setAttribute("email", loginMember.getEmail());
+            httpSession.setAttribute("nickName", loginMember.getNickname());
+
             log.info("로그인 성공");
             return "home";
         } else {
