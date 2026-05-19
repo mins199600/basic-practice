@@ -60,29 +60,48 @@
             </thead>
 
             <tbody>
-            <tr th:each="board : ${boardList}">
-                <td th:text="${board.id}">1</td>
-
+            <tr th:each="board, status : ${boardList}">
+                <td th:text="${startNo + status.index}">1</td>
                 <td th:text="${board.category}">일반</td>
-
                 <td class="title-cell">
                     <a th:href="@{/board/view/{id}(id=${board.id})}"
                        th:text="${board.title}">
                         게시글 제목
                     </a>
                 </td>
-
                 <td th:text="${board.nickName}">작성자</td>
-
                 <td th:text="${board.viewCount}">0</td>
-
                 <td th:text="${#temporals.format(board.createdAt, 'yyyy-MM-dd HH:mm')}">
                     2026-05-16 13:00
                 </td>
             </tr>
+
             </tbody>
         </table>
-    </div>
+
+        <!-- 페이지네이션 -->
+        <div class="board-pagination" th:if="${totalPage != null and totalPage > 1}">
+            <a th:if="${currentPage > 1}"
+               th:href="@{/home(page=${currentPage - 1})}"
+               class="board-page-button board-page-button--nav">
+                이전
+            </a>
+
+            <a th:each="i : ${#numbers.sequence(1, totalPage)}"
+               th:href="@{/home(page=${i})}"
+               th:text="${i}"
+               th:classappend="${i == currentPage} ? ' board-page-button--active' : ''"
+               class="board-page-button">
+            </a>
+
+            <a th:if="${currentPage < totalPage}"
+               th:href="@{/home(page=${currentPage + 1})}"
+               class="board-page-button board-page-button--nav">
+                다음
+            </a>
+        </div>
+
+
 
 
 <script src="/js/board.js"></script>

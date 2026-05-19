@@ -18,5 +18,4 @@ public class BoardDto {
     private boolean isNotice;
     private String filePath;
 
-
 }

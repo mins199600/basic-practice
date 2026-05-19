@@ -2,7 +2,6 @@ package com.practice.logincrud.board;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,6 +16,16 @@ public class BoardService {
     //전체조회
     public List<BoardDto> findAll() {
         return boardMapper.findAll();
+    }
+
+    // 페이징 목록 조회
+    public List<BoardDto> getBoardList(PageDto pageDto) {
+        return boardMapper.getBoardList(pageDto);
+    }
+
+    // 전체 게시글 수
+    public int getBoardTotalCount() {
+        return boardMapper.getBoardTotalCount();
     }
 
     //상세조회

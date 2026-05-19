@@ -21,5 +21,9 @@ public interface BoardMapper {
     //게시글 삭제
     void delete(Integer id);
 
+    // 페이징 추가
+    List<BoardDto> getBoardList(PageDto pageDto);
+    int getBoardTotalCount();
+
 
 }
