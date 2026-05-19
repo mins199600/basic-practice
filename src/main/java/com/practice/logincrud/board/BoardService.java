@@ -29,8 +29,13 @@ public class BoardService {
         boardMapper.save(boardDto);
     }
 
-
     //게시글 수정
+    public void update(BoardDto boardDto) {
+        boardMapper.update(boardDto);
+    }
 
     //게시글 삭제
+    public void delete(Integer id) {
+        boardMapper.delete(id);
+    }
 }

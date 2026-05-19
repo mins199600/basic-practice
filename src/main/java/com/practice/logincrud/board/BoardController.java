@@ -100,6 +100,77 @@ public class BoardController {
     }
 
     //게시글 수정
+    @GetMapping("/board/edit/{id}")
+    public String editForm(@PathVariable Integer id, Model model, HttpSession session) {
+
+        Integer memberId = (Integer) session.getAttribute("memberId");
+
+        if (memberId == null) {
+            log.info("memberId = " + memberId);
+            return "redirect:/";
+        }
+
+        BoardDto board = boardService.findById(id);
+
+        // 작성자 본인 확인
+        if (!board.getMemberId().equals(memberId)) {
+            log.info(" 작성자 본인 확인 memberId = " + memberId);
+            return "redirect:/board/view/" + id;
+        }
+
+        model.addAttribute("board", board);
+        log.info("board = " + board);
+        return "board/edit";
+    }
+
+    //게시글 수정 처리
+    @PostMapping("/board/edit/{id}")
+    public String edit(@PathVariable Integer id, BoardDto boardDto, HttpSession session) {
+
+        Integer memberId = (Integer) session.getAttribute("memberId");
+
+        if (memberId == null) {
+            log.info(" 글쓰기 수정 처리 memberId = " + memberId);
+            return "redirect:/";
+        }
+
+        BoardDto board = boardService.findById(id);
+
+        // 작성자 본인 확인
+        if (!board.getMemberId().equals(memberId)) {
+            log.info("작성자 본인 확인 처리 memberId = " + memberId);
+            return "redirect:/board/" + id;
+        }
+
+        // 수정할 내용 설정
+        boardDto.setId(id);
+        log.info("board = " + board);
+        boardService.update(boardDto);
+
+        return "redirect:/board/view/" + id;
+    }
 
     //게시글 삭제
+    @PostMapping("/board/delete/{id}")
+    public String delete(@PathVariable Integer id, HttpSession session) {
+        Integer memberId = (Integer) session.getAttribute("memberId");
+
+        if (memberId == null) {
+            return "redirect:/login";
+        }
+
+        BoardDto board = boardService.findById(id);
+        if (board == null) {
+            return "redirect:/home";
+        }
+
+        if (!board.getMemberId().equals(memberId)) {
+            return "redirect:/board/view/" + id;
+        }
+
+        boardService.delete(id);
+        return "redirect:/home";
+    }
+
+
 }

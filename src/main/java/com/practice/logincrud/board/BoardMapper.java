@@ -16,6 +16,10 @@ public interface BoardMapper {
     void save(BoardDto boardDto);
 
     //게시글 수정
+    void update(BoardDto boardDto);
 
     //게시글 삭제
+    void delete(Integer id);
+
+
 }

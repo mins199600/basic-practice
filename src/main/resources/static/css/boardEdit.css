@@ -1,0 +1,84 @@
+/* 전체 컨테이너 */
+.edit-container {
+    max-width: 800px;
+    margin: 50px auto;
+    padding: 30px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+/* 페이지 제목 */
+.page-title {
+    margin-bottom: 30px;
+    text-align: center;
+    font-weight: bold;
+    color: #333;
+}
+
+/* 각 입력 영역 간격 (mb-3 대신 사용) */
+.form-group {
+    margin-bottom: 25px;
+}
+
+/* 라벨 스타일 */
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #555;
+}
+
+/* 입력창 스타일 공통 */
+.form-control {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    transition: border-color 0.3s;
+}
+
+.form-control:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+/* 버튼 정렬 */
+.button-group {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 40px;
+}
+
+/* 수정 완료 버튼 */
+.btn-submit {
+    background-color: #007bff;
+    color: white;
+    padding: 12px 40px;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* 취소 버튼 */
+.btn-cancel {
+    background-color: #f8f9fa;
+    color: #666;
+    padding: 12px 40px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: bold;
+    text-align: center;
+}
+
+.btn-submit:hover {
+    background-color: #0056b3;
+}
+
+.btn-cancel:hover {
+    background-color: #e2e6ea;
+    color: #333;
+}

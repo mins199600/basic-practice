@@ -45,8 +45,10 @@
         <!-- 작성자만 보이는 버튼 -->
         <div th:if="${isAuthor}" class="author-buttons">
             <a th:href="@{/board/edit/{id}(id=${board.id})}" class="btn-edit">수정</a>
-            <form th:action="@{/board/delete/{id}(id=${board.id})}" method="post" style="display:inline;">
-                <button type="submit" class="btn-delete" onclick="return confirm('정말 삭제하시겠습니까?')">삭제</button>
+            <form th:action="@{/board/delete/{id}(id=${board.id})}"
+                  method="post"
+                  onsubmit="return confirm('삭제하시겠습니까?');">
+                <button type="submit" class="btn-delete">삭제</button>
             </form>
         </div>
     </div>
