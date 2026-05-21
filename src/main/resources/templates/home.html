@@ -18,8 +18,9 @@
                 <div>
 
                     <div class="nickname-text">
-                        <span id="nickname">사용자</span>님 안녕하세요.
+                        <span id="nickname" th:text="${nickName != null and nickName != '' ? nickName : '사용자'}"></span>님 안녕하세요.
                     </div>
+
 
                     <div class="email-text" id="email">
                         이메일 정보를 불러오는 중입니다.

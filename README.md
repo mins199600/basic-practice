@@ -1,4 +1,3 @@
-<img width="700" alt="ERD" src="https://github.com/user-attachments/assets/5043a5d1-c56c-4df6-bd11-52d16da439ac" />
 
 ## ERD
 

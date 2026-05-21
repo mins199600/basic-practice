@@ -4,7 +4,7 @@ fetch('/api/user-info')
     .then(data => {
         console.log('사용자 정보:', data);
 
-        const nickname = data.nickname || data.name || data.username || '사용자';
+        const nickname = data.nickName || '사용자';
         const email = data.email || '이메일 정보 없음';
 
         document.getElementById('nickname').textContent = nickname;

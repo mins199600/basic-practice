@@ -58,8 +58,11 @@ public class MemberController {
     @ResponseBody
     public Map<String, String> getUserInfo(HttpSession session) {
         String email = (String) session.getAttribute("email");
+        String nickName = (String) session.getAttribute("nickName");
+
         Map<String, String> response = new HashMap<>();
         response.put("email", email != null ? email : "로그인 안 함");
+        response.put("nickName", nickName != null ? nickName : "");
         return response;
     }
 
@@ -71,8 +74,8 @@ public class MemberController {
 
     //회원가입 로직
     @PostMapping("/signup")
-    public String signup(@RequestParam String email, @RequestParam String password, Model model) {
-        boolean result = memberService.join(email, password);
+    public String signup(@RequestParam String email, @RequestParam String password,  @RequestParam(required = false) String nickName, Model model) {
+        boolean result = memberService.join(email, password, nickName);
         log.info("회원가입 로직 지나가요~~");
 
         if (result) {

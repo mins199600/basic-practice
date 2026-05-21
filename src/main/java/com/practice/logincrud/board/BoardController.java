@@ -28,13 +28,14 @@ public class BoardController {
 
         int totalCount = boardService.getMyBoardTotalCount(memberId);
         List<BoardDto> boardList = boardService.getMyBoardList(memberId, pageDto);
-
         int totalPage = (int) Math.ceil((double) totalCount / pageDto.getPageSize());
+        String nickName = (String) session.getAttribute("nickName");
 
         model.addAttribute("boardList", boardList);
         model.addAttribute("startNo", pageDto.getStartNo());
         model.addAttribute("currentPage", pageDto.getPage());
         model.addAttribute("totalPage", totalPage);
+        model.addAttribute("nickName", nickName);
 
         return "home";
     }

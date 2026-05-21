@@ -32,7 +32,7 @@ public class MemberService {
     }
 
     //회원가입
-    public boolean join(String email, String password) {
+    public boolean join(String email, String password, String nickName) {
         int count = memberMapper.countByEmail(email);
         if (count > 0) {
 
@@ -41,6 +41,7 @@ public class MemberService {
         UserDto user = new UserDto();
         user.setEmail(email);
         user.setPassword(passwordEncoder.encode(password));
+        user.setNickName(nickName);
         memberMapper.insertMember(user);
         return true;
 
