@@ -6,8 +6,8 @@ import java.time.LocalDateTime;
 
 @Data
 public class BoardDto {
-    private Integer id;
-    private Integer memberId;
+    private Long id;
+    private Long memberId;
     private String title;
     private String content;
     private String nickName;

@@ -37,7 +37,7 @@ public class MemberController {
             httpSession.setAttribute("nickName", loginMember.getNickName());
 
             log.info("로그인 성공");
-            return "home";
+            return "redirect:/home";
         } else {
             httpSession.setAttribute("error", "아이디 또는 비밀번호가 틀렸습니다");
             log.info("로그인 실패");
@@ -119,7 +119,7 @@ public class MemberController {
 
         // 이메일이 변경되었으면 세션 이메일도 새 이메일로 변경
         session.setAttribute("email", userDto.getEmail());
-        session.setAttribute("nickname", userDto.getNickName());
+        session.setAttribute("nickName", userDto.getNickName());
 
         redirectAttributes.addFlashAttribute("message", "회원정보가 수정되었습니다.");
 
@@ -137,11 +137,10 @@ public class MemberController {
         if (email == null) {
             return "redirect:/";
         }
+
         memberService.deleteUser(email);
         session.invalidate();
         redirectAttributes.addFlashAttribute("message", "회원탈퇴가 완료되었습니다.");
         return "redirect:/";
     }
-
-
 }

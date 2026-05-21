@@ -4,16 +4,16 @@
 
 <mapper namespace="com.practice.logincrud.member.MemberMapper">
     <select id="findUserLogin" parameterType="String" resultType="com.practice.logincrud.member.UserDto">
-        SELECT id, email, password, nickName
+        SELECT id, email, password, nickname AS nickName, deleted
         FROM member
         WHERE email = #{email}
+          AND deleted = 0
     </select>
 
 
-
     <insert id="insertMember" parameterType="com.practice.logincrud.member.UserDto">
-        INSERT INTO member(email, password)
-        values (#{email}, #{password});
+        INSERT INTO member(email, password, nickname, deleted)
+        VALUES (#{email}, #{password}, #{nickName}, 0)
     </insert>
 
     <select id="countByEmail" parameterType="string" resultType="int">
@@ -25,29 +25,33 @@
     <select id="findUserByEmail" resultType="com.practice.logincrud.member.UserDto">
         SELECT
             id,
-            nickName,
+            nickname AS nickName,
             email,
-            password
+            password,
+            deleted
         FROM member
         WHERE email = #{email}
+          AND deleted = 0
     </select>
 
     <update id="updateUser">
         UPDATE member
         <set>
             email = #{user.email},
-            nickName = #{user.nickName}
-
+            nickname = #{user.nickName}
             <if test="user.password != null and user.password != ''">
                 , password = #{user.password}
             </if>
         </set>
         WHERE email = #{oldEmail}
+        AND deleted = 0
     </update>
 
-    <delete id="deleteUser">
-        DELETE FROM member
+    <update id="deleteUser">
+        UPDATE member
+        SET deleted = 1
         WHERE email = #{email}
-    </delete>
+          AND deleted = 0
+    </update>
 
 </mapper>

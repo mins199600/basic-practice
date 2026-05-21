@@ -19,17 +19,18 @@ public class BoardService {
     }
 
     // 페이징 목록 조회
-    public List<BoardDto> getBoardList(PageDto pageDto) {
-        return boardMapper.getBoardList(pageDto);
+    public List<BoardDto> getMyBoardList(Long memberId, PageDto pageDto) {
+        return boardMapper.getMyBoardList(memberId, pageDto);
     }
 
     // 전체 게시글 수
-    public int getBoardTotalCount() {
-        return boardMapper.getBoardTotalCount();
+    public int getMyBoardTotalCount(Long memberId) {
+        return boardMapper.getMyBoardTotalCount(memberId);
     }
 
+
     //상세조회
-    public BoardDto findById(Integer id) {
+    public BoardDto findById(Long id) {
         return boardMapper.findById(id);
     }
 
@@ -44,7 +45,7 @@ public class BoardService {
     }
 
     //게시글 삭제
-    public void delete(Integer id) {
+    public void delete(Long id) {
         boardMapper.delete(id);
     }
 }

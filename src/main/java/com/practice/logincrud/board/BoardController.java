@@ -21,13 +21,13 @@ public class BoardController {
     @GetMapping("/home")
     public String home(PageDto pageDto, Model model, HttpSession session) {
 
-        Object memberId = session.getAttribute("memberId");
+        Long memberId = (Long) session.getAttribute("memberId");
         if (memberId == null) {
             return "redirect:/";
         }
 
-        int totalCount = boardService.getBoardTotalCount();
-        List<BoardDto> boardList = boardService.getBoardList(pageDto);
+        int totalCount = boardService.getMyBoardTotalCount(memberId);
+        List<BoardDto> boardList = boardService.getMyBoardList(memberId, pageDto);
 
         int totalPage = (int) Math.ceil((double) totalCount / pageDto.getPageSize());
 
@@ -39,6 +39,7 @@ public class BoardController {
         return "home";
     }
 
+
     // 게시글 목록 페이지는 home으로 이동
     @GetMapping("/board/list")
     public String boardList() {
@@ -47,8 +48,8 @@ public class BoardController {
 
     // 상세조회
     @GetMapping("/board/view/{id}")
-    public String detail(@PathVariable Integer id, Model model, HttpSession session) {
-        Object memberId = session.getAttribute("memberId");
+    public String detail(@PathVariable Long id, Model model, HttpSession session) {
+        Long memberId = (Long) session.getAttribute("memberId");
         if (memberId == null) {
             return "redirect:/";
         }
@@ -61,11 +62,12 @@ public class BoardController {
 
         model.addAttribute("board", board);
 
-        boolean isAuthor = board.getMemberId().equals(memberId);
+        boolean isAuthor = board.getMemberId() != null && board.getMemberId().equals(memberId);
         model.addAttribute("isAuthor", isAuthor);
 
         return "board/detail";
     }
+
 
     // 글쓰기 화면 이동
     @GetMapping("/board/create")
@@ -83,7 +85,7 @@ public class BoardController {
     @PostMapping("/board/create")
     public String create(BoardDto boardDto, HttpSession session) {
 
-        Integer memberId = (Integer) session.getAttribute("memberId");
+        Long memberId = (Long) session.getAttribute("memberId");
         if (memberId == null) {
             return "redirect:/";
         }
@@ -96,9 +98,9 @@ public class BoardController {
 
     // 게시글 수정 화면
     @GetMapping("/board/edit/{id}")
-    public String editForm(@PathVariable Integer id, Model model, HttpSession session) {
+    public String editForm(@PathVariable Long id, Model model, HttpSession session) {
 
-        Integer memberId = (Integer) session.getAttribute("memberId");
+        Long memberId = (Long) session.getAttribute("memberId");
         if (memberId == null) {
             return "redirect:/";
         }
@@ -119,9 +121,9 @@ public class BoardController {
 
     // 게시글 수정 처리
     @PostMapping("/board/edit/{id}")
-    public String edit(@PathVariable Integer id, BoardDto boardDto, HttpSession session) {
+    public String edit(@PathVariable Long id, BoardDto boardDto, HttpSession session) {
 
-        Integer memberId = (Integer) session.getAttribute("memberId");
+        Long memberId = (Long) session.getAttribute("memberId");
         if (memberId == null) {
             return "redirect:/";
         }
@@ -144,8 +146,8 @@ public class BoardController {
 
     // 게시글 삭제
     @PostMapping("/board/delete/{id}")
-    public String delete(@PathVariable Integer id, HttpSession session) {
-        Integer memberId = (Integer) session.getAttribute("memberId");
+    public String delete(@PathVariable Long id, HttpSession session) {
+        Long memberId = (Long) session.getAttribute("memberId");
 
         if (memberId == null) {
             return "redirect:/login";
