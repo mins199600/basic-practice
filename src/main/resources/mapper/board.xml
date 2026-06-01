@@ -108,5 +108,26 @@
         WHERE member_id = #{memberId}
     </select>
 
+    <!-- 검색어 처리 -->
+    <select id="getBoardList" parameterType="map" resultType="com.practice.logincrud.board.BoardDto">
+        SELECT * FROM board
+        <where>
+            <if test="keyword != null and keyword != ''">
+                <choose>
+                    <when test="searchType == 'title'">
+                        AND title LIKE CONCAT('%', #{keyword}, '%')
+                    </when>
+                    <when test="searchType == 'content'">
+                        AND content LIKE CONCAT('%', #{keyword}, '%')
+                    </when>
+                    <when test="searchType == 'writer'">
+                        AND m.nickname LIKE CONCAT('%', #{keyword}, '%')
+                    </when>
+                </choose>
+            </if>
+        </where>
+        ORDER BY created_at DESC
+    </select>
+
 
 </mapper>

@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -47,5 +48,10 @@ public class BoardService {
     //게시글 삭제
     public void delete(Long id) {
         boardMapper.delete(id);
+    }
+
+    //검색어 처리
+    public List<BoardDto> getBoardList(Map<String, String> params) {
+        return boardMapper.getBoardList(params);
     }
 }

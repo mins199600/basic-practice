@@ -8,7 +8,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @Slf4j
@@ -165,6 +169,24 @@ public class BoardController {
 
         boardService.delete(id);
         return "redirect:/home";
+    }
+
+    // 검색어 처리
+    @GetMapping("/search")
+    public String boardList(@RequestParam(required = false) String searchType,
+                            @RequestParam(required = false) String keyword,
+                            Model model) {
+        Map<String, String> params = new HashMap<>();
+        params.put("searchType", searchType);
+        params.put("keyword", keyword);
+
+        List<BoardDto> boarList = boardService.getBoardList(params);
+        model.addAttribute("boardList", boarList);
+        model.addAttribute("searchType", searchType);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("startNo", 1);
+
+        return "/home";
     }
 
 }

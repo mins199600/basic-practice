@@ -4,6 +4,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface BoardMapper {
@@ -26,6 +27,6 @@ public interface BoardMapper {
     List<BoardDto> getMyBoardList(@Param("memberId") Long memberId, PageDto pageDto);
     int getMyBoardTotalCount(@Param("memberId") Long memberId);
 
-
-
+    //검색어
+    List<BoardDto> getBoardList(Map<String, String> params);
 }
