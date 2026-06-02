@@ -561,44 +561,6 @@ session.setAttribute("email", loginMember.getEmail());
 ---
 
 <details>
-<summary><b>[2026-05-16] Git 커밋 메시지 컨벤션 미준수</b></summary>
-
-<br>
-
-### 📌 문제 상황
-- `bug: 네임스페이스 boardDto 경로 수정` 형식으로 커밋 메시지 작성
-- `fix : 글쓰기 기능 추가` (콜론 앞 공백 포함)
-
-### 🔍 원인
-- `bug`는 표준 타입이 아님 (올바른 타입: `fix`)
-- 콜론(`:`) 앞에 공백이 있으면 안 됨
-- 하나의 커밋에 여러 목적을 섞음
-
-### ✅ 해결
-
-```bash
-# 목적별로 나눠서 커밋
-git commit -m "fix: BoardMapper.xml namespace 경로 수정"
-git commit -m "feat: 게시글 작성 기능 추가"
-```
-
-**표준 타입:**
-- `feat`: 새로운 기능 추가
-- `fix`: 버그 수정
-- `refactor`: 코드 리팩토링
-- `docs`: 문서 수정
-- `chore`: 빌드, 설정 파일 수정
-
-### 💡 배운 점
-- 커밋 메시지는 `type: subject` 형식 (콜론 뒤에만 공백)
-- 한 커밋에는 하나의 목적만 담는 것이 원칙
-- `bug`는 비표준 타입이므로 `fix` 사용
-
-</details>
-
----
-
-<details>
 <summary><b>[2026-05-19] 게시글 수정 후 404 오류 - 리다이렉트 경로 불일치</b></summary>
 
 <br>
