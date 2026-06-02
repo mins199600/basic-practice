@@ -3,6 +3,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.practice.logincrud.board.BoardMapper">
+
     <insert id="save" parameterType="com.practice.logincrud.board.BoardDto">
         INSERT INTO board (
             title,
@@ -84,41 +85,47 @@
     <!--페이지네이션-->
     <select id="getMyBoardList" resultType="com.practice.logincrud.board.BoardDto">
         SELECT
-            b.id,
-            b.member_id AS memberId,
-            b.title,
-            b.content,
+            b.id, b.member_id AS memberId,
+            b.title, b.content,
             m.nickname AS nickName,
             b.created_at AS createdAt,
             b.modified_at AS modifiedAt,
             b.view_count AS viewCount,
-            b.category,
-            b.is_notice AS isNotice,
+            b.category, b.is_notice AS isNotice,
             b.file_path AS filePath
         FROM board b
                  INNER JOIN member m ON b.member_id = m.id
-        WHERE b.member_id = #{memberId}
         ORDER BY b.is_notice DESC, b.created_at DESC, b.id DESC
         LIMIT #{pageDto.pageSize} OFFSET #{pageDto.offset}
     </select>
 
+    <!-- 전체 게시글 수-->
     <select id="getMyBoardTotalCount" resultType="int">
         SELECT COUNT(*)
         FROM board
-        WHERE member_id = #{memberId}
     </select>
 
     <!-- 검색어 처리 -->
     <select id="getBoardList" parameterType="map" resultType="com.practice.logincrud.board.BoardDto">
-        SELECT * FROM board
+        SELECT
+        b.id, b.member_id AS memberId,
+        b.title, b.content,
+        m.nickname AS nickName,
+        b.created_at AS createdAt,
+        b.modified_at AS modifiedAt,
+        b.view_count AS viewCount,
+        b.category, b.is_notice AS isNotice,
+        b.file_path AS filePath
+        FROM board b
+        INNER JOIN member m ON b.member_id = m.id
         <where>
             <if test="keyword != null and keyword != ''">
                 <choose>
                     <when test="searchType == 'title'">
-                        AND title LIKE CONCAT('%', #{keyword}, '%')
+                        AND b.title LIKE CONCAT('%', #{keyword}, '%')
                     </when>
                     <when test="searchType == 'content'">
-                        AND content LIKE CONCAT('%', #{keyword}, '%')
+                        AND b.content LIKE CONCAT('%', #{keyword}, '%')
                     </when>
                     <when test="searchType == 'writer'">
                         AND m.nickname LIKE CONCAT('%', #{keyword}, '%')
@@ -126,7 +133,30 @@
                 </choose>
             </if>
         </where>
-        ORDER BY created_at DESC
+        ORDER BY b.is_notice DESC, b.created_at DESC, b.id DESC
+        LIMIT #{pageSize} OFFSET #{offset}
+    </select>
+
+    <!--검색결과 총 개수-->
+    <select id="getBoardSearchCount" parameterType="map" resultType="int">
+        SELECT COUNT(*)
+        FROM board b
+        INNER JOIN member m ON b.member_id = m.id
+        <where>
+            <if test="keyword != null and keyword != ''">
+                <choose>
+                    <when test="searchType == 'title'">
+                        AND b.title LIKE CONCAT('%', #{keyword}, '%')
+                    </when>
+                    <when test="searchType == 'content'">
+                        AND b.content LIKE CONCAT('%', #{keyword}, '%')
+                    </when>
+                    <when test="searchType == 'writer'">
+                        AND m.nickname LIKE CONCAT('%', #{keyword}, '%')
+                    </when>
+                </choose>
+            </if>
+        </where>
     </select>
 
 

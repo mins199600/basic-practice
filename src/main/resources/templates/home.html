@@ -43,7 +43,7 @@
         </div>
 
         <div class="search-area">
-            <form th:action="@{/search}" method="get">
+            <form th:action="@{/home}" method="get">
                 <select name="searchType" class="search-select">
                     <option value="title" th:selected="${searchType == 'title'}">제목</option>
                     <option value="content" th:selected="${searchType == 'content'}">내용</option>
@@ -95,27 +95,22 @@
         </table>
 
         <!-- 페이지네이션 -->
+        <!-- 페이지네이션 — searchType, keyword 같이 넘기기 -->
         <div class="board-pagination" th:if="${totalPage != null and totalPage > 1}">
             <a th:if="${currentPage > 1}"
-               th:href="@{/home(page=${currentPage - 1})}"
-               class="board-page-button board-page-button--nav">
-                이전
-            </a>
+               th:href="@{/home(page=${currentPage - 1}, searchType=${searchType}, keyword=${keyword})}"
+               class="board-page-button board-page-button--nav">이전</a>
 
             <a th:each="i : ${#numbers.sequence(1, totalPage)}"
-               th:href="@{/home(page=${i})}"
+               th:href="@{/home(page=${i}, searchType=${searchType}, keyword=${keyword})}"
                th:text="${i}"
                th:classappend="${i == currentPage} ? ' board-page-button--active' : ''"
-               class="board-page-button">
-            </a>
+               class="board-page-button"></a>
 
             <a th:if="${currentPage < totalPage}"
-               th:href="@{/home(page=${currentPage + 1})}"
-               class="board-page-button board-page-button--nav">
-                다음
-            </a>
+               th:href="@{/home(page=${currentPage + 1}, searchType=${searchType}, keyword=${keyword})}"
+               class="board-page-button board-page-button--nav">다음</a>
         </div>
-
 
     </div>
 

@@ -23,27 +23,49 @@ public class BoardController {
 
     // 홈 = 게시글 목록 + 페이지네이션
     @GetMapping("/home")
-    public String home(PageDto pageDto, Model model, HttpSession session) {
+    public String home(PageDto pageDto,
+                       @RequestParam(required = false) String searchType,
+                       @RequestParam(required = false) String keyword,
+                       Model model, HttpSession session) {
 
         Long memberId = (Long) session.getAttribute("memberId");
         if (memberId == null) {
             return "redirect:/";
         }
 
-        int totalCount = boardService.getMyBoardTotalCount(memberId);
-        List<BoardDto> boardList = boardService.getMyBoardList(memberId, pageDto);
-        int totalPage = (int) Math.ceil((double) totalCount / pageDto.getPageSize());
         String nickName = (String) session.getAttribute("nickName");
+        List<BoardDto> boardList;
+        int totalCount;
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+
+            // 검색어 있을 때
+            Map<String, Object> params = new HashMap<>();
+            params.put("searchType", searchType);
+            params.put("keyword", keyword);
+            params.put("pageSize", pageDto.getPageSize());
+            params.put("offset", pageDto.getOffset());
+
+            boardList = boardService.getBoardList(params);
+            totalCount = boardService.getBoardSearchCount(params);
+        } else {
+            // 검색어 없을 때 → 전체 조회
+            boardList = boardService.getMyBoardList(pageDto);
+            totalCount = boardService.getMyBoardTotalCount();
+        }
+
+        int totalPage = (int) Math.ceil((double) totalCount / pageDto.getPageSize());
 
         model.addAttribute("boardList", boardList);
         model.addAttribute("startNo", pageDto.getStartNo());
         model.addAttribute("currentPage", pageDto.getPage());
         model.addAttribute("totalPage", totalPage);
         model.addAttribute("nickName", nickName);
+        model.addAttribute("searchType", searchType);
+        model.addAttribute("keyword", keyword);
 
         return "home";
     }
-
 
     // 게시글 목록 페이지는 home으로 이동
     @GetMapping("/board/list")
@@ -173,20 +195,10 @@ public class BoardController {
 
     // 검색어 처리
     @GetMapping("/search")
-    public String boardList(@RequestParam(required = false) String searchType,
-                            @RequestParam(required = false) String keyword,
-                            Model model) {
-        Map<String, String> params = new HashMap<>();
-        params.put("searchType", searchType);
-        params.put("keyword", keyword);
-
-        List<BoardDto> boarList = boardService.getBoardList(params);
-        model.addAttribute("boardList", boarList);
-        model.addAttribute("searchType", searchType);
-        model.addAttribute("keyword", keyword);
-        model.addAttribute("startNo", 1);
-
-        return "/home";
+    public String search(@RequestParam(required = false) String searchType,
+                         @RequestParam(required = false) String keyword) {
+        return "redirect:/home?searchType=" + (searchType != null ? searchType : "title")
+                + "&keyword=" + (keyword != null ? keyword : "");
     }
 
 }

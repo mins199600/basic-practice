@@ -8,6 +8,10 @@ import java.util.Map;
 
 @Mapper
 public interface BoardMapper {
+
+    //전체 게시글 수
+    int getMyBoardTotalCount();
+
     //전체조회
     List<BoardDto> findAll();
 
@@ -24,9 +28,13 @@ public interface BoardMapper {
     void delete(Long id);
 
     // 페이징 추가
-    List<BoardDto> getMyBoardList(@Param("memberId") Long memberId, PageDto pageDto);
-    int getMyBoardTotalCount(@Param("memberId") Long memberId);
+    List<BoardDto> getMyBoardList(@Param("pageDto") PageDto pageDto);
 
     //검색어
-    List<BoardDto> getBoardList(Map<String, String> params);
+    List<BoardDto> getBoardList(Map<String, Object> params);
+
+    // 검색 결과 총 개수
+    int getBoardSearchCount(Map<String, Object> params);
+
+
 }

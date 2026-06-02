@@ -20,15 +20,14 @@ public class BoardService {
     }
 
     // 페이징 목록 조회
-    public List<BoardDto> getMyBoardList(Long memberId, PageDto pageDto) {
-        return boardMapper.getMyBoardList(memberId, pageDto);
+    public List<BoardDto> getMyBoardList(PageDto pageDto) {
+        return boardMapper.getMyBoardList(pageDto);
     }
 
     // 전체 게시글 수
-    public int getMyBoardTotalCount(Long memberId) {
-        return boardMapper.getMyBoardTotalCount(memberId);
+    public int getMyBoardTotalCount() {
+        return boardMapper.getMyBoardTotalCount();
     }
-
 
     //상세조회
     public BoardDto findById(Long id) {
@@ -51,7 +50,12 @@ public class BoardService {
     }
 
     //검색어 처리
-    public List<BoardDto> getBoardList(Map<String, String> params) {
+    public List<BoardDto> getBoardList(Map<String, Object> params) {
         return boardMapper.getBoardList(params);
+    }
+
+    // 검색 결과 총 개수
+    public int getBoardSearchCount(Map<String, Object> params) {
+        return boardMapper.getBoardSearchCount(params);
     }
 }
