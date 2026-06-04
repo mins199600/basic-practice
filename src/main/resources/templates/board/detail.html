@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${board.title}">게시글 제목</title>
+    <title th:text="${board.title}">게시글 상세</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="/css/detail.css">
 </head>
@@ -41,8 +41,6 @@
     <!-- 버튼 영역 -->
     <div class="detail-buttons">
         <a th:href="@{/home}" class="btn-list">목록</a>
-
-        <!-- 작성자만 보이는 버튼 -->
         <div th:if="${isAuthor}" class="author-buttons">
             <a th:href="@{/board/edit/{id}(id=${board.id})}" class="btn-edit">수정</a>
             <form th:action="@{/board/delete/{id}(id=${board.id})}"
@@ -53,7 +51,127 @@
         </div>
     </div>
 
+    <!-- ===== 댓글 영역 ===== -->
+    <div class="comment-section">
+        <h4>댓글</h4>
+
+        <!-- 댓글 목록 -->
+        <div th:each="comment : ${commentList}" class="comment-item">
+
+            <!-- 댓글 내용 -->
+            <div class="comment-box">
+                <span class="comment-nick" th:text="${comment.nickName}">닉네임</span>
+                <span class="comment-content" th:text="${comment.content}">댓글 내용</span>
+                <span class="comment-date" th:text="${comment.createdAt}">날짜</span>
+
+                <div class="comment-actions">
+
+                    <!--
+                        Long 타입 비교는 == 대신 toString() 비교 사용
+                        수정: 본인 or 관리자
+                    -->
+                    <button type="button" class="edit-comment-btn"
+                            th:if="${comment.memberId.toString() == loginMemberId.toString() or isAdmin}"
+                            th:onclick="'toggleEdit(' + ${comment.id} + ')'">
+                        수정
+                    </button>
+
+                    <!--
+                        삭제: 본인 or 게시글 작성자 or 관리자
+                    -->
+                    <form th:action="@{/comment/delete}" method="post"
+                          th:if="${comment.memberId.toString() == loginMemberId.toString() or isAuthor or isAdmin}">
+                        <input type="hidden" name="id" th:value="${comment.id}">
+                        <input type="hidden" name="boardId" th:value="${board.id}">
+                        <button type="submit" class="btn-comment-delete">삭제</button>
+                    </form>
+
+                    <!-- 답글: 모두 -->
+                    <button type="button" class="btn-reply"
+                            th:onclick="'toggleReply(' + ${comment.id} + ')'">
+                        답글
+                    </button>
+
+                </div>
+            </div>
+
+            <!-- 댓글 수정 폼 (기본 숨김) -->
+            <div th:id="'edit-form-' + ${comment.id}" class="edit-form-wrap">
+                <form th:action="@{/comment/update}" method="post">
+                    <input type="hidden" name="id" th:value="${comment.id}">
+                    <input type="hidden" name="boardId" th:value="${board.id}">
+                    <input type="text" name="content" th:value="${comment.content}">
+                    <button type="submit" class="btn-comment-submit">저장</button>
+                    <button type="button" class="btn-cancel"
+                            th:onclick="'toggleEdit(' + ${comment.id} + ')'">취소</button>
+                </form>
+            </div>
+
+            <!-- 대댓글 작성 폼 (기본 숨김) -->
+            <div th:id="'reply-form-' + ${comment.id}" class="reply-form-wrap">
+                <form th:action="@{/comment/reply}" method="post">
+                    <input type="hidden" name="boardId" th:value="${board.id}">
+                    <input type="hidden" name="parentId" th:value="${comment.id}">
+                    <input type="text" name="content" placeholder="대댓글을 입력하세요">
+                    <button type="submit">등록</button>
+                </form>
+            </div>
+
+            <!-- 대댓글 목록 -->
+            <div th:each="reply : ${comment.children}" class="reply-item">
+                <span class="reply-arrow">↳</span>
+                <span class="comment-nick" th:text="${reply.nickName}">닉네임</span>
+                <span class="comment-content" th:text="${reply.content}">대댓글 내용</span>
+                <span class="comment-date" th:text="${reply.createdAt}">날짜</span>
+
+                <div class="comment-actions">
+
+                    <!-- 수정: 본인 or 관리자 -->
+                    <button type="button" class="edit-comment-btn"
+                            th:if="${reply.memberId.toString() == loginMemberId.toString() or isAdmin}"
+                            th:onclick="'toggleEdit(' + ${reply.id} + ')'">
+                        수정
+                    </button>
+
+                    <!-- 삭제: 본인 or 게시글 작성자 or 관리자 -->
+                    <form th:action="@{/comment/delete}" method="post"
+                          th:if="${reply.memberId.toString() == loginMemberId.toString() or isAuthor or isAdmin}">
+                        <input type="hidden" name="id" th:value="${reply.id}">
+                        <input type="hidden" name="boardId" th:value="${board.id}">
+                        <button type="submit" class="btn-comment-delete">삭제</button>
+                    </form>
+
+                </div>
+
+                <!-- 대댓글 수정 폼 (기본 숨김) -->
+                <div th:id="'edit-form-' + ${reply.id}" class="edit-form-wrap">
+                    <form th:action="@{/comment/update}" method="post">
+                        <input type="hidden" name="id" th:value="${reply.id}">
+                        <input type="hidden" name="boardId" th:value="${board.id}">
+                        <input type="text" name="content" th:value="${reply.content}">
+                        <button type="submit" class="btn-comment-submit">저장</button>
+                        <button type="button" class="btn-cancel"
+                                th:onclick="'toggleEdit(' + ${reply.id} + ')'">취소</button>
+                    </form>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- 댓글 작성 폼 -->
+        <div class="comment-write">
+            <form th:action="@{/comment/write}" method="post">
+                <input type="hidden" name="boardId" th:value="${board.id}">
+                <input type="text" name="content" placeholder="댓글을 입력하세요" class="comment-input">
+                <button type="submit" class="btn-comment-submit">등록</button>
+            </form>
+        </div>
+    </div>
+
 </div>
+
+<script src="/js/comment.js"></script>
 
 </body>
 </html>

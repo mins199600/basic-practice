@@ -34,6 +34,7 @@ public class MemberController {
         if (loginMember != null) {
             httpSession.setAttribute("memberId", loginMember.getId());
             httpSession.setAttribute("email", loginMember.getEmail());
+            httpSession.setAttribute("role", loginMember.getRole());
             httpSession.setAttribute("nickName", loginMember.getNickName());
 
             log.info("로그인 성공");

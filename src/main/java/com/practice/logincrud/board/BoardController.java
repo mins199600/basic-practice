@@ -1,5 +1,8 @@
 package com.practice.logincrud.board;
 
+import com.practice.logincrud.comment.CommentDto;
+import com.practice.logincrud.comment.CommentMapper;
+import com.practice.logincrud.comment.CommentService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +23,7 @@ import java.util.Map;
 public class BoardController {
 
     private final BoardService boardService;
+    private final CommentService commentService;
 
     // 홈 = 게시글 목록 + 페이지네이션
     @GetMapping("/home")
@@ -76,24 +80,30 @@ public class BoardController {
     // 상세조회
     @GetMapping("/board/view/{id}")
     public String detail(@PathVariable Long id, Model model, HttpSession session) {
-        Long memberId = (Long) session.getAttribute("memberId");
+        Long memberId = (Long) session.getAttribute("memberId"); // ← memberId 로 받음
         if (memberId == null) {
             return "redirect:/";
         }
 
         BoardDto board = boardService.findById(id);
-
         if (board == null) {
             return "redirect:/home";
         }
 
-        model.addAttribute("board", board);
+        List<CommentDto> commentList = commentService.getCommentList(id); // intValue() 제거
+        String role = (String) session.getAttribute("role");
 
-        boolean isAuthor = board.getMemberId() != null && board.getMemberId().equals(memberId);
+        model.addAttribute("board", board);
+        model.addAttribute("commentList", commentList);
+        model.addAttribute("loginMemberId", memberId);
+        model.addAttribute("isAdmin", "ADMIN".equals(role));
+
+        boolean isAuthor = board.getMemberId() != null && board.getMemberId().equals(memberId); // ← memberId 사용
         model.addAttribute("isAuthor", isAuthor);
 
         return "board/detail";
     }
+
 
 
     // 글쓰기 화면 이동
