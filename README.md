@@ -85,6 +85,50 @@ UPDATE member SET deleted = 1 WHERE email = 'user@test.com';
 
 ---
 
+### 인터셉터 도입 및 세션 키 공통화
+
+초기 개발 시 각 Controller 메서드마다 아래와 같은 로그인 체크 코드가 반복적으로 작성되어 있었습니다.
+
+```java
+Long memberId = (Long) session.getAttribute("memberId");
+if (memberId == null) return "redirect:/login";
+```
+
+이 방식은 Controller가 늘어날수록 동일한 코드가 중복되고, 세션 키 이름을 문자열로 직접 작성하다 보니 오타나 이름 불일치로 인한 `NullPointerException`이 반복적으로 발생했습니다.
+
+이를 해결하기 위해 두 가지를 도입했습니다.
+
+**① SessionConst 상수 클래스**
+
+세션에서 사용하는 키 이름을 상수로 일원화하여 오타와 불일치를 방지했습니다.
+
+```java
+public class SessionConst {
+    public static final String MEMBER_ID = "memberId";
+    public static final String EMAIL     = "email";
+    public static final String NICKNAME  = "nickname";
+    public static final String ROLE      = "role";
+}
+```
+
+**② LoginInterceptor**
+
+모든 요청이 Controller에 도달하기 전에 인터셉터에서 로그인 여부를 일괄 검사하도록 변경했습니다.  
+로그인이 필요 없는 경로(`/`, `/login`, `/signup` 등)는 제외 처리했습니다.
+
+```
+모든 요청
+    ↓
+LoginInterceptor (로그인 여부 체크)
+    ↓                    ↓
+로그인 O            로그인 X
+    ↓                    ↓
+Controller          redirect:/login
+```
+
+이 구조로 변경한 이후 Controller에서 세션 체크 코드가 완전히 제거되었고, 세션 키 관련 오류가 발생하지 않게 되었습니다.
+--- 
+
 ## 구현 기능
 
 ### 1. 회원가입
@@ -92,6 +136,7 @@ UPDATE member SET deleted = 1 WHERE email = 'user@test.com';
 회원 가입 시 `member` 테이블에 사용자 정보가 저장됩니다.
 
 이메일, 닉네임, 비밀번호, 주소 정보를 입력받으며, 비밀번호는 암호화하여 저장합니다.
+--- 
 
 ### 2. 로그인
 
@@ -100,12 +145,14 @@ UPDATE member SET deleted = 1 WHERE email = 'user@test.com';
 로그인 성공 후 세션에 `memberId`, `nickname`, `email` 정보를 저장하여 이후 기능에서 사용자 식별에 활용합니다.
 
 작성자명은 직접 저장하지 않고, 세션에 저장된 `memberId`를 `board.member_id`에 저장합니다.
+---
 
 ### 3. 게시글 작성
 
 게시글 작성 시 `board` 테이블에 게시글 정보가 저장됩니다.
 
 작성자명은 직접 저장하지 않고, 세션에 저장된 `memberId`를 `board.member_id`에 저장합니다.
+--- 
 
 ### 4. 게시글 목록 조회
 
@@ -114,24 +161,28 @@ UPDATE member SET deleted = 1 WHERE email = 'user@test.com';
 로그인한 모든 회원이 전체 게시글을 조회할 수 있으며, 작성자명은 `member.nickname`으로 표시됩니다.
 
 게시글은 최신순으로 정렬되며, 공지사항은 일반 게시글보다 상단에 노출됩니다.
+--- 
 
 ### 5. 게시글 상세 조회
 
 게시글 상세 화면에서는 게시글 내용, 작성일, 수정일, 조회수, 카테고리, 첨부파일 정보를 함께 확인할 수 있습니다.
 
 작성자 정보는 `member` 테이블과 조인하여 출력합니다.
+--- 
 
 ### 6. 게시글 수정
 
 게시글 수정은 작성자 본인만 가능하도록 구현했습니다.
 
 세션의 `memberId`와 게시글의 `board.member_id`를 비교하여 접근을 제한합니다.
+--- 
 
 ### 7. 게시글 삭제
 
 게시글 삭제 역시 작성자 본인만 가능하도록 구현했습니다.
 
 삭제 후에는 목록 화면으로 이동합니다.
+--- 
 
 ### 8. 게시글 페이지네이션
 
@@ -140,18 +191,21 @@ UPDATE member SET deleted = 1 WHERE email = 'user@test.com';
 `PageDto`를 사용하여 현재 페이지와 페이지 크기를 관리하고, `LIMIT`와 `OFFSET`을 활용해 필요한 데이터만 조회합니다.
 
 게시글 번호는 조회 시점에 계산하여, 삭제 후에도 번호가 자연스럽게 재정렬되도록 구성했습니다.
+--- 
 
 ### 9. 닉네임 자동 반영
 
 `board` 테이블에는 작성자명을 직접 저장하지 않고 `member_id`만 저장합니다.
 
 따라서 게시글 조회 시마다 `member` 테이블의 `nickname`을 가져오므로, 회원이 닉네임을 수정하면 기존 게시글에도 최신 닉네임이 반영됩니다.
+--- 
 
 ### 10. 공지사항 구분
 
 `board.is_notice` 컬럼을 통해 일반 게시글과 공지사항을 구분할 수 있도록 설계했습니다.
 
 목록 조회 시 공지사항이 먼저 노출되도록 정렬 기준에 반영할 수 있습니다.
+--- 
 
 ### 11. 회원 삭제 방식
 
