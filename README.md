@@ -85,6 +85,51 @@ UPDATE member SET deleted = 1 WHERE email = 'user@test.com';
 
 ---
 
+### 인터셉터 도입 및 세션 키 공통화
+
+초기 개발 시 각 Controller 메서드마다 아래와 같은 로그인 체크 코드가 반복적으로 작성되어 있었습니다.
+
+```java
+Long memberId = (Long) session.getAttribute("memberId");
+if (memberId == null) return "redirect:/login";
+```
+
+이 방식은 Controller가 늘어날수록 동일한 코드가 중복되고, 세션 키 이름을 문자열로 직접 작성하다 보니 오타나 이름 불일치로 인한 `NullPointerException`이 반복적으로 발생했습니다.
+
+이를 해결하기 위해 두 가지를 도입했습니다.
+
+**① SessionConst 상수 클래스**
+
+세션에서 사용하는 키 이름을 상수로 일원화하여 오타와 불일치를 방지했습니다.
+
+```java
+public class SessionConst {
+    public static final String MEMBER_ID = "memberId";
+    public static final String EMAIL     = "email";
+    public static final String NICKNAME  = "nickname";
+    public static final String ROLE      = "role";
+}
+```
+
+**② LoginInterceptor**
+
+모든 요청이 Controller에 도달하기 전에 인터셉터에서 로그인 여부를 일괄 검사하도록 변경했습니다.  
+로그인이 필요 없는 경로(`/`, `/login`, `/signup` 등)는 제외 처리했습니다.
+
+```
+모든 요청
+    ↓
+LoginInterceptor (로그인 여부 체크)
+    ↓                    ↓
+로그인 O            로그인 X
+    ↓                    ↓
+Controller          redirect:/login
+```
+
+이 구조로 변경한 이후 Controller에서 세션 체크 코드가 완전히 제거되었고, 세션 키 관련 오류가 발생하지 않게 되었습니다.
+
+--- 
+
 ## 구현 기능
 
 ### 1. 회원가입
@@ -92,6 +137,8 @@ UPDATE member SET deleted = 1 WHERE email = 'user@test.com';
 회원 가입 시 `member` 테이블에 사용자 정보가 저장됩니다.
 
 이메일, 닉네임, 비밀번호, 주소 정보를 입력받으며, 비밀번호는 암호화하여 저장합니다.
+
+--- 
 
 ### 2. 로그인
 
@@ -101,11 +148,15 @@ UPDATE member SET deleted = 1 WHERE email = 'user@test.com';
 
 작성자명은 직접 저장하지 않고, 세션에 저장된 `memberId`를 `board.member_id`에 저장합니다.
 
+---
+
 ### 3. 게시글 작성
 
 게시글 작성 시 `board` 테이블에 게시글 정보가 저장됩니다.
 
 작성자명은 직접 저장하지 않고, 세션에 저장된 `memberId`를 `board.member_id`에 저장합니다.
+
+--- 
 
 ### 4. 게시글 목록 조회
 
@@ -115,11 +166,15 @@ UPDATE member SET deleted = 1 WHERE email = 'user@test.com';
 
 게시글은 최신순으로 정렬되며, 공지사항은 일반 게시글보다 상단에 노출됩니다.
 
+--- 
+
 ### 5. 게시글 상세 조회
 
 게시글 상세 화면에서는 게시글 내용, 작성일, 수정일, 조회수, 카테고리, 첨부파일 정보를 함께 확인할 수 있습니다.
 
 작성자 정보는 `member` 테이블과 조인하여 출력합니다.
+
+--- 
 
 ### 6. 게시글 수정
 
@@ -127,11 +182,15 @@ UPDATE member SET deleted = 1 WHERE email = 'user@test.com';
 
 세션의 `memberId`와 게시글의 `board.member_id`를 비교하여 접근을 제한합니다.
 
+--- 
+
 ### 7. 게시글 삭제
 
 게시글 삭제 역시 작성자 본인만 가능하도록 구현했습니다.
 
 삭제 후에는 목록 화면으로 이동합니다.
+
+--- 
 
 ### 8. 게시글 페이지네이션
 
@@ -141,17 +200,23 @@ UPDATE member SET deleted = 1 WHERE email = 'user@test.com';
 
 게시글 번호는 조회 시점에 계산하여, 삭제 후에도 번호가 자연스럽게 재정렬되도록 구성했습니다.
 
+--- 
+
 ### 9. 닉네임 자동 반영
 
 `board` 테이블에는 작성자명을 직접 저장하지 않고 `member_id`만 저장합니다.
 
 따라서 게시글 조회 시마다 `member` 테이블의 `nickname`을 가져오므로, 회원이 닉네임을 수정하면 기존 게시글에도 최신 닉네임이 반영됩니다.
 
+--- 
+
 ### 10. 공지사항 구분
 
 `board.is_notice` 컬럼을 통해 일반 게시글과 공지사항을 구분할 수 있도록 설계했습니다.
 
 목록 조회 시 공지사항이 먼저 노출되도록 정렬 기준에 반영할 수 있습니다.
+
+--- 
 
 ### 11. 회원 삭제 방식
 
@@ -162,6 +227,16 @@ UPDATE member SET deleted = 1 WHERE email = 'user@test.com';
 이를 방지하기 위해 `member` 테이블에 `deleted` 컬럼을 두고, 회원 탈퇴 시 해당 값을 `1`로 변경하도록 처리했습니다.
 
 또한 로그인 및 회원 조회 시에는 `deleted = 0`인 회원만 대상으로 처리하여, 탈퇴한 회원은 서비스를 이용할 수 없도록 제한했습니다.
+
+---
+
+### 12. 인터셉터 기반 로그인 검증
+
+`LoginInterceptor`를 도입하여 로그인이 필요한 모든 페이지에 대한 접근 제어를 일원화했습니다.
+
+로그인하지 않은 사용자가 보호된 경로에 접근하면 자동으로 로그인 페이지로 리다이렉트됩니다.
+
+세션 키는 `SessionConst` 클래스에 상수로 정의하여 전체 코드에서 일관성 있게 사용합니다.
 
 ---
 
@@ -708,5 +783,241 @@ ORDER BY b.is_notice DESC, b.created_at DESC
 - JOIN은 작성자 닉네임을 가져오기 위한 것이지 필터링 목적이 아니다
 - 목록 조회 쿼리와 카운트 쿼리의 WHERE 조건은 항상 동일하게 맞춰야 페이지네이션이 정확하다
 - 전체 조회는 WHERE 조건 자체가 필요 없다
+
+</details>
+
+---
+
+<details>
+<summary><b>[2026-06-04] 댓글/대댓글 기능 구현 - 전체 구조 미숙지</b></summary>
+
+<br>
+
+### 📌 문제 상황
+- 댓글/대댓글 기능을 처음 구현해야 했는데 DB 설계부터 HTML 렌더링까지 어떻게 구현해야 할지 전혀 몰랐음
+- GPT에게 전체 코드를 받아서 붙여넣는 방식으로 시작하여 코드가 동작은 하지만 왜 동작하는지 이해하지 못한 상태였음
+
+### 🔍 원인
+- `parent_id` 개념을 처음 접함
+- 댓글과 대댓글이 같은 테이블에 저장된다는 것을 몰랐음
+- DB → Mapper → Service → Controller → HTML 전체 흐름을 이해하지 못했음
+
+### ✅ 해결
+- 댓글/대댓글은 같은 `comment` 테이블에 저장하고 `parent_id`로 구분하는 구조를 학습
+
+```sql
+-- parent_id가 NULL  → 댓글
+-- parent_id가 숫자  → 해당 댓글의 대댓글
+id=1, parent_id=NULL  → 댓글
+id=3, parent_id=1     → id=1의 대댓글
+```
+
+- Service에서 DB의 평평한 리스트를 트리 구조로 변환하는 로직이 핵심임을 이해
+
+```java
+// 부모(댓글)만 뽑기
+List<CommentDto> parents = all.stream()
+    .filter(c -> c.getParentId() == null)
+    .collect(Collectors.toList());
+
+// 각 댓글에 대댓글 붙이기
+for (CommentDto parent : parents) {
+    List<CommentDto> children = all.stream()
+        .filter(c -> parent.getId().equals(c.getParentId()))
+        .collect(Collectors.toList());
+    parent.setChildren(children);
+}
+```
+
+### 💡 배운 점
+- 댓글과 대댓글은 별도 테이블이 아니라 `parent_id` 하나로 같은 테이블에서 구분한다
+- Service 계층에서 평평한 리스트를 트리 구조로 변환하는 역할을 담당한다
+- 코드를 받아서 쓰는 것보다 각 계층이 왜 이 구조인지 이해하는 것이 중요하다
+
+</details>
+
+---
+
+<details>
+<summary><b>[2026-06-04] 댓글 수정/삭제 버튼 미노출 - Long 타입 비교 오류</b></summary>
+
+<br>
+
+### 📌 문제 상황
+- 본인이 작성한 댓글에도 수정/삭제 버튼이 표시되지 않거나, 반대로 모든 사람에게 버튼이 보이는 오류 발생
+
+### 🔍 원인
+- Thymeleaf에서 `==` 연산자로 `Long` 타입을 비교하면 값이 아닌 객체 주소를 비교하게 됨
+- 값이 같아도 다른 객체이면 `false`가 반환될 수 있음
+
+```html
+<!-- ❌ 잘못된 코드 -->
+th:if="${comment.memberId == loginMemberId}"
+```
+
+### ✅ 해결
+
+```html
+<!-- ✅ 올바른 코드 -->
+th:if="${comment.memberId.toString() == loginMemberId.toString()}"
+```
+
+### 💡 배운 점
+- Java의 `Long` 타입은 `==`으로 비교하면 안 되고 `.toString()` 또는 `.equals()`를 사용해야 한다
+- Thymeleaf에서 숫자 타입 비교 시 `.toString()`으로 문자열 변환 후 비교하면 값 기준으로 정확하게 동작한다
+
+</details>
+
+---
+
+<details>
+<summary><b>[2026-06-04] 댓글 권한 조건 미동작 - model.addAttribute 변수명 불일치</b></summary>
+
+<br>
+
+### 📌 문제 상황
+- Controller에서 넘긴 로그인 사용자 정보가 HTML에서 인식되지 않아 권한 조건이 정상 동작하지 않음
+
+### 🔍 원인
+- Controller에서 `model.addAttribute("loginMemberId", memberId)`로 저장했으나
+- HTML에서 `${memberId}`로 다른 이름을 사용하여 값이 `null`로 처리됨
+
+```java
+// Controller
+model.addAttribute("loginMemberId", memberId);
+```
+
+```html
+<!-- ❌ 잘못된 코드 - 이름이 다름 -->
+th:if="${memberId == ...}"
+```
+
+### ✅ 해결
+
+```html
+<!-- ✅ addAttribute 이름과 동일하게 -->
+th:if="${loginMemberId == ...}"
+```
+
+### 💡 배운 점
+- `model.addAttribute("이름", 값)`에서 지정한 이름과 HTML의 `${이름}`이 정확히 일치해야 한다
+- 세션 key, addAttribute 이름, HTML 변수명은 프로젝트 전체에서 일관성 있게 관리해야 한다
+
+</details>
+
+---
+
+<details>
+<summary><b>[2026-06-04] 댓글 수정 버튼 CSS 미적용 - 클래스명 불일치</b></summary>
+
+<br>
+
+### 📌 문제 상황
+- 댓글 수정 버튼에 CSS 스타일이 적용되지 않음
+
+### 🔍 원인
+- HTML에서 사용한 클래스명과 CSS에 정의된 클래스명이 서로 달랐음
+
+```html
+<!-- HTML -->
+<button class="btn-edit-comment">수정</button>
+```
+
+```css
+/* CSS */
+.edit-comment-btn { ... }  /* 이름이 다름 */
+```
+
+### ✅ 해결
+- HTML과 CSS 클래스명을 `edit-comment-btn`으로 통일
+
+```html
+<!-- ✅ -->
+<button class="edit-comment-btn">수정</button>
+```
+
+```css
+/* ✅ */
+.edit-comment-btn { ... }
+```
+
+### 💡 배운 점
+- HTML 클래스명과 CSS 선택자는 대소문자까지 정확히 일치해야 스타일이 적용된다
+- 클래스명을 작성할 때 HTML과 CSS를 동시에 확인하는 습관이 필요하다
+
+</details>
+
+---
+
+<details>
+<summary><b>[2026-06-04] 대댓글 삭제 오작동 - th:value 중복 작성</b></summary>
+
+<br>
+
+### 📌 문제 상황
+- 대댓글 삭제 시 잘못된 ID 값이 서버로 전달되어 정상적으로 삭제되지 않음
+
+### 🔍 원인
+- 대댓글 삭제 form의 `input` 태그에 `th:value` 속성이 두 개씩 중복 작성되어 있었음
+
+```html
+<!-- ❌ 잘못된 코드 -->
+<input type="hidden" name="id" th:value="${reply.id}" th:value="${board.id}">
+<input type="hidden" name="boardId" th:value="${board.id}" th:value="${board.id}">
+```
+
+### ✅ 해결
+
+```html
+<!-- ✅ 각각 하나씩만 -->
+<input type="hidden" name="id" th:value="${reply.id}">
+<input type="hidden" name="boardId" th:value="${board.id}">
+```
+
+### 💡 배운 점
+- 같은 속성을 하나의 태그에 두 번 작성하면 예상치 못한 동작이 발생할 수 있다
+- hidden input 작성 시 `name`과 `th:value`가 의도한 값을 담고 있는지 반드시 확인해야 한다
+
+</details>
+
+---
+
+<details>
+<summary><b>[2026-06-04] 댓글 실수 삭제 방지 - 삭제 확인 처리 미흡</b></summary>
+
+<br>
+
+### 📌 문제 상황
+- 삭제 버튼을 실수로 눌렀을 때 확인 절차 없이 바로 삭제되는 문제
+
+### 🔍 원인
+- 댓글/대댓글 삭제 form에 사용자 확인 절차가 없었음
+
+### ✅ 해결
+- 댓글/대댓글 삭제 form 태그에 `onsubmit` 속성 추가
+
+```html
+<!-- 댓글 삭제 -->
+<form th:action="@{/comment/delete}" method="post"
+      th:if="${comment.memberId.toString() == loginMemberId.toString() or isAuthor or isAdmin}"
+      onsubmit="return confirm('댓글을 삭제하시겠습니까?');">
+    <input type="hidden" name="id" th:value="${comment.id}">
+    <input type="hidden" name="boardId" th:value="${board.id}">
+    <button type="submit" class="btn-comment-delete">삭제</button>
+</form>
+
+<!-- 대댓글 삭제 -->
+<form th:action="@{/comment/delete}" method="post"
+      th:if="${reply.memberId.toString() == loginMemberId.toString() or isAuthor or isAdmin}"
+      onsubmit="return confirm('댓글을 삭제하시겠습니까?');">
+    <input type="hidden" name="id" th:value="${reply.id}">
+    <input type="hidden" name="boardId" th:value="${board.id}">
+    <button type="submit" class="btn-comment-delete">삭제</button>
+</form>
+```
+
+### 💡 배운 점
+- `onsubmit="return confirm('...')"` 에서 확인 클릭 시 `true`를 반환하여 form이 제출되고, 취소 클릭 시 `false`를 반환하여 form 제출이 중단된다
+- 삭제처럼 되돌릴 수 없는 작업에는 반드시 사용자 확인 절차를 추가해야 한다
 
 </details>
