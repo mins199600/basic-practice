@@ -66,21 +66,10 @@
 
                 <div class="comment-actions">
 
-                    <!--
-                        Long 타입 비교는 == 대신 toString() 비교 사용
-                        수정: 본인 or 관리자
-                    -->
-                    <button type="button" class="edit-comment-btn"
-                            th:if="${comment.memberId.toString() == loginMemberId.toString() or isAdmin}"
-                            th:onclick="'toggleEdit(' + ${comment.id} + ')'">
-                        수정
-                    </button>
-
-                    <!--
-                        삭제: 본인 or 게시글 작성자 or 관리자
-                    -->
+                    <!-- 댓글 삭제 -->
                     <form th:action="@{/comment/delete}" method="post"
-                          th:if="${comment.memberId.toString() == loginMemberId.toString() or isAuthor or isAdmin}">
+                          th:if="${comment.memberId.toString() == loginMemberId.toString() or isAuthor or isAdmin}"
+                          onsubmit="return confirm('댓글을 삭제하시겠습니까?');">
                         <input type="hidden" name="id" th:value="${comment.id}">
                         <input type="hidden" name="boardId" th:value="${board.id}">
                         <button type="submit" class="btn-comment-delete">삭제</button>
@@ -133,9 +122,10 @@
                         수정
                     </button>
 
-                    <!-- 삭제: 본인 or 게시글 작성자 or 관리자 -->
+                    <!-- 대댓글 삭제 -->
                     <form th:action="@{/comment/delete}" method="post"
-                          th:if="${reply.memberId.toString() == loginMemberId.toString() or isAuthor or isAdmin}">
+                          th:if="${reply.memberId.toString() == loginMemberId.toString() or isAuthor or isAdmin}"
+                          onsubmit="return confirm('댓글을 삭제하시겠습니까?');">
                         <input type="hidden" name="id" th:value="${reply.id}">
                         <input type="hidden" name="boardId" th:value="${board.id}">
                         <button type="submit" class="btn-comment-delete">삭제</button>

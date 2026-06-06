@@ -19,7 +19,10 @@ public class MemberController {
     MemberService memberService;
 
     @GetMapping("/")
-    public String home() {
+    public String home(@RequestParam(required = false) String error, Model model) {
+        if (error != null) {
+            model.addAttribute("errorMessage", "아이디 또는 비밀번호가 틀렸습니다.");
+        }
         return "main";
     }
 
@@ -39,10 +42,10 @@ public class MemberController {
 
             log.info("로그인 성공");
             return "redirect:/home";
+
         } else {
-            httpSession.setAttribute("error", "아이디 또는 비밀번호가 틀렸습니다");
             log.info("로그인 실패");
-            return "main";
+            return "redirect:/?error=true";
         }
     }
 
@@ -82,6 +85,7 @@ public class MemberController {
         if (result) {
             log.info("회원가입 성공");
             return "redirect:/";
+
         } else {
             log.info("회원가입 오류");
             model.addAttribute("errorMessage", "이미 사용 중인 이메일입니다.");
@@ -94,9 +98,6 @@ public class MemberController {
     @GetMapping("/edit")
     public String edit(HttpSession session, Model model) {
         String email = (String) session.getAttribute("email");
-        if (email == null) {
-            return "redirect:/";
-        }
         UserDto user = memberService.findUserByEmail(email);
         model.addAttribute("user", user);
         return "edit";
@@ -109,10 +110,6 @@ public class MemberController {
                              RedirectAttributes redirectAttributes) {
 
         String oldEmail = (String) session.getAttribute("email");
-
-        if (oldEmail == null) {
-            return "redirect:/";
-        }
 
         boolean result = memberService.updateUser(oldEmail, userDto);
 
@@ -135,13 +132,7 @@ public class MemberController {
     @PostMapping("/user/delete")
     public String deleteUser(HttpSession session,
                              RedirectAttributes redirectAttributes) {
-
         String email = (String) session.getAttribute("email");
-
-        if (email == null) {
-            return "redirect:/";
-        }
-
         memberService.deleteUser(email);
         session.invalidate();
         redirectAttributes.addFlashAttribute("message", "회원탈퇴가 완료되었습니다.");

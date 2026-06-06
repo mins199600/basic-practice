@@ -24,7 +24,6 @@ public class CommentController {
                                 HttpSession session) {
 
         Long memberId = (Long) session.getAttribute("memberId");
-        if (memberId == null) return "redirect:/";
 
         CommentDto commentDto = new CommentDto();
         commentDto.setBoardId(boardId);
@@ -44,7 +43,7 @@ public class CommentController {
                               HttpSession session) {
 
         Long memberId = (Long)session.getAttribute("memberId");
-        if (memberId == null) return "redirect:/";
+
 
         CommentDto commentDto = new CommentDto();
         commentDto.setBoardId(boardId);
@@ -63,8 +62,9 @@ public class CommentController {
                                 @RequestParam Long boardId,
                                 @RequestParam String content,
                                 HttpSession session) {
+
         Long memberId = (Long) session.getAttribute("memberId");
-        if (memberId == null) return "redirect:/";
+
 
         commentService.updateComment(id, content, memberId);
 
@@ -76,8 +76,8 @@ public class CommentController {
     public String deleteComment(@RequestParam Long id,
                                 @RequestParam Long boardId,
                                 HttpSession session) {
+
         Long memberId = (Long) session.getAttribute("memberId");
-        if (memberId == null) return "redirect:/";
 
         String role = (String) session.getAttribute("role"); // 세션에서 role 꺼내기
 

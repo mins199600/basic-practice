@@ -1,7 +1,6 @@
 package com.practice.logincrud.board;
 
 import com.practice.logincrud.comment.CommentDto;
-import com.practice.logincrud.comment.CommentMapper;
 import com.practice.logincrud.comment.CommentService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -32,10 +31,6 @@ public class BoardController {
                        @RequestParam(required = false) String keyword,
                        Model model, HttpSession session) {
 
-        Long memberId = (Long) session.getAttribute("memberId");
-        if (memberId == null) {
-            return "redirect:/";
-        }
 
         String nickName = (String) session.getAttribute("nickName");
         List<BoardDto> boardList;
@@ -80,17 +75,15 @@ public class BoardController {
     // 상세조회
     @GetMapping("/board/view/{id}")
     public String detail(@PathVariable Long id, Model model, HttpSession session) {
-        Long memberId = (Long) session.getAttribute("memberId"); // ← memberId 로 받음
-        if (memberId == null) {
-            return "redirect:/";
-        }
+
+        Long memberId = (Long) session.getAttribute("memberId");
 
         BoardDto board = boardService.findById(id);
         if (board == null) {
             return "redirect:/home";
         }
 
-        List<CommentDto> commentList = commentService.getCommentList(id); // intValue() 제거
+        List<CommentDto> commentList = commentService.getCommentList(id);
         String role = (String) session.getAttribute("role");
 
         model.addAttribute("board", board);
@@ -98,22 +91,15 @@ public class BoardController {
         model.addAttribute("loginMemberId", memberId);
         model.addAttribute("isAdmin", "ADMIN".equals(role));
 
-        boolean isAuthor = board.getMemberId() != null && board.getMemberId().equals(memberId); // ← memberId 사용
+        boolean isAuthor = board.getMemberId() != null && board.getMemberId().equals(memberId);
         model.addAttribute("isAuthor", isAuthor);
 
         return "board/detail";
     }
 
-
-
     // 글쓰기 화면 이동
     @GetMapping("/board/create")
-    public String createForm(HttpSession session) {
-
-        Object memberId = session.getAttribute("memberId");
-        if (memberId == null) {
-            return "redirect:/";
-        }
+    public String createForm() {
 
         return "board/create";
     }
@@ -123,9 +109,6 @@ public class BoardController {
     public String create(BoardDto boardDto, HttpSession session) {
 
         Long memberId = (Long) session.getAttribute("memberId");
-        if (memberId == null) {
-            return "redirect:/";
-        }
 
         boardDto.setMemberId(memberId);
         boardService.save(boardDto);
@@ -138,9 +121,6 @@ public class BoardController {
     public String editForm(@PathVariable Long id, Model model, HttpSession session) {
 
         Long memberId = (Long) session.getAttribute("memberId");
-        if (memberId == null) {
-            return "redirect:/";
-        }
 
         BoardDto board = boardService.findById(id);
 
@@ -161,9 +141,6 @@ public class BoardController {
     public String edit(@PathVariable Long id, BoardDto boardDto, HttpSession session) {
 
         Long memberId = (Long) session.getAttribute("memberId");
-        if (memberId == null) {
-            return "redirect:/";
-        }
 
         BoardDto board = boardService.findById(id);
 
@@ -184,11 +161,8 @@ public class BoardController {
     // 게시글 삭제
     @PostMapping("/board/delete/{id}")
     public String delete(@PathVariable Long id, HttpSession session) {
-        Long memberId = (Long) session.getAttribute("memberId");
 
-        if (memberId == null) {
-            return "redirect:/login";
-        }
+        Long memberId = (Long) session.getAttribute("memberId");
 
         BoardDto board = boardService.findById(id);
         if (board == null) {

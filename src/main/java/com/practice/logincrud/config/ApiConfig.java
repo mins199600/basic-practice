@@ -1,4 +1,4 @@
-package com.practice.logincrud.member;
+package com.practice.logincrud.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
