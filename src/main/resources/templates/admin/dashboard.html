@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>관리자 대시보드</title>
+
+    <link rel="stylesheet" type="text/css" href="/css/admin-dashboard.css">
+</head>
+<body>
+
+<!-- 상단 메뉴 -->
+<header class="admin-top-menu">
+    <div class="admin-logo">
+        <span class="logo-main">ADMIN</span>
+        <span class="logo-sub">MANAGER</span>
+    </div>
+
+    <nav class="admin-main-nav">
+        <button type="button" class="main-menu-button active" data-tab="dashboard">대시보드</button>
+        <button type="button" class="main-menu-button" data-tab="members">회원 관리</button>
+        <button type="button" class="main-menu-button" data-tab="posts">게시글 관리</button>
+        <button type="button" class="main-menu-button" data-tab="notices">공지사항</button>
+        <button type="button" class="main-menu-button" data-tab="popups">팝업 관리</button>
+    </nav>
+</header>
+
+<div class="admin-layout">
+
+    <!-- 좌측 메뉴 -->
+    <aside class="admin-sidebar">
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">회원 관리</div>
+            <button type="button" class="sidebar-menu-button active" data-tab="members">전체 회원 목록</button>
+            <button type="button" class="sidebar-menu-button" data-tab="members">회원 수정/탈퇴</button>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">게시글 관리</div>
+            <button type="button" class="sidebar-menu-button" data-tab="posts">전체 게시글</button>
+            <button type="button" class="sidebar-menu-button" data-tab="notices">공지사항 관리</button>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">팝업 관리</div>
+            <button type="button" class="sidebar-menu-button" data-tab="popups">팝업 등록/관리</button>
+        </div>
+
+    </aside>
+
+    <!-- 메인 콘텐츠 -->
+    <main class="admin-content">
+
+        <!-- 대시보드 -->
+        <section id="dashboard" class="content-section active">
+            <div class="page-location">홈 &gt; 대시보드</div>
+            <h1 class="page-title">대시보드</h1>
+
+            <div class="summary-card-wrap">
+                <div class="summary-card summary-member">
+                    <div class="summary-icon">👥</div>
+                    <div class="summary-count">1,284</div>
+                    <div class="summary-label">전체 회원</div>
+                </div>
+
+                <div class="summary-card summary-post">
+                    <div class="summary-icon">📄</div>
+                    <div class="summary-count">3,921</div>
+                    <div class="summary-label">전체 게시글</div>
+                </div>
+
+                <div class="summary-card summary-notice">
+                    <div class="summary-icon">📌</div>
+                    <div class="summary-count">12</div>
+                    <div class="summary-label">공지사항</div>
+                </div>
+
+                <div class="summary-card summary-popup">
+                    <div class="summary-icon">📢</div>
+                    <div class="summary-count">3</div>
+                    <div class="summary-label">활성 팝업</div>
+                </div>
+            </div>
+
+            <div class="admin-box">
+                <div class="box-header">
+                    <h2 class="box-title">최근 가입 회원</h2>
+                </div>
+
+                <table class="admin-table member-table">
+                    <thead>
+                    <tr>
+                        <th>아이디</th>
+                        <th>이름</th>
+                        <th>이메일</th>
+                        <th>가입일</th>
+                        <th>상태</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>user01</td>
+                        <td>홍길동</td>
+                        <td>hong@email.com</td>
+                        <td>2024-06-01</td>
+                        <td><span class="status-active">활성</span></td>
+                    </tr>
+                    <tr>
+                        <td>user02</td>
+                        <td>김철수</td>
+                        <td>kim@email.com</td>
+                        <td>2024-06-03</td>
+                        <td><span class="status-active">활성</span></td>
+                    </tr>
+                    <tr>
+                        <td>user03</td>
+                        <td>이영희</td>
+                        <td>lee@email.com</td>
+                        <td>2024-06-05</td>
+                        <td><span class="status-disabled">비활성</span></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- 회원 관리 -->
+        <section id="members" class="content-section">
+            <div class="page-location">홈 &gt; 회원 관리</div>
+            <h1 class="page-title">회원 관리</h1>
+
+            <div class="warning-message">
+                비밀번호는 보안상 관리자가 변경할 수 없습니다. 고객이 직접 변경해야 합니다.
+            </div>
+
+            <div class="admin-box">
+                <div class="box-header">
+                    <h2 class="box-title">전체 회원 목록</h2>
+
+                    <div class="search-area">
+                        <input type="text" class="search-input" placeholder="아이디 / 이름 검색">
+                        <button type="button" class="btn-search">검색</button>
+                    </div>
+                </div>
+
+                <table class="admin-table member-table">
+                    <thead>
+                    <tr>
+                        <th>번호</th>
+                        <th>아이디</th>
+                        <th>이름</th>
+                        <th>이메일</th>
+                        <th>가입일</th>
+                        <th>상태</th>
+                        <th>등급</th>
+                        <th>관리</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>001</td>
+                        <td>user01</td>
+                        <td>홍길동</td>
+                        <td>hong@email.com</td>
+                        <td>2024-06-01</td>
+                        <td><span class="status-active">활성</span></td>
+                        <td><span class="role-admin">관리자</span></td>
+                        <td>
+                            <div class="table-button-group">
+                                <button type="button" class="btn-edit-member"
+                                        data-name="홍길동"
+                                        data-email="hong@email.com"
+                                        data-phone="010-1111-2222">
+                                    수정
+                                </button>
+                                <button type="button" class="btn-delete-member" data-name="홍길동">
+                                    탈퇴
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>002</td>
+                        <td>user02</td>
+                        <td>김철수</td>
+                        <td>kim@email.com</td>
+                        <td>2024-06-03</td>
+                        <td><span class="status-active">활성</span></td>
+                        <td><span class="role-user">일반</span></td>
+                        <td>
+                            <div class="table-button-group">
+                                <button type="button" class="btn-edit-member"
+                                        data-name="김철수"
+                                        data-email="kim@email.com"
+                                        data-phone="010-2222-3333">
+                                    수정
+                                </button>
+                                <button type="button" class="btn-delete-member" data-name="김철수">
+                                    탈퇴
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>003</td>
+                        <td>user03</td>
+                        <td>이영희</td>
+                        <td>lee@email.com</td>
+                        <td>2024-06-05</td>
+                        <td><span class="status-disabled">비활성</span></td>
+                        <td><span class="role-user">일반</span></td>
+                        <td>
+                            <div class="table-button-group">
+                                <button type="button" class="btn-edit-member"
+                                        data-name="이영희"
+                                        data-email="lee@email.com"
+                                        data-phone="010-3333-4444">
+                                    수정
+                                </button>
+                                <button type="button" class="btn-delete-member" data-name="이영희">
+                                    탈퇴
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- 게시글 관리 -->
+        <section id="posts" class="content-section">
+            <div class="page-location">홈 &gt; 게시글 관리</div>
+            <h1 class="page-title">게시글 관리</h1>
+
+            <div class="admin-box">
+                <div class="box-header">
+                    <h2 class="box-title">전체 게시글</h2>
+
+                    <div class="search-area">
+                        <input type="text" class="search-input" placeholder="게시글 제목 검색">
+                        <button type="button" class="btn-search">검색</button>
+                    </div>
+                </div>
+
+                <table class="admin-table post-table">
+                    <thead>
+                    <tr>
+                        <th>번호</th>
+                        <th>구분</th>
+                        <th>제목</th>
+                        <th>작성자</th>
+                        <th>작성일</th>
+                        <th>조회수</th>
+                        <th>관리</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>001</td>
+                        <td><span class="post-notice-label">공지</span></td>
+                        <td>서비스 점검 안내</td>
+                        <td>관리자</td>
+                        <td>2024-06-01</td>
+                        <td>1204</td>
+                        <td>
+                            <div class="table-button-group">
+                                <button type="button" class="btn-edit-post"
+                                        data-title="서비스 점검 안내"
+                                        data-content="서비스 점검 안내 내용입니다.">
+                                    수정
+                                </button>
+                                <button type="button" class="btn-delete-post">삭제</button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>002</td>
+                        <td><span class="post-normal-label">일반</span></td>
+                        <td>Spring Boot 질문 있습니다</td>
+                        <td>user02</td>
+                        <td>2024-06-03</td>
+                        <td>87</td>
+                        <td>
+                            <div class="table-button-group">
+                                <button type="button" class="btn-edit-post"
+                                        data-title="Spring Boot 질문 있습니다"
+                                        data-content="Spring Boot 질문 내용입니다.">
+                                    수정
+                                </button>
+                                <button type="button" class="btn-delete-post">삭제</button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>003</td>
+                        <td><span class="post-normal-label">일반</span></td>
+                        <td>Thymeleaf 사용법 공유</td>
+                        <td>user03</td>
+                        <td>2024-06-05</td>
+                        <td>213</td>
+                        <td>
+                            <div class="table-button-group">
+                                <button type="button" class="btn-edit-post"
+                                        data-title="Thymeleaf 사용법 공유"
+                                        data-content="Thymeleaf 사용법 내용입니다.">
+                                    수정
+                                </button>
+                                <button type="button" class="btn-delete-post">삭제</button>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- 공지사항 관리 -->
+        <section id="notices" class="content-section">
+            <div class="page-location">홈 &gt; 공지사항 관리</div>
+            <h1 class="page-title">공지사항 관리</h1>
+
+            <div class="two-column-layout">
+
+                <div class="admin-box">
+                    <div class="box-header">
+                        <h2 class="box-title">공지사항 작성</h2>
+                    </div>
+
+                    <form class="notice-form" action="/admin/notice/write" method="post">
+                        <div class="form-group">
+                            <label class="form-label">제목</label>
+                            <input type="text" class="form-input" name="title" placeholder="공지사항 제목">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">내용</label>
+                            <textarea class="form-textarea" name="content" placeholder="공지사항 내용"></textarea>
+                        </div>
+
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="noticePinned" name="isPinned">
+                            <label for="noticePinned">상단 고정</label>
+                        </div>
+
+                        <button type="submit" class="btn-save">공지사항 등록</button>
+                    </form>
+                </div>
+
+                <div class="admin-box">
+                    <div class="box-header">
+                        <h2 class="box-title">등록된 공지사항</h2>
+                    </div>
+
+                    <ul class="notice-list">
+                        <li class="notice-list-item">
+                            <div class="notice-info">
+                                <span class="notice-fixed-label">고정</span>
+                                <span class="notice-title">서비스 점검 안내</span>
+                            </div>
+                            <div class="notice-action">
+                                <span class="notice-date">2024-06-01</span>
+                                <button type="button" class="btn-edit-notice">수정</button>
+                                <button type="button" class="btn-delete-notice">삭제</button>
+                            </div>
+                        </li>
+
+                        <li class="notice-list-item">
+                            <div class="notice-info">
+                                <span class="notice-title">이용약관 변경 안내</span>
+                            </div>
+                            <div class="notice-action">
+                                <span class="notice-date">2024-05-20</span>
+                                <button type="button" class="btn-edit-notice">수정</button>
+                                <button type="button" class="btn-delete-notice">삭제</button>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- 팝업 관리 -->
+        <section id="popups" class="content-section">
+            <div class="page-location">홈 &gt; 팝업 관리</div>
+            <h1 class="page-title">팝업 관리</h1>
+
+            <div class="two-column-layout">
+
+                <div class="admin-box">
+                    <div class="box-header">
+                        <h2 class="box-title">팝업 등록</h2>
+                    </div>
+
+                    <form class="popup-form" action="/admin/popup/save" method="post">
+                        <div class="form-group">
+                            <label class="form-label">팝업 제목</label>
+                            <input type="text" class="form-input" name="popupTitle" placeholder="팝업 제목">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">팝업 내용</label>
+                            <textarea class="form-textarea" name="popupContent" placeholder="팝업 내용"></textarea>
+                        </div>
+
+                        <div class="date-input-row">
+                            <div class="form-group">
+                                <label class="form-label">시작일</label>
+                                <input type="date" class="form-input" name="startDate">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">종료일</label>
+                                <input type="date" class="form-input" name="endDate">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-save">팝업 저장</button>
+                    </form>
+                </div>
+
+                <div class="admin-box">
+                    <div class="box-header">
+                        <h2 class="box-title">팝업 목록</h2>
+                        <button type="button" class="btn-preview-popup">미리보기</button>
+                    </div>
+
+                    <ul class="popup-list">
+                        <li class="popup-list-item">
+                            <div class="popup-info">
+                                <span class="popup-status-on"></span>
+                                <div>
+                                    <div class="popup-title">여름 이벤트 팝업</div>
+                                    <div class="popup-date">2024-06-01 ~ 2024-06-30</div>
+                                </div>
+                            </div>
+
+                            <div class="popup-action">
+                                <button type="button" class="btn-edit-popup">수정</button>
+                                <button type="button" class="btn-delete-popup">삭제</button>
+                            </div>
+                        </li>
+
+                        <li class="popup-list-item">
+                            <div class="popup-info">
+                                <span class="popup-status-off"></span>
+                                <div>
+                                    <div class="popup-title disabled">점검 안내 팝업</div>
+                                    <div class="popup-date">2024-05-01 ~ 2024-05-02</div>
+                                </div>
+                            </div>
+
+                            <div class="popup-action">
+                                <button type="button" class="btn-edit-popup">수정</button>
+                                <button type="button" class="btn-delete-popup">삭제</button>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<!-- 회원 수정 모달 -->
+<div id="memberEditModal" class="modal-background">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h2 class="modal-title">회원 정보 수정</h2>
+            <button type="button" class="btn-modal-close">×</button>
+        </div>
+
+        <div class="modal-content">
+            <div class="warning-message">
+                비밀번호는 고객이 직접 변경해야 합니다. 관리자는 수정할 수 없습니다.
+            </div>
+
+            <form action="/admin/member/update" method="post">
+                <div class="form-group">
+                    <label class="form-label">이름</label>
+                    <input type="text" id="memberEditName" class="form-input" name="name">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">이메일</label>
+                    <input type="email" id="memberEditEmail" class="form-input" name="email">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">전화번호</label>
+                    <input type="text" id="memberEditPhone" class="form-input" name="phone">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">등급</label>
+                    <select class="form-input" name="role">
+                        <option value="USER">일반</option>
+                        <option value="ADMIN">관리자</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">상태</label>
+                    <select class="form-input" name="status">
+                        <option value="ACTIVE">활성</option>
+                        <option value="DISABLED">비활성</option>
+                    </select>
+                </div>
+
+                <div class="modal-button-area">
+                    <button type="button" class="btn-cancel">취소</button>
+                    <button type="submit" class="btn-save">저장</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 회원 탈퇴 모달 -->
+<div id="memberDeleteModal" class="modal-background">
+    <div class="modal-box small-modal">
+        <div class="modal-header">
+            <h2 class="modal-title">회원 탈퇴 처리</h2>
+            <button type="button" class="btn-modal-close">×</button>
+        </div>
+
+        <div class="modal-content center-content">
+            <div class="modal-warning-icon">⚠️</div>
+            <p class="delete-message">
+                <span id="deleteMemberName"></span> 회원을 탈퇴 처리하시겠습니까?
+            </p>
+            <p class="delete-sub-message">
+                탈퇴 처리 후에는 복구할 수 없습니다.
+            </p>
+
+            <div class="modal-button-area center-button-area">
+                <button type="button" class="btn-cancel">취소</button>
+                <button type="button" class="btn-delete-confirm">탈퇴 처리</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 게시글 수정 모달 -->
+<div id="postEditModal" class="modal-background">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h2 class="modal-title">게시글 수정</h2>
+            <button type="button" class="btn-modal-close">×</button>
+        </div>
+
+        <div class="modal-content">
+            <form action="/admin/post/update" method="post">
+                <div class="form-group">
+                    <label class="form-label">제목</label>
+                    <input type="text" id="postEditTitle" class="form-input" name="title">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">내용</label>
+                    <textarea id="postEditContent" class="form-textarea post-edit-textarea" name="content"></textarea>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="postPinned" name="isPinned">
+                    <label for="postPinned">공지사항으로 상단 고정</label>
+                </div>
+
+                <div class="modal-button-area">
+                    <button type="button" class="btn-cancel">취소</button>
+                    <button type="submit" class="btn-save">저장</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 팝업 미리보기 모달 -->
+<div id="popupPreviewModal" class="modal-background">
+    <div class="modal-box small-modal">
+        <div class="modal-header">
+            <h2 class="modal-title">팝업 미리보기</h2>
+            <button type="button" class="btn-modal-close">×</button>
+        </div>
+
+        <div class="modal-content center-content">
+            <div class="popup-preview-icon">🎉</div>
+            <h3 class="popup-preview-title">여름 이벤트 안내</h3>
+            <p class="popup-preview-content">
+                6월 한 달간 특별 이벤트가 진행됩니다.<br>
+                지금 바로 참여하고 혜택을 받아보세요.
+            </p>
+
+            <div class="modal-button-area center-button-area">
+                <button type="button" class="btn-save">자세히 보기</button>
+                <button type="button" class="btn-cancel">닫기</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/js/admin-dashboard.js"></script>
+</body>
+</html>

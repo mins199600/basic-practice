@@ -1,0 +1,294 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #1a1f2e;
+    color: #c8d0e0;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 13px;
+    min-height: 100vh;
+}
+
+/* =========================
+   전체 페이지
+========================= */
+
+.admin-join-page {
+    min-height: 100vh;
+    background:
+            radial-gradient(circle at top left, rgba(0, 200, 180, 0.12), transparent 32%),
+            radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.08), transparent 35%),
+            #1a1f2e;
+    display: flex;
+    flex-direction: column;
+}
+
+/* =========================
+   상단
+========================= */
+
+.admin-join-header {
+    height: 58px;
+    background-color: #0f1420;
+    border-bottom: 2px solid #00c8b4;
+    display: flex;
+    align-items: center;
+    padding: 0 28px;
+}
+
+.admin-logo-box {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.logo-main-text {
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+}
+
+.logo-sub-text {
+    color: #00c8b4;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 1.8px;
+}
+
+/* =========================
+   중앙 영역
+========================= */
+
+.admin-join-container {
+    flex: 1;
+    width: 100%;
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 60px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* =========================
+   가입 카드
+========================= */
+
+.join-card {
+    width: 100%;
+    background-color: #141929;
+    border: 1px solid #1e2535;
+    border-top: 2px solid #00c8b4;
+    border-radius: 10px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+    overflow: hidden;
+}
+
+.join-card-header {
+    padding: 32px 34px 22px;
+    background-color: #141929;
+    border-bottom: 1px solid #1e2535;
+    text-align: center;
+}
+
+.join-icon {
+    width: 52px;
+    height: 52px;
+    margin: 0 auto 14px;
+    background: linear-gradient(135deg, #00c8b4, #0099a8);
+    border-radius: 14px;
+    color: #0f1420;
+    font-size: 1.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.join-title {
+    margin-bottom: 7px;
+    color: #ffffff;
+    font-size: 1.35rem;
+    font-weight: 800;
+}
+
+.join-sub-title {
+    margin: 0;
+    color: #5a6478;
+    font-size: 0.82rem;
+}
+
+/* =========================
+   폼
+========================= */
+
+.join-form {
+    padding: 26px 28px 18px;
+}
+
+.join-form-group {
+    margin-bottom: 15px;
+}
+
+.join-form-label {
+    display: block;
+    margin-bottom: 7px;
+    color: #7a8599;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.join-form-input {
+    width: 100%;
+    height: 42px;
+    padding: 0 13px;
+    background-color: #0f1420;
+    border: 1px solid #2a3040;
+    border-radius: 6px;
+    color: #c8d0e0;
+    font-family: inherit;
+    font-size: 0.85rem;
+    outline: none;
+    transition: 0.15s;
+}
+
+.join-form-input:focus {
+    border-color: #00c8b4;
+    box-shadow: 0 0 0 3px rgba(0, 200, 180, 0.08);
+}
+
+.join-form-input::placeholder {
+    color: #3a4455;
+}
+
+/* =========================
+   안내 메시지
+========================= */
+
+.join-warning-message {
+    margin-bottom: 18px;
+    padding: 10px 13px;
+    background-color: rgba(245, 158, 11, 0.08);
+    border: 1px solid rgba(245, 158, 11, 0.2);
+    border-radius: 6px;
+    color: #f59e0b;
+    font-size: 0.78rem;
+    line-height: 1.5;
+}
+
+/* =========================
+   버튼
+========================= */
+
+.btn-join-submit {
+    width: 100%;
+    height: 44px;
+    background: linear-gradient(135deg, #00c8b4, #0099a8);
+    border: none;
+    border-radius: 6px;
+    color: #0f1420;
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: 0.15s;
+}
+
+.btn-join-submit:hover {
+    opacity: 0.88;
+    transform: translateY(-1px);
+}
+
+.btn-join-submit:active {
+    transform: translateY(0);
+}
+
+/* =========================
+   링크
+========================= */
+
+.join-link-area {
+    padding: 0 28px 28px;
+    text-align: center;
+}
+
+.join-link-button {
+    color: #7a8599;
+    font-size: 0.78rem;
+    text-decoration: none;
+    transition: 0.15s;
+}
+
+.join-link-button:hover {
+    color: #00c8b4;
+}
+
+/* =========================
+   푸터
+========================= */
+
+.admin-join-footer {
+    padding: 18px 24px;
+    border-top: 1px solid #1e2535;
+    background-color: rgba(15, 20, 32, 0.85);
+    text-align: center;
+}
+
+.admin-join-footer p {
+    margin: 0;
+    color: #3a4455;
+    font-size: 0.72rem;
+}
+
+/* =========================
+   반응형
+========================= */
+
+@media (max-width: 480px) {
+    .admin-join-header {
+        height: 54px;
+        padding: 0 18px;
+    }
+
+    .admin-join-container {
+        padding: 30px 16px;
+    }
+
+    .join-card-header {
+        padding: 28px 22px 20px;
+    }
+
+    .join-form {
+        padding: 24px 22px 16px;
+    }
+
+    .join-link-area {
+        padding: 0 22px 24px;
+    }
+
+    .join-title {
+        font-size: 1.2rem;
+    }
+}
+
+/* =========================
+   스크롤바
+========================= */
+
+::-webkit-scrollbar {
+    width: 5px;
+}
+
+::-webkit-scrollbar-track {
+    background-color: #0f1420;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #2a3040;
+    border-radius: 4px;
+}

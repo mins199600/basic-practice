@@ -23,3 +23,31 @@ function logout() {
         window.location.href = '/logout';
     }
 }
+
+// 필터 드롭다운
+const filterToggle   = document.getElementById('filterToggle');
+const filterDropdown = document.getElementById('filterDropdown');
+
+filterToggle.addEventListener('click', function(e) {
+    e.stopPropagation();
+    filterDropdown.classList.toggle('open');
+});
+
+document.addEventListener('click', function() {
+    filterDropdown.classList.remove('open');
+});
+
+filterDropdown.addEventListener('click', function(e) {
+    e.stopPropagation();
+});
+
+// 적용 버튼
+document.getElementById('filterApply').addEventListener('click', function() {
+    const selectedCategory = document.querySelector('input[name="filterCategory"]:checked');
+    const selectedSort     = document.querySelector('input[name="filterSort"]:checked');
+
+    document.getElementById('hiddenCategory').value = selectedCategory ? selectedCategory.value : '';
+    document.getElementById('hiddenSort').value     = selectedSort ? selectedSort.value : 'latest';
+
+    document.getElementById('searchForm').submit();
+});
