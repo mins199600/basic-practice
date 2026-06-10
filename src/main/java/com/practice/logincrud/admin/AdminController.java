@@ -1,10 +1,10 @@
 package com.practice.logincrud.admin;
-
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequiredArgsConstructor
@@ -26,9 +26,12 @@ public class AdminController {
 
     //관리자 회워가입
     @PostMapping("/admin/join")
-    public String join(AdminDto adminDto) {
-        adminDto.setRole("ADMIN");
-        adminService.joinAdmin(adminDto);
-        return "redirect:/admin";
+    public String join(@RequestParam String email, @RequestParam String password, @RequestParam(required = false) String nickName, Model model) {
+        boolean adminResult = adminService.joinAdmin(email, password, nickName);
+        if (adminResult) {
+            return "redirect:/admin";
+        } else {
+            return "/admin/admin-create";
+        }
     }
 }
