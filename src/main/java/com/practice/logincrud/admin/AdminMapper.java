@@ -6,5 +6,5 @@ import org.apache.ibatis.annotations.Mapper;
 public interface AdminMapper {
 
     //회원가입
-    void insertAdmin(AdminDto adminDto);
+    int insertAdmin(AdminDto adminDto);
 }

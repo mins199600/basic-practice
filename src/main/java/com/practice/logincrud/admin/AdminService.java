@@ -13,18 +13,16 @@ public class AdminService {
 
     //관리자 회원가입
     public boolean joinAdmin(String email, String password, String nickName) {
-        int count = adminMapper.insertAdmin();
-
-        if(count == 0) {
-            return false;
-        }
 
         AdminDto adminDto = new AdminDto();
         adminDto.setEmail(email);
         adminDto.setPassword(passwordEncoder.encode(password));
         adminDto.setNickname(nickName);
-        adminMapper.insertAdmin(adminDto);
-        return true;
+        adminDto.setRole("ADMIN");
+
+        int count = adminMapper.insertAdmin(adminDto);
+
+        return count == 1;
     }
 
 }

@@ -26,8 +26,18 @@ public class AdminController {
 
     //관리자 회워가입
     @PostMapping("/admin/join")
-    public String join(@RequestParam String email, @RequestParam String password, @RequestParam(required = false) String nickName, Model model) {
+    public String join(@RequestParam String email,
+                       @RequestParam String password,
+                       @RequestParam String passwordCheck,
+                       @RequestParam(required = false) String nickName,
+                       Model model) {
         boolean adminResult = adminService.joinAdmin(email, password, nickName);
+
+        if (!password.equals(passwordCheck)) {
+            model.addAttribute("error", "비밀번호가 일치하지 않습니다.");
+            return "admin/admin-create";
+        }
+
         if (adminResult) {
             return "redirect:/admin";
         } else {
