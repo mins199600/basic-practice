@@ -1021,3 +1021,170 @@ th:if="${loginMemberId == ...}"
 - 삭제처럼 되돌릴 수 없는 작업에는 반드시 사용자 확인 절차를 추가해야 한다
 
 </details>
+
+---
+
+<details>
+<summary><b>[2026-06-11] 관리자 페이지 접근 오류 - 인터셉터 예외 경로 누락</b></summary>
+
+<br>
+
+### 📌 문제 상황
+
+관리자 로그인 페이지로 이동하기 위해 브라우저에서 아래 주소로 접근했다.
+
+```text
+http://localhost:8080/admin
+```
+
+기대했던 동작은 관리자 로그인 페이지인 `admin/admin-login.html`이 출력되는 것이었다.
+
+```java
+@GetMapping("/admin")
+public String admin() {
+    return "admin/admin-login";
+}
+```
+
+하지만 실제로는 관리자 로그인 페이지가 아니라 메인 페이지로 이동했다.
+
+메인 페이지는 아래 컨트롤러에서 반환하고 있었다.
+
+```java
+@GetMapping("/")
+public String home(@RequestParam(required = false) String error, Model model) {
+    if (error != null) {
+        model.addAttribute("errorMessage", "아이디 또는 비밀번호가 틀렸습니다.");
+    }
+    return "main";
+}
+```
+
+즉, `/admin`으로 접근했는데 결과적으로 `/` 매핑이 실행되는 것처럼 보였다.
+
+---
+
+### 🔍 원인
+
+원인은 `LoginInterceptor`의 예외 경로 설정 누락이었다.
+
+기존 `WebConfig` 설정은 다음과 같았다.
+
+```java
+@Configuration
+public class WebConfig implements WebMvcConfigurer {
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(new LoginInterceptor())
+                .addPathPatterns("/**")
+                .excludePathPatterns(
+                        "/",
+                        "/login",
+                        "/join",
+                        "/signup",
+                        "/css/**",
+                        "/js/**",
+                        "/images/**",
+                        "/api/user-info"
+                );
+    }
+}
+```
+
+여기서 인터셉터 적용 범위는 다음과 같다.
+
+```java
+.addPathPatterns("/**")
+```
+
+즉, 모든 요청에 대해 `LoginInterceptor`가 동작한다.
+
+하지만 예외 경로에는 관리자 로그인 페이지와 관리자 회원가입 페이지가 등록되어 있지 않았다.
+
+```java
+"/admin",
+"/admin/join"
+```
+
+따라서 로그인하지 않은 상태에서 `/admin`으로 접근하면 요청이 컨트롤러까지 도달하기 전에 인터셉터에 의해 가로채졌다.
+
+요청 흐름은 다음과 같았다.
+
+```text
+1. 사용자가 /admin 요청
+2. LoginInterceptor가 요청을 가로챔
+3. 로그인 세션이 없다고 판단
+4. 인터셉터에서 / 경로로 redirect
+5. 결과적으로 @GetMapping("/") 컨트롤러가 실행됨
+6. main.html 페이지가 출력됨
+```
+
+즉, `/admin` 컨트롤러 매핑이 잘못된 것이 아니라, 컨트롤러에 도달하기 전에 인터셉터가 요청을 막고 `/`로 리다이렉트하고 있었던 것이다.
+
+---
+
+### ✅ 해결
+
+관리자 로그인 페이지와 관리자 회원가입 페이지는 로그인하지 않은 사용자도 접근할 수 있어야 한다.
+
+따라서 `LoginInterceptor` 예외 경로에 다음 두 경로를 추가했다.
+
+```java
+"/admin",
+"/admin/join"
+```
+
+수정된 `WebConfig`는 다음과 같다.
+
+```java
+@Configuration
+public class WebConfig implements WebMvcConfigurer {
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(new LoginInterceptor())
+                .addPathPatterns("/**")
+                .excludePathPatterns(
+                        "/",
+                        "/login",
+                        "/join",
+                        "/signup",
+                        "/admin",
+                        "/admin/join",
+                        "/css/**",
+                        "/js/**",
+                        "/images/**",
+                        "/api/user-info"
+                );
+    }
+}
+```
+
+수정 후 `/admin` 요청은 인터셉터 예외 경로로 처리되어 정상적으로 관리자 로그인 컨트롤러까지 도달한다.
+
+```text
+1. 사용자가 /admin 요청
+2. /admin은 인터셉터 예외 경로이므로 통과
+3. AdminController의 @GetMapping("/admin") 실행
+4. admin/admin-login.html 반환
+```
+
+관리자 회원가입 페이지도 동일하게 정상 접근된다.
+
+```text
+http://localhost:8080/admin/join
+```
+
+---
+
+### 💡 배운 점
+
+- `addPathPatterns("/**")`를 사용하면 모든 요청이 인터셉터 대상이 된다.
+- 로그인 없이 접근해야 하는 페이지는 반드시 `excludePathPatterns()`에 등록해야 한다.
+- 컨트롤러 매핑이 정상이어도 인터셉터에서 요청을 가로채면 해당 컨트롤러까지 도달하지 못할 수 있다.
+- 로그인 페이지, 회원가입 페이지, 정적 리소스, 관리자 로그인/가입 페이지는 예외 경로로 별도 관리해야 한다.
+- 특정 URL로 접근했는데 다른 컨트롤러가 실행되는 것처럼 보이면, 실제로는 중간에서 `redirect`가 발생했는지 확인해야 한다.
+
+</details>
+
