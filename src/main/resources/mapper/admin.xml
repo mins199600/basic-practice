@@ -10,4 +10,17 @@
             #{nickname},
             #{role})
     </insert>
+
+    <select id="adminLogin" parameterType="String" resultType="com.practice.logincrud.admin.AdminDto">
+        SELECT id,
+               email,
+               password,
+               nickname,
+               role,
+               deleted
+        FROM member
+        WHERE email = #{email}
+          AND deleted = 0
+          AND role = 'ADMIN'
+    </select>
 </mapper>

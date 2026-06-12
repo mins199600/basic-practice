@@ -1,5 +1,7 @@
 package com.practice.logincrud.admin;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequiredArgsConstructor
+@Slf4j
 public class AdminController {
 
     private final AdminService adminService;
@@ -42,6 +45,29 @@ public class AdminController {
             return "redirect:/admin";
         } else {
             return "/admin/admin-create";
+        }
+    }
+
+    //관리자 로그인
+    @PostMapping("/admin/login")
+    public String login(@RequestParam String email,
+                        @RequestParam String password,
+                        HttpSession httpSession
+    ) {
+        AdminDto adminLogin = adminService.adminAccess(email, password);
+
+        if (adminLogin != null) {
+            httpSession.setAttribute("memberId", adminLogin.getId());
+            httpSession.setAttribute("email", adminLogin.getEmail());
+            httpSession.setAttribute("role", adminLogin.getRole());
+            httpSession.setAttribute("nickName", adminLogin.getNickname());
+
+            log.info("로그인 성공");
+            return "admin/dashboard";
+
+        } else {
+            log.info("로그인 실패");
+            return "redirect:/admin?error=true";
         }
     }
 }
