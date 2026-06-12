@@ -1188,3 +1188,410 @@ http://localhost:8080/admin/join
 
 </details>
 
+---
+
+<details>
+<summary><b>[2026-06-12] 관리자 로그인 실패 - 인터셉터 통과 후 인증 로직에서 실패</b></summary>
+
+<br>
+
+### 📌 문제 상황
+
+관리자 로그인 페이지에서 이메일과 비밀번호를 입력한 뒤 로그인 버튼을 클릭했다.
+
+```html
+<form class="login-form" action="/admin/login" method="post">
+    <input type="text" name="email">
+    <input type="password" name="password">
+    <button type="submit">로그인</button>
+</form>
+```
+
+기대했던 동작은 관리자 로그인 성공 후 관리자 대시보드로 이동하는 것이었다.
+
+```java
+return "redirect:/admin/dashboard";
+```
+
+하지만 실제로는 로그인 성공 처리가 되지 않고, 로그인 실패 로직으로 이동했다.
+
+```java
+log.info("로그인 실패");
+return "redirect:/admin?error=true";
+```
+
+---
+
+### 🔍 원인 분석
+
+처음에는 로그인 버튼을 눌러도 `@PostMapping("/admin/login")` 내부 로그가 출력되지 않았다.
+
+즉, 요청이 Controller까지 도달하지 못하고 있었다.
+
+기존 요청 흐름은 다음과 같았다.
+
+```text
+로그인 버튼 클릭
+→ POST /admin/login
+→ LoginInterceptor에서 요청을 가로챔
+→ 로그인 전 상태라 세션 없음
+→ 인터셉터에서 redirect
+→ Controller 로그도 출력되지 않음
+```
+
+이 문제는 `WebConfig`의 인터셉터 예외 경로에 `/admin/login`을 추가하여 해결했다.
+
+```java
+.excludePathPatterns(
+        "/",
+        "/login",
+        "/join",
+        "/signup",
+        "/admin",
+        "/admin/login",
+        "/admin/join",
+        "/css/**",
+        "/js/**",
+        "/images/**",
+        "/api/user-info"
+)
+```
+
+이후에는 `@PostMapping("/admin/login")`까지 요청이 정상적으로 들어오게 되었다.
+
+하지만 Controller에 진입한 뒤에도 로그인은 실패했다.
+
+변경된 요청 흐름은 다음과 같았다.
+
+```text
+로그인 버튼 클릭
+→ POST /admin/login
+→ Controller 진입
+→ adminService.adminAccess(email, password) 실행
+→ 결과가 null
+→ 로그인 실패
+```
+
+즉, 두 번째 문제는 인터셉터 문제가 아니라 **관리자 인증 로직에서 `adminLogin`이 null로 반환되는 문제**였다.
+
+---
+
+### 🔎 확인한 코드
+
+관리자 로그인 Controller는 다음과 같았다.
+
+```java
+@PostMapping("/admin/login")
+public String login(@RequestParam String email,
+                    @RequestParam String password,
+                    HttpSession httpSession) {
+
+    AdminDto adminLogin = adminService.adminAccess(email, password);
+
+    if (adminLogin != null) {
+        httpSession.setAttribute("memberId", adminLogin.getId());
+        httpSession.setAttribute("email", adminLogin.getEmail());
+        httpSession.setAttribute("role", adminLogin.getRole());
+        httpSession.setAttribute("nickName", adminLogin.getNickname());
+
+        log.info("로그인 성공");
+        return "redirect:/admin/dashboard";
+    } else {
+        log.info("로그인 실패");
+        return "redirect:/admin?error=true";
+    }
+}
+```
+
+Service에서는 이메일로 관리자를 조회한 뒤, BCrypt로 비밀번호를 비교하고 있었다.
+
+```java
+public AdminDto adminAccess(String email, String password) {
+    AdminDto admin = adminMapper.adminLogin(email);
+
+    if (admin == null) {
+        return null;
+    }
+
+    if (passwordEncoder.matches(password, admin.getPassword())) {
+        return admin;
+    }
+
+    return null;
+}
+```
+
+따라서 `adminLogin`이 null이 되는 경우는 크게 두 가지였다.
+
+```text
+1. adminMapper.adminLogin(email)의 조회 결과가 null
+2. passwordEncoder.matches(password, admin.getPassword())가 false
+```
+
+---
+
+### ✅ 해결 과정
+
+#### 1. 인터셉터 예외 경로 추가
+
+관리자 로그인 처리 요청인 `/admin/login`도 로그인 전 접근이 가능해야 하므로 인터셉터 예외 경로에 추가했다.
+
+```java
+"/admin/login"
+```
+
+최종적으로 관리자 로그인 관련 예외 경로는 다음과 같이 정리했다.
+
+```java
+.excludePathPatterns(
+        "/",
+        "/login",
+        "/join",
+        "/signup",
+        "/admin",
+        "/admin/login",
+        "/admin/join",
+        "/css/**",
+        "/js/**",
+        "/images/**",
+        "/api/user-info"
+)
+```
+
+---
+
+#### 2. HTML form name과 Controller 파라미터명 확인
+
+Controller는 다음 파라미터명을 기준으로 값을 받는다.
+
+```java
+@RequestParam String email,
+@RequestParam String password
+```
+
+따라서 HTML input의 `name` 속성도 동일해야 한다.
+
+```html
+<input type="text" name="email">
+<input type="password" name="password">
+```
+
+만약 HTML이 아래처럼 되어 있다면 Controller에서 값을 제대로 받을 수 없다.
+
+```html
+<input type="text" name="adminId">
+<input type="password" name="adminPassword">
+```
+
+이 경우에는 HTML을 수정하거나, Controller에서 명시적으로 파라미터명을 지정해야 한다.
+
+```java
+@PostMapping("/admin/login")
+public String login(@RequestParam("adminId") String email,
+                    @RequestParam("adminPassword") String password,
+                    HttpSession httpSession) {
+    ...
+}
+```
+
+---
+
+#### 3. 관리자 계정 조회 조건 확인
+
+관리자 로그인은 일반 회원이 아니라 `ADMIN` 권한을 가진 회원만 성공해야 한다.
+
+따라서 DB에서 관리자 계정의 상태를 확인했다.
+
+```sql
+SELECT id, email, password, nickname, role, deleted
+FROM member
+WHERE email = 'admin@test.com';
+```
+
+확인해야 할 값은 다음과 같다.
+
+```text
+email   → 입력한 이메일과 일치해야 함
+deleted → 0이어야 함
+role    → ADMIN이어야 함
+```
+
+관리자 권한이 없다면 다음 SQL로 변경한다.
+
+```sql
+UPDATE member
+SET role = 'ADMIN'
+WHERE email = 'admin@test.com';
+```
+
+탈퇴 처리된 계정이라면 다음 SQL로 복구한다.
+
+```sql
+UPDATE member
+SET deleted = 0
+WHERE email = 'admin@test.com';
+```
+
+---
+
+#### 4. Mapper 조회 쿼리 수정
+
+관리자 로그인에서는 `role = 'ADMIN'` 조건을 추가하여 관리자 계정만 조회하도록 수정했다.
+
+```xml
+<select id="adminLogin" parameterType="String" resultType="com.practice.logincrud.admin.AdminDto">
+    SELECT id,
+           email,
+           password,
+           nickname,
+           role,
+           deleted
+    FROM member
+    WHERE email = #{email}
+      AND deleted = 0
+      AND role = 'ADMIN'
+</select>
+```
+
+기존 쿼리에서는 `role`을 조회하지 않거나, 관리자 여부를 확인하지 않아 관리자 로그인 검증이 명확하지 않았다.
+
+---
+
+#### 5. 비밀번호 암호화 상태 확인
+
+Service에서는 BCrypt 방식으로 비밀번호를 비교한다.
+
+```java
+passwordEncoder.matches(password, admin.getPassword())
+```
+
+따라서 DB에 저장된 비밀번호는 평문이 아니라 BCrypt로 암호화된 값이어야 한다.
+
+정상적인 BCrypt 비밀번호는 보통 다음과 같은 형태이다.
+
+```text
+$2a$10$...
+$2b$10$...
+```
+
+만약 DB에 비밀번호가 아래처럼 평문으로 저장되어 있으면 로그인은 실패한다.
+
+```text
+1234
+```
+
+이 경우 `passwordEncoder.matches("1234", "1234")`는 정상적인 BCrypt 비교가 아니기 때문에 실패한다.
+
+해결 방법은 회원가입 로직을 통해 BCrypt로 암호화된 계정을 생성한 뒤, DB에서 해당 계정의 role만 `ADMIN`으로 변경하는 것이다.
+
+```sql
+UPDATE member
+SET role = 'ADMIN'
+WHERE email = 'admin@test.com';
+```
+
+---
+
+### ✅ 최종 코드
+
+#### AdminController
+
+```java
+@PostMapping("/admin/login")
+public String login(@RequestParam String email,
+                    @RequestParam String password,
+                    HttpSession httpSession) {
+
+    AdminDto adminLogin = adminService.adminAccess(email, password);
+
+    if (adminLogin != null) {
+        httpSession.setAttribute("memberId", adminLogin.getId());
+        httpSession.setAttribute("email", adminLogin.getEmail());
+        httpSession.setAttribute("role", adminLogin.getRole());
+        httpSession.setAttribute("nickName", adminLogin.getNickname());
+
+        log.info("관리자 로그인 성공");
+        return "redirect:/admin/dashboard";
+    }
+
+    log.info("관리자 로그인 실패");
+    return "redirect:/admin?error=true";
+}
+```
+
+#### AdminService
+
+```java
+public AdminDto adminAccess(String email, String password) {
+    AdminDto admin = adminMapper.adminLogin(email);
+
+    if (admin == null) {
+        return null;
+    }
+
+    if (passwordEncoder.matches(password, admin.getPassword())) {
+        return admin;
+    }
+
+    return null;
+}
+```
+
+#### AdminMapper.xml
+
+```xml
+<select id="adminLogin" parameterType="String" resultType="com.practice.logincrud.admin.AdminDto">
+    SELECT id,
+           email,
+           password,
+           nickname,
+           role,
+           deleted
+    FROM member
+    WHERE email = #{email}
+      AND deleted = 0
+      AND role = 'ADMIN'
+</select>
+```
+
+#### WebConfig.java
+
+```java
+@Configuration
+public class WebConfig implements WebMvcConfigurer {
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(new LoginInterceptor())
+                .addPathPatterns("/**")
+                .excludePathPatterns(
+                        "/",
+                        "/login",
+                        "/join",
+                        "/signup",
+                        "/admin",
+                        "/admin/login",
+                        "/admin/join",
+                        "/css/**",
+                        "/js/**",
+                        "/images/**",
+                        "/api/user-info"
+                );
+    }
+}
+```
+
+---
+
+### 💡 배운 점
+
+- 로그가 찍히지 않으면 Controller까지 요청이 도달하지 않은 것이다.
+- 로그가 찍히는데 로그인 실패가 발생하면 Controller 이후 Service 또는 Mapper 로직을 확인해야 한다.
+- 인터셉터를 사용할 때는 로그인 페이지뿐만 아니라 로그인 처리 URL도 예외 경로에 등록해야 한다.
+- `GET /admin`과 `POST /admin/login`은 서로 다른 요청이므로 각각 예외 처리가 필요하다.
+- `@RequestParam` 이름과 HTML input의 `name` 속성은 반드시 일치해야 한다.
+- BCrypt의 `matches()`는 입력 비밀번호와 DB의 암호화된 비밀번호를 비교하는 메서드이므로, DB 비밀번호가 평문이면 실패한다.
+- 관리자 로그인은 `role = 'ADMIN'`, `deleted = 0` 조건을 함께 검증해야 한다.
+
+</details>
+
