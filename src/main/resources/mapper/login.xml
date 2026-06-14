@@ -3,6 +3,8 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.practice.logincrud.member.MemberMapper">
+
+    <!--로그인-->
     <select id="findUserLogin" parameterType="String" resultType="com.practice.logincrud.member.UserDto">
         SELECT id, email, password, nickname AS nickName, deleted
         FROM member
@@ -10,18 +12,20 @@
           AND deleted = 0
     </select>
 
-
+    <!--회원 가입-->
     <insert id="insertMember" parameterType="com.practice.logincrud.member.UserDto">
         INSERT INTO member(email, password, nickname, deleted)
         VALUES (#{email}, #{password}, #{nickName}, 0)
     </insert>
 
+    <!--회원정보 이메일 중복 처리-->
     <select id="countByEmail" parameterType="string" resultType="int">
         SELECT COUNT(*)
         FROM member
         WHERE email = #{email}
     </select>
 
+    <!--회원정보 수정-->
     <select id="findUserByEmail" resultType="com.practice.logincrud.member.UserDto">
         SELECT
             id,
@@ -34,6 +38,7 @@
           AND deleted = 0
     </select>
 
+    <!--회원 수정 로직-->
     <update id="updateUser">
         UPDATE member
         <set>
@@ -47,11 +52,20 @@
         AND deleted = 0
     </update>
 
+    <!--회원 삭제-->
     <update id="deleteUser">
         UPDATE member
         SET deleted = 1
         WHERE email = #{email}
           AND deleted = 0
     </update>
+
+    <!--전체 회원 수-->
+    <!-- 전체 회원 수 (탈퇴 제외) -->
+    <select id="getTotalMemberCount" resultType="int">
+        SELECT COUNT(*)
+        FROM member
+        WHERE deleted = 0
+    </select>
 
 </mapper>

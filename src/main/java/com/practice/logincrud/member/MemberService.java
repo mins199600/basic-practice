@@ -47,12 +47,10 @@ public class MemberService {
 
     }
 
-
     // 회원정보 조회
     public UserDto findUserByEmail(String email) {
         return memberMapper.findUserByEmail(email);
     }
-
 
     // 회원정보 수정
     public boolean updateUser(String oldEmail, UserDto userDto) {
@@ -85,6 +83,11 @@ public class MemberService {
     public void deleteUser(String email) {
         memberMapper.deleteUser(email);
         log.info("회원 soft delete 완료");
+    }
+
+    //전체 회원 수
+    public int getTotalMemberCount() {
+        return memberMapper.getTotalMemberCount();
     }
 
 

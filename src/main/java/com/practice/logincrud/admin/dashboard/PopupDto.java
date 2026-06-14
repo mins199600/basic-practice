@@ -1,4 +1,4 @@
-package com.practice.logincrud.admin;
+package com.practice.logincrud.admin.dashboard;
 
 import lombok.Data;
 

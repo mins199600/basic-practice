@@ -59,19 +59,19 @@
             <div class="summary-card-wrap">
                 <div class="summary-card summary-member">
                     <div class="summary-icon">👥</div>
-                    <div class="summary-count">1,284</div>
+                    <div class="summary-count" th:text="${totalMember}">1,284</div>
                     <div class="summary-label">전체 회원</div>
                 </div>
 
                 <div class="summary-card summary-post">
                     <div class="summary-icon">📄</div>
-                    <div class="summary-count">3,921</div>
+                    <div class="summary-count" th:text="${totalBoard}">3,921</div>
                     <div class="summary-label">전체 게시글</div>
                 </div>
 
                 <div class="summary-card summary-notice">
                     <div class="summary-icon">📌</div>
-                    <div class="summary-count">12</div>
+                    <div class="summary-count" th:text="${totalNotice}">12</div>
                     <div class="summary-label">공지사항</div>
                 </div>
 

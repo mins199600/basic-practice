@@ -24,4 +24,7 @@ public interface MemberMapper {
 
     //회원정보 삭제
     void deleteUser(@Param("email") String email);
+
+    //전체 회원 수
+    int getTotalMemberCount();
 }

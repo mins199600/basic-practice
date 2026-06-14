@@ -23,4 +23,6 @@
           AND deleted = 0
           AND role = 'ADMIN'
     </select>
+
+
 </mapper>

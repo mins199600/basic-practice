@@ -63,7 +63,7 @@ public class AdminController {
             httpSession.setAttribute("nickName", adminLogin.getNickname());
 
             log.info("로그인 성공");
-            return "admin/dashboard";
+            return "redirect:/admin/dashboard";
 
         } else {
             log.info("로그인 실패");
