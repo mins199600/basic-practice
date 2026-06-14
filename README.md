@@ -1595,3 +1595,217 @@ public class WebConfig implements WebMvcConfigurer {
 
 </details>
 
+<details>
+<summary><b>[2026-06-14] 관리자 대시보드 데이터 미표시 - 인터셉터 차단 / 세션 키 불일치 / 뷰 직접 반환</b></summary>
+
+<br>
+
+### 📌 문제 상황
+
+관리자 로그인 후 `/admin/dashboard`에 접근했을 때 대시보드에 표시되어야 할 데이터(전체 회원 수, 전체 게시글 수, 공지사항 수)가 화면에 나타나지 않았다.
+
+콘솔에도 아무런 로그가 출력되지 않았다.
+
+기대했던 동작은 다음과 같았다.
+
+```text
+관리자가 /admin/dashboard 접근 시
+    └→ AdminInterceptor 실행
+    └→ role == ADMIN
+    └→ 통과 → Controller 실행 → DB 값 화면에 표시 ✅
+```
+
+하지만 실제 동작은 다음과 같았다.
+
+```text
+관리자가 /admin/dashboard 접근 시
+    └→ LoginInterceptor 실행
+    └→ 세션 없음 또는 키 불일치로 인증 실패
+    └→ / 로 리다이렉트 ❌
+```
+
+---
+
+### 🔍 원인 분석
+
+원인은 총 세 가지가 복합적으로 작용하고 있었다.
+
+---
+
+#### 원인 1 — `WebConfig`에서 `/admin/**` 경로 누락
+
+기존 `WebConfig`에는 `/admin/dashboard`가 `excludePathPatterns`에 등록되어 있지 않았다.
+
+```java
+// ❌ 수정 전 — /admin/dashboard 가 excludePathPatterns에 없음
+registry.addInterceptor(new LoginInterceptor())
+        .addPathPatterns("/**")
+        .excludePathPatterns(
+                "/admin",
+                "/admin/login",
+                "/admin/join"
+                // /admin/dashboard 없음 → LoginInterceptor가 차단!
+        );
+```
+
+따라서 관리자가 로그인 후 `/admin/dashboard`에 접근해도 `LoginInterceptor`가 요청을 가로채서 `/`로 리다이렉트시켰다.
+
+컨트롤러 자체가 실행되지 않으니 콘솔에 로그도 출력되지 않았다.
+
+---
+
+#### 원인 2 — 세션 키 불일치
+
+`SessionConst.java`에 정의된 세션 키 이름과 실제로 세션에 저장할 때 사용한 키 이름이 달랐다.
+
+```java
+// ❌ SessionConst.java — 대문자 M
+public static final String Member_Id = "Member_Id";
+
+// ❌ AdminController.java / MemberController.java — 소문자 m
+httpSession.setAttribute("memberId", ...);
+```
+
+`LoginInterceptor`는 `SessionConst.Member_Id` 즉 `"Member_Id"` 키로 세션을 조회했지만, 실제 세션에는 `"memberId"` 키로 저장되어 있었다.
+
+결과적으로 세션 조회 결과가 항상 `null`로 반환되어 로그인한 사용자도 인증 실패로 처리되었다.
+
+```text
+LoginInterceptor → session.getAttribute("Member_Id") → null
+                                                         ↓
+                                                   / 로 리다이렉트
+```
+
+---
+
+#### 원인 3 — 로그인 후 뷰 직접 반환
+
+관리자 로그인 성공 후 컨트롤러에서 뷰 이름을 직접 반환하고 있었다.
+
+```java
+// ❌ AdminController.java
+return "admin/dashboard";
+```
+
+이 방식은 `AdminDashboardController`를 거치지 않고 바로 뷰를 렌더링하기 때문에, `Model`에 데이터가 주입되지 않은 상태로 화면이 출력된다.
+
+```text
+return "admin/dashboard"
+    → AdminDashboardController 실행 안 됨
+    → Model에 totalMember, totalBoard, totalNotice 없음
+    → 화면에 데이터 미표시
+```
+
+---
+
+### ✅ 해결 방법
+
+---
+
+#### 해결 1 — `AdminInterceptor` 분리 + `WebConfig` 재설계
+
+`LoginInterceptor`는 일반 사용자 로그인 여부만 검사하고, 관리자 전용 경로(`/admin/**`)는 별도의 `AdminInterceptor`가 담당하도록 분리했다.
+
+```java
+// ✅ WebConfig.java
+@Override
+public void addInterceptors(InterceptorRegistry registry) {
+
+    // 일반 로그인 인터셉터
+    registry.addInterceptor(new LoginInterceptor())
+            .addPathPatterns("/**")
+            .excludePathPatterns(
+                    "/", "/login", "/join", "/signup",
+                    "/admin", "/admin/login", "/admin/join",
+                    "/admin/**",   // ✅ admin 하위는 AdminInterceptor가 담당
+                    "/css/**", "/js/**", "/images/**", "/api/user-info"
+            );
+
+    // 관리자 전용 인터셉터
+    registry.addInterceptor(new AdminInterceptor())
+            .addPathPatterns("/admin/**")
+            .excludePathPatterns(
+                    "/admin",
+                    "/admin/login",
+                    "/admin/join"
+            );
+}
+```
+
+이 구조로 변경하면 요청 흐름이 다음과 같이 동작한다.
+
+```text
+일반 사용자가 /admin/dashboard 접근 시
+    └→ LoginInterceptor → /admin/** 제외 → 통과
+    └→ AdminInterceptor 실행
+    └→ role != ADMIN
+    └→ /admin (관리자 로그인 페이지) 으로 리다이렉트 ✅
+
+관리자가 /admin/dashboard 접근 시
+    └→ LoginInterceptor → /admin/** 제외 → 통과
+    └→ AdminInterceptor 실행
+    └→ role == ADMIN
+    └→ 통과 → Controller 실행 → DB 값 화면에 표시 ✅
+
+일반 사용자가 /home 접근 시
+    └→ LoginInterceptor 실행
+    └→ 세션 없으면 / 로 리다이렉트 ✅
+```
+
+---
+
+#### 해결 2 — 세션 키 소문자로 통일
+
+`SessionConst.java`의 세션 키 이름을 실제 저장 시 사용하는 이름과 동일하게 소문자로 통일했다.
+
+```java
+// ✅ SessionConst.java
+public static final String Member_Id = "memberId"; // 소문자로 통일
+```
+
+세션 저장, 조회, 인터셉터 검사 모두 동일한 키를 사용하게 되어 인증 실패 문제가 해결되었다.
+
+---
+
+#### 해결 3 — 로그인 후 `redirect` 처리
+
+로그인 성공 후 뷰를 직접 반환하는 방식에서 `redirect`로 변경했다.
+
+```java
+// ✅ AdminController.java
+return "redirect:/admin/dashboard";
+// redirect → AdminDashboardController 실행 → Model에 데이터 주입 → 화면 정상 표시
+```
+
+`redirect`를 사용하면 브라우저가 `/admin/dashboard`로 새 GET 요청을 보내고, 해당 컨트롤러가 실행되어 DB 데이터를 `Model`에 담은 뒤 뷰를 렌더링한다.
+
+---
+
+### 🏗️ 개선된 구조
+
+```text
+요청: /admin/dashboard
+    ↓
+LoginInterceptor → /admin/** 제외 → 통과
+    ↓
+AdminInterceptor → role == ADMIN 확인
+    ↓ (ADMIN이면)
+AdminDashboardController → DB 조회 → Model에 데이터 주입
+    ↓
+dashboard.html → th:text="${totalMember}" 정상 출력 ✅
+```
+
+---
+
+### 💡 배운 점
+
+| 번호 | 배운 점 |
+|------|---------|
+| 1 | 인터셉터가 막으면 Controller 자체가 실행되지 않는다. 콘솔 로그로 진입 여부를 먼저 확인해야 한다 |
+| 2 | 세션 키는 `SessionConst` 같은 상수 클래스로 관리하고, 저장/조회 시 반드시 같은 키를 사용해야 한다 |
+| 3 | `return "뷰이름"` 은 해당 Controller를 거치지 않으므로 Model이 비어있다 |
+| 4 | `return "redirect:/경로"` 를 사용해야 해당 Controller → Model → View 순서가 보장된다 |
+| 5 | 인터셉터가 여러 개 필요할 때는 역할별로 분리하고, 각 인터셉터가 담당하는 경로를 명확하게 구분해야 한다 |
+
+</details>
+
