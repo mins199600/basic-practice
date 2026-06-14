@@ -8,4 +8,6 @@ public interface AdminDashboardMapper {
     //전체 공지사항 수
     int getNoticeBoardCount();
 
+    //팝업
+    int getActivePopupCount();
 }

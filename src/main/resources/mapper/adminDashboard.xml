@@ -3,10 +3,19 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.practice.logincrud.admin.dashboard.AdminDashboardMapper">
+
     <!-- 공지사항 수 -->
     <select id="getNoticeBoardCount" resultType="int">
         SELECT COUNT(*)
         FROM board
         WHERE is_notice = 1
     </select>
+
+    <!-- 활성 팝업 수 -->
+    <select id="getActivePopupCount" resultType="int">
+        SELECT COUNT(*)
+        FROM popup
+        WHERE use_yn = 'Y'
+    </select>
+
 </mapper>

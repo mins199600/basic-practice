@@ -5,7 +5,6 @@ import com.practice.logincrud.member.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,7 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class AdminDashboardController {
 
     private static final Logger log = LoggerFactory.getLogger(AdminDashboardController.class);
-    private final AdminDashboardService adminDashboardService;  // 공지사항
+    private final AdminDashboardService adminDashboardService;  // 관리자 공지사항
     private final BoardService boardService;                    // 전체 게시글
     private final MemberService memberService;                  // 전체 회원
 
@@ -25,10 +24,12 @@ public class AdminDashboardController {
         int totalBoard  = boardService.getMyBoardTotalCount();          // 회원 전체 게시글 수
         int totalMember = memberService.getTotalMemberCount();          // 전체 회원 수
         int totalNotice = adminDashboardService.getNoticeBoardCount();  // 관리자 공지 사항
+        int activePopupCount = adminDashboardService.getActivePopupCount();     // 관리자 팝업
 
         model.addAttribute("totalBoard",  totalBoard);
         model.addAttribute("totalMember", totalMember);
         model.addAttribute("totalNotice", totalNotice);
+        model.addAttribute("activePopupCount", activePopupCount);
 
         log.info("totalBoard: " + totalBoard);
         log.info("totalMember: " + totalMember);
