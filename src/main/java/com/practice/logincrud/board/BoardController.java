@@ -29,6 +29,8 @@ public class BoardController {
     public String home(PageDto pageDto,
                        @RequestParam(required = false) String searchType,
                        @RequestParam(required = false) String keyword,
+                       @RequestParam(required = false) String category,
+                       @RequestParam(required = false) String sort,
                        Model model, HttpSession session) {
 
 
@@ -48,6 +50,11 @@ public class BoardController {
             boardList = boardService.getBoardList(params);
             totalCount = boardService.getBoardSearchCount(params);
         } else {
+
+            //검색어 없을 때 -> 필터 적용 조회
+            pageDto.setCategory(category);
+            pageDto.setSort(sort);
+
             // 검색어 없을 때 → 전체 조회
             boardList = boardService.getMyBoardList(pageDto);
             totalCount = boardService.getMyBoardTotalCount();
@@ -62,6 +69,8 @@ public class BoardController {
         model.addAttribute("nickName", nickName);
         model.addAttribute("searchType", searchType);
         model.addAttribute("keyword", keyword);
+        model.addAttribute("category", category);
+        model.addAttribute("sort", sort);
 
         return "home";
     }

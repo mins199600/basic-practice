@@ -411,3 +411,95 @@ body {
     }
 }
 
+/* ============================= */
+/* 필터 드롭다운 */
+/* ============================= */
+
+.filter-wrapper {
+    position: relative;
+}
+
+.filter-button {
+    padding: 10px 16px;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    background-color: #ffffff;
+    font-size: 14px;
+    color: #333;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: border-color 0.2s ease;
+}
+
+.filter-button:hover {
+    border-color: #03c75a;
+    color: #03c75a;
+}
+
+.filter-dropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    z-index: 100;
+    background-color: #ffffff;
+    border: 1px solid #e5e5e5;
+    border-radius: 12px;
+    padding: 16px;
+    min-width: 180px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.10);
+}
+
+.filter-dropdown.open {
+    display: block;
+}
+
+.filter-section-title {
+    font-size: 12px;
+    font-weight: bold;
+    color: #999;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.filter-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #333;
+    padding: 4px 0;
+    cursor: pointer;
+}
+
+.filter-option input[type="radio"] {
+    accent-color: #03c75a;
+    cursor: pointer;
+}
+
+.filter-divider {
+    border: none;
+    border-top: 1px solid #f0f0f0;
+    margin: 10px 0;
+}
+
+.filter-apply-btn {
+    width: 100%;
+    margin-top: 12px;
+    padding: 8px 0;
+    background-color: #03c75a;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.filter-apply-btn:hover {
+    background-color: #02b350;
+}
+
+

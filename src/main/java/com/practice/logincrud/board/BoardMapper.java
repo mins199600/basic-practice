@@ -36,5 +36,7 @@ public interface BoardMapper {
     // 검색 결과 총 개수
     int getBoardSearchCount(Map<String, Object> params);
 
+    int getMyBoardTotalCount(PageDto pageDto);
+
 
 }

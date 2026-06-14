@@ -83,19 +83,35 @@
     </delete>
 
     <!--페이지네이션-->
+    <!-- 페이지네이션 + 필터 -->
     <select id="getMyBoardList" resultType="com.practice.logincrud.board.BoardDto">
         SELECT
-            b.id, b.member_id AS memberId,
-            b.title, b.content,
-            m.nickname AS nickName,
-            b.created_at AS createdAt,
-            b.modified_at AS modifiedAt,
-            b.view_count AS viewCount,
-            b.category, b.is_notice AS isNotice,
-            b.file_path AS filePath
+        b.id, b.member_id AS memberId,
+        b.title, b.content,
+        m.nickname AS nickName,
+        b.created_at AS createdAt,
+        b.modified_at AS modifiedAt,
+        b.view_count AS viewCount,
+        b.category, b.is_notice AS isNotice,
+        b.file_path AS filePath
         FROM board b
-                 INNER JOIN member m ON b.member_id = m.id
-        ORDER BY b.is_notice DESC, b.created_at DESC, b.id DESC
+        INNER JOIN member m ON b.member_id = m.id
+
+        <where>
+            <if test="pageDto.category != null and pageDto.category != ''">
+                AND b.category = #{pageDto.category}
+            </if>
+        </where>
+
+        <choose>
+            <when test="pageDto.sort == 'viewCount'">
+                ORDER BY b.is_notice DESC, b.view_count DESC, b.id DESC
+            </when>
+            <otherwise>
+                ORDER BY b.is_notice DESC, b.created_at DESC, b.id DESC
+            </otherwise>
+        </choose>
+
         LIMIT #{pageDto.pageSize} OFFSET #{pageDto.offset}
     </select>
 

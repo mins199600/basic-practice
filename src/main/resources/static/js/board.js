@@ -25,29 +25,38 @@ function logout() {
 }
 
 // 필터 드롭다운
+// ===========================
+// 필터 드롭다운 열기/닫기
+// ===========================
+
 const filterToggle   = document.getElementById('filterToggle');
 const filterDropdown = document.getElementById('filterDropdown');
+const filterApply    = document.getElementById('filterApply');
 
-filterToggle.addEventListener('click', function(e) {
+// 필터 버튼 클릭 → 드롭다운 열기/닫기
+filterToggle.addEventListener('click', function (e) {
     e.stopPropagation();
     filterDropdown.classList.toggle('open');
 });
 
-document.addEventListener('click', function() {
+// 드롭다운 바깥 클릭 → 닫기
+document.addEventListener('click', function () {
     filterDropdown.classList.remove('open');
 });
 
-filterDropdown.addEventListener('click', function(e) {
+// 드롭다운 내부 클릭 시 닫히지 않도록
+filterDropdown.addEventListener('click', function (e) {
     e.stopPropagation();
 });
 
-// 적용 버튼
-document.getElementById('filterApply').addEventListener('click', function() {
+// 적용 버튼 클릭 → hidden input에 값 넣고 form 제출
+filterApply.addEventListener('click', function () {
     const selectedCategory = document.querySelector('input[name="filterCategory"]:checked');
     const selectedSort     = document.querySelector('input[name="filterSort"]:checked');
 
     document.getElementById('hiddenCategory').value = selectedCategory ? selectedCategory.value : '';
-    document.getElementById('hiddenSort').value     = selectedSort ? selectedSort.value : 'latest';
+    document.getElementById('hiddenSort').value     = selectedSort     ? selectedSort.value     : 'latest';
 
     document.getElementById('searchForm').submit();
 });
+

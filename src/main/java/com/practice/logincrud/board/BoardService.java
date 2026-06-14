@@ -58,4 +58,8 @@ public class BoardService {
     public int getBoardSearchCount(Map<String, Object> params) {
         return boardMapper.getBoardSearchCount(params);
     }
+
+    public int getMyBoardTotalCount(PageDto pageDto) {
+        return boardMapper.getMyBoardTotalCount(pageDto);
+    }
 }

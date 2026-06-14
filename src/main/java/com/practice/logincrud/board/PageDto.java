@@ -9,6 +9,8 @@ public class PageDto {
 
     private int page = 1;
     private int pageSize = 10;
+    private String category;
+    private String sort;
 
     public int getOffset() {
         return (page - 1) * pageSize;
