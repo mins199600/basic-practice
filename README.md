@@ -1595,7 +1595,9 @@ public class WebConfig implements WebMvcConfigurer {
 
 </details>
 
+---
 <details>
+
 <summary><b>[2026-06-14] 관리자 대시보드 데이터 미표시 - 인터셉터 차단 / 세션 키 불일치 / 뷰 직접 반환</b></summary>
 
 <br>
