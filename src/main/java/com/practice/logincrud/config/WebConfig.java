@@ -34,7 +34,11 @@ public class WebConfig implements WebMvcConfigurer {
                 .excludePathPatterns(
                         "/admin",           // 관리자 로그인 페이지
                         "/admin/login",     // 관리자 로그인 처리
-                        "/admin/join"       // 관리자 회원가입
+                        "/admin/join",      // 관리자 회원가입
+                        "/admin/find-id",    // 관리자 아이디 찾기
+                        "/admin/find-password",  //관리자 비번 찾기
+                        "/admin/reset-password"
+
                 );
     }
 }

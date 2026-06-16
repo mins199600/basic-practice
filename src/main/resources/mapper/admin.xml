@@ -3,6 +3,8 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.practice.logincrud.admin.AdminMapper">
+
+    <!--회원가입-->
     <insert id="insertAdmin" parameterType="com.practice.logincrud.admin.AdminDto">
         insert into member(email, password, nickname, role)
         values (#{email},
@@ -11,6 +13,7 @@
             #{role})
     </insert>
 
+    <!--로그인-->
     <select id="adminLogin" parameterType="String" resultType="com.practice.logincrud.admin.AdminDto">
         SELECT id,
                email,
@@ -24,5 +27,30 @@
           AND role = 'ADMIN'
     </select>
 
+    <!--아이디 찾기-->
+    <select id="findEmailByNickname" parameterType="String" resultType="String">
+        SELECT email
+        FROM member
+        WHERE nickname = #{nickname}
+            AND role = 'ADMIN'
+            AND deleted = 0
+    </select>
 
+    <!--비밀번호 찾기 - 본인 확인-->
+    <select id="findByEmailAndNickname" resultType="com.practice.logincrud.admin.AdminDto">
+        SELECT id, email, nickname, role
+        FROM member
+        WHERE email = #{email}
+          AND nickname = #{nickname}
+          AND role = 'ADMIN'
+          AND deleted = 0
+    </select>
+
+    <!--비밀번호 변경-->
+    <update id="updatePassword">
+        update member
+        set password = #{password}
+        where email = #{email}
+        and role = 'ADMIN'
+    </update>
 </mapper>

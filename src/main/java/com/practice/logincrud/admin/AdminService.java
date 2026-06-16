@@ -46,4 +46,21 @@ public class AdminService {
         log.info("관리자 비밀번호 불일치");
         return null;  // 비밀번호 불일치
     }
+
+    //아이디 찾기
+    public String findEmail(String nickname) {
+        return adminMapper.findEmailByNickname(nickname);
+    }
+
+    //비밀번호 찾기 - 본인 확인
+    public boolean verifyAdmin(String email, String nickname) {
+        AdminDto admin = adminMapper.findByEmailAndNickname(email, nickname);
+        return admin != null;
+    }
+
+    //비밀번호 변경
+    public void updatePassword(String email, String newPassword) {
+        String encoded = passwordEncoder.encode(newPassword);
+        adminMapper.updatePassword(email, encoded);
+    }
 }

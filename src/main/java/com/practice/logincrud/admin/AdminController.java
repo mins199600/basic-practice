@@ -70,4 +70,61 @@ public class AdminController {
             return "redirect:/admin?error=true";
         }
     }
+
+    //아이디 찾기
+    @GetMapping("/admin/find-id")
+    public String findIdForm() {
+        return "admin/find-id";
+    }
+
+    //아이디 찾기
+    @PostMapping("/admin/find-id")
+    public String findId(@RequestParam String nickname, Model model) {
+        String email = adminService.findEmail(nickname);
+
+        if (email != null) {
+            model.addAttribute("foundEmail", email);
+        } else {
+            model.addAttribute("error", "일치하는 계정이 없습니다.");
+        }
+        return "admin/find-id";
+    }
+
+    //비밀번호 찾기
+    @GetMapping("/admin/find-password")
+    public String findPasswordForm() {
+        return "admin/find-password";
+    }
+
+    @PostMapping("/admin/find-password")
+    public String findPassword(@RequestParam String email,
+                               @RequestParam String nickname,
+                               Model model) {
+        boolean verified = adminService.verifyAdmin(email, nickname);
+
+        if (verified) {
+            // 본인 확인 성공 → 비밀번호 재설정 페이지로
+            model.addAttribute("verifiedEmail", email);
+            return "admin/reset-password";
+        } else {
+            model.addAttribute("error", "이메일 또는 닉네임이 일치하지 않습니다.");
+            return "admin/find-password";
+        }
+    }
+
+    //비밀번호 재설정
+    @PostMapping("/admin/reset-password")
+    public String resetPassword(@RequestParam String email,
+                                @RequestParam String newPassword,
+                                @RequestParam String newPasswordCheck,
+                                Model model) {
+        if (!newPassword.equals(newPasswordCheck)) {
+            model.addAttribute("error", "비밀번호가 일치하지 않습니다.");
+            model.addAttribute("verifiedEmail", email);
+            return "admin/reset-password";
+        }
+
+        adminService.updatePassword(email, newPassword);
+        return "redirect:/admin?passwordChanged=true";
+    }
 }
