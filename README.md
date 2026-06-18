@@ -1813,8 +1813,6 @@ dashboard.html → th:text="${totalMember}" 정상 출력 ✅
 
 ---
 
----
-
 <details>
 <summary><b>[2026-06-18] 500 에러 - BadSqlGrammarException / 템플릿 파일 미존재</b></summary>
 
