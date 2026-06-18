@@ -1811,3 +1811,154 @@ dashboard.html → th:text="${totalMember}" 정상 출력 ✅
 
 </details>
 
+---
+
+<details>
+<summary><b>[2026-06-18] 500 에러 - BadSqlGrammarException / 템플릿 파일 미존재</b></summary>
+
+<br>
+
+### 📌 문제 상황
+
+EC2에 배포 후 `/admin` 경로로 접근했을 때 아래와 같은 500 에러가 발생했다.
+
+```text
+Whitelabel Error Page
+There was an unexpected error (type=Internal Server Error, status=500).
+```
+
+---
+
+### 🔍 원인 분석
+
+EC2에서 로그를 확인했다.
+
+```bash
+grep "ERROR\|Caused by" nohup.out | tail -30
+```
+
+로그에서 두 가지 에러가 발견되었다.
+
+#### 에러 1 — BadSqlGrammarException
+
+```text
+org.springframework.jdbc.BadSqlGrammarException
+```
+
+SQL 문법 오류로 인해 DB 쿼리가 실패하고 있었다.
+
+#### 에러 2 — 템플릿 파일 없음
+
+```text
+Error resolving template [/admin/admin-login]
+template might not exist or might not be accessible
+```
+
+컨트롤러에서 뷰 이름을 반환할 때 앞에 `/`가 붙어 있었다.
+
+```java
+// ❌ 수정 전
+return "/admin/admin-login";
+```
+
+Thymeleaf는 `/admin/admin-login`을 템플릿 경로로 인식하지 못한다.
+
+---
+
+### ✅ 해결
+
+#### 해결 1 — 컨트롤러 리턴값 슬래시 제거
+
+```java
+// ✅ 수정 후
+return "admin/admin-login";
+```
+
+#### 해결 2 — 템플릿 파일 위치 확인
+
+템플릿 파일이 아래 경로에 존재해야 한다.
+
+```text
+src/main/resources/templates/admin/admin-login.html
+```
+
+---
+
+### 💡 배운 점
+
+- EC2 배포 후 에러 발생 시 `grep "ERROR\|Caused by" nohup.out | tail -30` 으로 원인을 빠르게 파악할 수 있다.
+- Thymeleaf 템플릿 리턴값에 `/`를 붙이면 파일을 찾지 못한다. 반드시 `"admin/admin-login"` 형식으로 작성해야 한다.
+- 로컬에서는 정상 동작해도 EC2 배포 후 에러가 날 수 있으므로 로그 확인이 필수다.
+
+</details>
+
+---
+
+<details>
+<summary><b>[2026-06-18] EC2 재배포 흐름 혼란 - scp 실행 위치 및 배포 순서</b></summary>
+
+<br>
+
+### 📌 문제 상황
+
+코드 수정 후 EC2에 재배포할 때 어떤 터미널에서 어떤 명령어를 실행해야 하는지 혼란이 생겼다.
+
+터미널을 두 개 사용하다 보니 `scp` 명령어를 EC2 SSH에서 실행해야 하는지, 로컬 PowerShell에서 실행해야 하는지 헷갈렸다.
+
+---
+
+### 🔍 원인 분석
+
+`scp` 명령어의 구조를 이해하지 못한 것이 원인이었다.
+
+```text
+scp -i "키파일" [보낼파일] [받을곳]
+         ↑           ↑         ↑
+      내 컴퓨터   내 컴퓨터   EC2 서버
+```
+
+`scp`는 **내 컴퓨터에서 EC2로 파일을 복사**하는 명령어이므로 반드시 **로컬 PowerShell**에서 실행해야 한다.
+
+또한 재배포 시 DB는 건드릴 필요가 없는데, DB 백업/복원까지 매번 해야 하는 것으로 오해하고 있었다.
+
+---
+
+### ✅ 해결 - 재배포 흐름 정리
+
+#### 코드만 수정한 경우 (대부분의 재배포)
+
+| 순서 | 명령어 | 실행 위치 |
+|------|--------|-----------|
+| 1 | 코드 수정 | 로컬 IntelliJ |
+| 2 | `./gradlew build` | 로컬 PowerShell |
+| 3 | `scp -i "키파일" build/libs/login-crud-0.0.1-SNAPSHOT.jar ec2-user@13.124.5.156:/home/ec2-user/` | 로컬 PowerShell |
+| 4 | `pkill -f "login-crud"` | EC2 SSH |
+| 5 | `nohup java -jar /home/ec2-user/login-crud-0.0.1-SNAPSHOT.jar &` | EC2 SSH |
+
+#### DB 데이터가 바뀐 경우에만 추가
+
+```text
+1. 로컬 DB 백업
+2. EC2에 DB 복원
+3. 위 코드 재배포 순서 진행
+```
+
+---
+
+### 💡 배운 점
+
+- `scp`는 로컬 PowerShell에서 실행한다. EC2 SSH에서 실행하는 명령어가 아니다.
+- `pkill`, `nohup java -jar`는 EC2 SSH에서 실행한다.
+- 코드만 수정했을 때는 DB를 건드릴 필요가 없다. JAR 파일만 다시 올리면 된다.
+- DB는 EC2에 그대로 유지되므로 코드 재배포 시 데이터가 사라지지 않는다.
+
+| 명령어 | 실행 위치 |
+|--------|-----------|
+| `scp` | 💻 로컬 PowerShell |
+| `./gradlew build` | 💻 로컬 PowerShell |
+| `pkill -f` | 🖥️ EC2 SSH |
+| `nohup java -jar` | 🖥️ EC2 SSH |
+| `tail -f nohup.out` | 🖥️ EC2 SSH |
+
+</details>
+
