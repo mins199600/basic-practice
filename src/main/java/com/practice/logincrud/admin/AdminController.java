@@ -18,7 +18,7 @@ public class AdminController {
     //관리자 페이지 이동
     @GetMapping("/admin")
     public String admin() {
-        return "/admin/admin-login";
+        return "admin/admin-login";
     }
 
     //관리자 회원가입 페이지 이동
