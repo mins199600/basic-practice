@@ -60,12 +60,28 @@
           AND deleted = 0
     </update>
 
-    <!--전체 회원 수-->
     <!-- 전체 회원 수 (탈퇴 제외) -->
     <select id="getTotalMemberCount" resultType="int">
         SELECT COUNT(*)
         FROM member
         WHERE deleted = 0
+    </select>
+
+    <!-- 전체 회원 목록 -->
+    <select id="getAllMembers" resultType="com.practice.logincrud.member.UserDto">
+        SELECT id, email, nickname AS nickName, role, deleted
+        FROM member
+        WHERE deleted = 0
+        ORDER BY id DESC
+    </select>
+
+    <!-- 최근 가입 회원 5명 -->
+    <select id="getRecentMembers" resultType="com.practice.logincrud.member.UserDto">
+        SELECT id, email, nickname AS nickName, role, deleted
+        FROM member
+        WHERE deleted = 0
+        ORDER BY id DESC
+        LIMIT 5
     </select>
 
 </mapper>

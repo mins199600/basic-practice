@@ -82,7 +82,6 @@
     where id = #{id}
     </delete>
 
-    <!--페이지네이션-->
     <!-- 페이지네이션 + 필터 -->
     <select id="getMyBoardList" resultType="com.practice.logincrud.board.BoardDto">
         SELECT

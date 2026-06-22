@@ -3,6 +3,8 @@ package com.practice.logincrud.member;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 @Mapper
 public interface MemberMapper {
 
@@ -27,4 +29,11 @@ public interface MemberMapper {
 
     //전체 회원 수
     int getTotalMemberCount();
+
+    // 전체 회원 목록 조회
+    List<UserDto> getAllMembers();
+
+    // 최근 가입 회원 5명
+    List<UserDto> getRecentMembers();
+
 }

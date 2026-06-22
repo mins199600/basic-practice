@@ -30,6 +30,9 @@ public class AdminDashboardController {
         model.addAttribute("totalMember", totalMember);
         model.addAttribute("totalNotice", totalNotice);
         model.addAttribute("activePopupCount", activePopupCount);
+        model.addAttribute("memberList",       memberService.getAllMembers());    // 전체 회원
+        model.addAttribute("recentMembers",    memberService.getRecentMembers()); // 최근 가입 회원 5명
+        model.addAttribute("boardList",        boardService.findAll());           // 전체 게시글
 
         log.info("totalBoard: " + totalBoard);
         log.info("totalMember: " + totalMember);
@@ -37,5 +40,7 @@ public class AdminDashboardController {
 
         return "admin/dashboard";
     }
+
+
 
 }

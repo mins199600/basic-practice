@@ -26,14 +26,6 @@ public class MemberController {
         return "main";
     }
 
-    // 홈 페이지
-    @GetMapping("/home")
-    public String homePage(HttpSession session, Model model) {
-        String nickName = (String) session.getAttribute("nickName");
-        model.addAttribute("nickName", nickName);
-        return "home";
-    }
-
 
     //로그인
     @PostMapping("/login")

@@ -6,6 +6,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Slf4j
 public class MemberService {
@@ -89,6 +91,15 @@ public class MemberService {
     public int getTotalMemberCount() {
         return memberMapper.getTotalMemberCount();
     }
+
+    public List<UserDto> getAllMembers() {
+        return memberMapper.getAllMembers();
+    }
+
+    public List<UserDto> getRecentMembers() {
+        return memberMapper.getRecentMembers();
+    }
+
 
 
 }
