@@ -9,8 +9,11 @@ import java.util.Map;
 @Mapper
 public interface BoardMapper {
 
-    //전체 게시글 수
+    //전체 게시글 수(필터 없음)
     int getMyBoardTotalCount();
+
+    //전체 게시글 수(필터 적용)
+    int getMyBoardTotalCountByFilter(@Param("pageDto") PageDto pageDto);
 
     //전체조회
     List<BoardDto> findAll();
@@ -27,7 +30,7 @@ public interface BoardMapper {
     //게시글 삭제
     void delete(Long id);
 
-    // 페이징 추가
+    // 페이징 추가 + 필터
     List<BoardDto> getMyBoardList(@Param("pageDto") PageDto pageDto);
 
     //검색어
@@ -36,7 +39,8 @@ public interface BoardMapper {
     // 검색 결과 총 개수
     int getBoardSearchCount(Map<String, Object> params);
 
-    int getMyBoardTotalCount(PageDto pageDto);
+    // 조회수 증가
+    void increaseViewCount(@Param("id") Long id);
 
 
 }

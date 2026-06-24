@@ -114,10 +114,21 @@
         LIMIT #{pageDto.pageSize} OFFSET #{pageDto.offset}
     </select>
 
-    <!-- 전체 게시글 수-->
+    <!-- 전체 게시글 수(필터 없음) -->
     <select id="getMyBoardTotalCount" resultType="int">
         SELECT COUNT(*)
         FROM board
+    </select>
+
+    <!--전체 게시글 수(필터 적용)-->
+    <select id="getMyBoardTotalCountByFilter" resultType="int">
+        SELECT COUNT(*)
+        FROM board b
+        <where>
+            <if test="pageDto.category != null and pageDto.category != ''">
+                AND b.category = #{pageDto.category}
+            </if>
+        </where>
     </select>
 
     <!-- 검색어 처리 -->
@@ -173,6 +184,13 @@
             </if>
         </where>
     </select>
+
+    <!--조회수 증가-->
+    <update id="increaseViewCount" parameterType="long">
+        UPDATE board
+        SET view_count = view_count + 1
+        WHERE id = #{id}
+    </update>
 
 
 </mapper>

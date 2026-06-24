@@ -24,9 +24,14 @@ public class BoardService {
         return boardMapper.getMyBoardList(pageDto);
     }
 
-    // 전체 게시글 수
+    // 전체 게시글 수(필터 없음)
     public int getMyBoardTotalCount() {
         return boardMapper.getMyBoardTotalCount();
+    }
+
+    //전체 게시글 수(필터 적용)
+    public int getMyBoardTotalCountByFilter(PageDto pageDto) {
+        return boardMapper.getMyBoardTotalCountByFilter(pageDto);
     }
 
     //상세조회
@@ -59,7 +64,10 @@ public class BoardService {
         return boardMapper.getBoardSearchCount(params);
     }
 
-    public int getMyBoardTotalCount(PageDto pageDto) {
-        return boardMapper.getMyBoardTotalCount(pageDto);
+    // 조회수 증가
+    public void increaseViewCount(Long id) {
+        boardMapper.increaseViewCount(id);
     }
+
+
 }

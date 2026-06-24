@@ -49,6 +49,7 @@ public class BoardController {
 
             boardList = boardService.getBoardList(params);
             totalCount = boardService.getBoardSearchCount(params);
+
         } else {
 
             //검색어 없을 때 -> 필터 적용 조회
@@ -57,7 +58,7 @@ public class BoardController {
 
             // 검색어 없을 때 → 전체 조회
             boardList = boardService.getMyBoardList(pageDto);
-            totalCount = boardService.getMyBoardTotalCount();
+            totalCount = boardService.getMyBoardTotalCountByFilter(pageDto);
         }
 
         int totalPage = (int) Math.ceil((double) totalCount / pageDto.getPageSize());
@@ -86,6 +87,8 @@ public class BoardController {
     public String detail(@PathVariable Long id, Model model, HttpSession session) {
 
         Long memberId = (Long) session.getAttribute("memberId");
+
+        boardService.increaseViewCount(id); // 조회수 증가
 
         BoardDto board = boardService.findById(id);
         if (board == null) {
