@@ -18,6 +18,9 @@ public class MemberController {
     @Autowired
     MemberService memberService;
 
+    @Autowired
+    EmailAuthService emailAuthService;
+
     @GetMapping("/")
     public String home(@RequestParam(required = false) String error, Model model) {
         if (error != null) {
@@ -79,20 +82,61 @@ public class MemberController {
 
     //회원가입 로직
     @PostMapping("/signup")
-    public String signup(@RequestParam String email, @RequestParam String password,  @RequestParam(required = false) String nickName, Model model) {
-        boolean result = memberService.join(email, password, nickName);
-        log.info("회원가입 로직 지나가요~~");
+    public String signup(@RequestParam String email,
+                         @RequestParam String password,
+                         @RequestParam(required = false) String nickName,
+                         Model model,
+                         HttpSession httpSession) {
 
-        if (result) {
-            log.info("회원가입 성공");
-            return "redirect:/";
+        log.info("회원가입 로직 진입");
 
-        } else {
-            log.info("회원가입 오류");
-            model.addAttribute("errorMessage", "이미 사용 중인 이메일입니다.");
+        // 1) 이메일 인증 여부 체크
+        if (!emailAuthService.isVerified(email, httpSession)) {
+            model.addAttribute("errorMessage", "이메일 인증을 먼저 완료해주세요.");
             return "signup";
         }
 
+        // 2) 회원가입
+        boolean result = memberService.join(email, password, nickName);
+
+        if (result) {
+            // 3) 가입 끝나면 인증정보 삭제
+            emailAuthService.clear(email, httpSession);
+            log.info("회원가입 성공");
+            return "redirect:/";
+        } else {
+            log.info("회원가입 오류 - 중복 이메일");
+            model.addAttribute("errorMessage", "이미 사용 중인 이메일입니다.");
+            return "signup";
+        }
+    }
+
+    //이메일 전송
+    @PostMapping("/email/send-code")
+    @ResponseBody
+    public Map<String, Object> sendCode(@RequestParam String email, HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            emailAuthService.sendCode(email, session);
+            result.put("success", true);
+            result.put("message", "인증번호를 발송했습니다.");
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", "메일 발송 실패: 설정을 확인하세요.");
+        }
+        return result;
+    }
+
+    @PostMapping("/email/verify-code")
+    @ResponseBody
+    public Map<String, Object> verifyCode(@RequestParam String email,
+                                          @RequestParam String code,
+                                          HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        boolean ok = emailAuthService.verifyCode(email, code, session);
+        result.put("success", ok);
+        result.put("message", ok ? "이메일 인증 완료" : "인증번호가 올바르지 않거나 만료되었습니다.");
+        return result;
     }
 
     //회원정보 수정 페이지 이동

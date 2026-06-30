@@ -25,7 +25,9 @@ public class WebConfig implements WebMvcConfigurer {
                         "/css/**",          // 로그인 여부와 상관 없기 때문에 브라우저가 불러와야 화면에 정상적으로 표시됨
                         "/js/**",
                         "/images/**",
-                        "/api/user-info"    //사용자 정보를 JS에서 호출하는데, 로그인 안 된 상태에서도 로그인 안함을 반환 해야 하기 때문에
+                        "/api/user-info",    //사용자 정보를 JS에서 호출하는데, 로그인 안 된 상태에서도 로그인 안함을 반환 해야 하기 때문에
+                        "/email/send-code",
+                        "/email/verify-code"
                 );
 
         // 2. 관리자 전용 인터셉터 (ADMIN role 체크)
