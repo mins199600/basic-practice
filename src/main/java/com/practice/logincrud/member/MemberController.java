@@ -89,9 +89,11 @@ public class MemberController {
                          HttpSession httpSession) {
 
         log.info("회원가입 로직 진입");
+        log.info("회원가입 요청 email={}", email);
 
         // 1) 이메일 인증 여부 체크
         if (!emailAuthService.isVerified(email, httpSession)) {
+            log.warn("회원가입 차단 - 이메일 미인증 email={}", email);
             model.addAttribute("errorMessage", "이메일 인증을 먼저 완료해주세요.");
             return "signup";
         }
@@ -102,10 +104,10 @@ public class MemberController {
         if (result) {
             // 3) 가입 끝나면 인증정보 삭제
             emailAuthService.clear(email, httpSession);
-            log.info("회원가입 성공");
+            log.info("회원가입 성공 email={}", email);
             return "redirect:/";
         } else {
-            log.info("회원가입 오류 - 중복 이메일");
+            log.warn("회원가입 실패 - 중복 이메일 email={}", email);
             model.addAttribute("errorMessage", "이미 사용 중인 이메일입니다.");
             return "signup";
         }
@@ -116,14 +118,34 @@ public class MemberController {
     @ResponseBody
     public Map<String, Object> sendCode(@RequestParam String email, HttpSession session) {
         Map<String, Object> result = new HashMap<>();
+
         try {
+
+            UserDto existing = memberService.findUserByEmail(email);
+            if (existing != null) {
+                log.warn("인증코드 발송 차단 - 이미 가입된 이메일 email={}", email);
+                result.put("success", false);
+                result.put("message", "이미 가입된 이메일입니다.");
+                return result;
+            }
+        } catch (Exception e) {
+            log.error("중복 이메일 조회 실패(DB 연결 문제) email={}", email, e);
+            result.put("success", false);
+            result.put("message", "서버 DB 연결 오류입니다. 잠시 후 다시 시도해주세요.");
+            return result;
+        }
+
+        try {
+
             emailAuthService.sendCode(email, session);
             result.put("success", true);
             result.put("message", "인증번호를 발송했습니다.");
         } catch (Exception e) {
+            log.error("메일 발송 실패 email={}", email, e);
             result.put("success", false);
-            result.put("message", "메일 발송 실패: 설정을 확인하세요.");
+            result.put("message", "메일 발송 실패: 메일 설정을 확인하세요.");
         }
+
         return result;
     }
 

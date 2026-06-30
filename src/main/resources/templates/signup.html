@@ -8,7 +8,7 @@
     <link rel="stylesheet" type="text/css" href="/css/signup.css">
 
 </head>
-<body>
+<body th:attr="data-error-message=${errorMessage}">
     <div class="signup-page">
         <div class="signup-card">
             <h1 class="signup-title">회원가입</h1>
@@ -18,6 +18,19 @@
                 <div class="signup-input-group">
                     <label for="email" class="signup-label">이메일</label>
                     <input type="email" id="email" name="email" class="signup-input" placeholder="example@email.com" required>
+                </div>
+
+                <div class="signup-input-group">
+                    <button type="button" class="signup-submit-button" onclick="sendCode()">인증번호 발송</button>
+                </div>
+
+                <div class="signup-input-group">
+                    <label for="code" class="signup-label">인증번호</label>
+                    <input type="text" id="code" class="signup-input" placeholder="6자리 인증번호 입력">
+                </div>
+
+                <div class="signup-input-group">
+                    <button type="button" class="signup-submit-button" onclick="verifyCode()">인증번호 확인</button>
                 </div>
 
                 <div class="signup-input-group">
@@ -38,9 +51,7 @@
         </div>
     </div>
 
-    <script th:if="${errorMessage}" th:inline="javascript">
-        alert([[${errorMessage}]]);
-    </script>
+    <script src="/js/signup.js"></script>
 
 </body>
 </html>

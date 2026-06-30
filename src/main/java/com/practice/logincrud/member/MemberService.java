@@ -37,7 +37,7 @@ public class MemberService {
     public boolean join(String email, String password, String nickName) {
         int count = memberMapper.countByEmail(email);
         if (count > 0) {
-
+            log.warn("join 실패 - 중복 이메일 email={}", email);
             return false;
         }
         UserDto user = new UserDto();
@@ -45,6 +45,8 @@ public class MemberService {
         user.setPassword(passwordEncoder.encode(password));
         user.setNickName(nickName);
         memberMapper.insertMember(user);
+
+        log.info("join 성공 email={}", email);
         return true;
 
     }
