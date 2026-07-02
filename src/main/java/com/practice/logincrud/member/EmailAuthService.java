@@ -31,7 +31,7 @@ public class EmailAuthService {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, false, "UTF-8");
         helper.setTo(email);
-        helper.setSubject("[LOGIN-CRUD] 이메일 인증번호");
+        helper.setSubject("이메일 인증번호");
         helper.setText("인증번호는 [" + code + "] 입니다. 5분 내 입력해주세요.");
         mailSender.send(message);
     }

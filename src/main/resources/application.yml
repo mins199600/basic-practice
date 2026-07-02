@@ -6,6 +6,15 @@ spring:
     prefix: classpath:/templates/
     suffix: .html
     cache: false
+
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://127.0.0.1:3306/easy?useSSL=false
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    hikari:
+      maximum-pool-size: 20
+
   mail:
     host: smtp.gmail.com
     port: 587
@@ -21,15 +30,6 @@ spring:
           connectiontimeout: 5000
           timeout: 5000
           writetimeout: 5000
-
-
-  datasource:
-    driver-class-name: org.mariadb.jdbc.Driver
-    url: jdbc:mariadb://localhost:3306/easy?characterEncoding=UTF-8&serverTimezone=Asia/Seoul
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
-    hikari:
-      maximum-pool-size: 100
 
 mybatis:
   mapper-locations: classpath:mapper/*.xml
