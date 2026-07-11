@@ -36,9 +36,6 @@ public interface MemberMapper {
     // 최근 가입 회원 5명
     List<UserDto> getRecentMembers();
 
-    //아이디 찾기 - 닉네임으로 이메일 조회
-    String findEmailByNickname(@Param("nickname") String nickname);
-
     //비밀번호 재설정
     void updatePassword(@Param("email") String email, @Param("password") String password);
 

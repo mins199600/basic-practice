@@ -172,69 +172,25 @@ public class MemberController {
         return "member/find-id";
     }
 
-    //아이디 찾기용 인증코드 발송 (닉네임으로 매칭되는 이메일에 발송, 이메일 자체는 노출하지 않음)
+    //아이디 찾기용 인증코드 발송 - 입력한 이메일이 가입된 계정인 경우에만 발송
     @PostMapping("/find-id/send-code")
     @ResponseBody
-    public Map<String, Object> sendFindIdCode(@RequestParam String nickname, HttpSession session) {
-        Map<String, Object> result = new HashMap<>();
-
-        String email;
-        try {
-            email = memberService.findEmailByNickname(nickname);
-        } catch (Exception e) {
-            log.error("아이디 찾기 이메일 조회 실패(DB 연결 문제) nickname={}", nickname, e);
-            result.put("success", false);
-            result.put("message", "서버 DB 연결 오류입니다. 잠시 후 다시 시도해주세요.");
-            return result;
-        }
-
-        if (email == null) {
-            log.warn("아이디 찾기 인증코드 발송 차단 - 일치하는 계정 없음 nickname={}", nickname);
-            result.put("success", false);
-            result.put("message", "일치하는 계정이 없습니다.");
-            return result;
-        }
-
-        try {
-            emailAuthService.sendCode(email, session);
-            result.put("success", true);
-            result.put("message", "가입된 이메일로 인증번호를 발송했습니다.");
-        } catch (Exception e) {
-            log.error("아이디 찾기 메일 발송 실패 nickname={}", nickname, e);
-            result.put("success", false);
-            result.put("message", "메일 발송 실패: 메일 설정을 확인하세요.");
-        }
-
-        return result;
+    public Map<String, Object> sendFindIdCode(@RequestParam String email, HttpSession session) {
+        return sendCodeToRegisteredEmail(email, session);
     }
 
-    //아이디 찾기용 인증코드 확인 - 인증 성공 시에만 이메일 공개
+    //아이디 찾기용 인증코드 확인 - 인증 성공 시 마스킹 없이 이메일 그대로 반환
     @PostMapping("/find-id/verify-code")
     @ResponseBody
-    public Map<String, Object> verifyFindIdCode(@RequestParam String nickname,
+    public Map<String, Object> verifyFindIdCode(@RequestParam String email,
                                                 @RequestParam String code,
                                                 HttpSession session) {
-        Map<String, Object> result = new HashMap<>();
-
-        String email = memberService.findEmailByNickname(nickname);
-        if (email == null) {
-            result.put("success", false);
-            result.put("message", "일치하는 계정이 없습니다.");
-            return result;
-        }
-
-        boolean ok = emailAuthService.verifyCode(email, code, session);
-        result.put("success", ok);
-
-        if (ok) {
-            result.put("message", "이메일 인증 완료");
+        Map<String, Object> result = verifyRegisteredEmailCode(email, code, session);
+        if (Boolean.TRUE.equals(result.get("success"))) {
             result.put("email", email);
             emailAuthService.clear(email, session);
-            log.info("아이디 찾기 성공 nickname={}", nickname);
-        } else {
-            result.put("message", "인증번호가 올바르지 않거나 만료되었습니다.");
+            log.info("아이디 찾기 성공 email={}", email);
         }
-
         return result;
     }
 
@@ -248,6 +204,20 @@ public class MemberController {
     @PostMapping("/password/send-code")
     @ResponseBody
     public Map<String, Object> sendPasswordResetCode(@RequestParam String email, HttpSession session) {
+        return sendCodeToRegisteredEmail(email, session);
+    }
+
+    //비밀번호 재설정용 인증코드 확인
+    @PostMapping("/password/verify-code")
+    @ResponseBody
+    public Map<String, Object> verifyPasswordResetCode(@RequestParam String email,
+                                                        @RequestParam String code,
+                                                        HttpSession session) {
+        return verifyRegisteredEmailCode(email, code, session);
+    }
+
+    //가입된 이메일에 한해 인증코드 발송 (아이디 찾기 / 비밀번호 찾기 공용)
+    private Map<String, Object> sendCodeToRegisteredEmail(String email, HttpSession session) {
         Map<String, Object> result = new HashMap<>();
 
         UserDto existing;
@@ -261,7 +231,7 @@ public class MemberController {
         }
 
         if (existing == null) {
-            log.warn("비밀번호 재설정 인증코드 발송 차단 - 가입되지 않은 이메일 email={}", email);
+            log.warn("인증코드 발송 차단 - 가입되지 않은 이메일 email={}", email);
             result.put("success", false);
             result.put("message", "가입된 이메일이 아닙니다.");
             return result;
@@ -272,7 +242,7 @@ public class MemberController {
             result.put("success", true);
             result.put("message", "인증번호를 발송했습니다.");
         } catch (Exception e) {
-            log.error("비밀번호 재설정 메일 발송 실패 email={}", email, e);
+            log.error("인증코드 메일 발송 실패 email={}", email, e);
             result.put("success", false);
             result.put("message", "메일 발송 실패: 메일 설정을 확인하세요.");
         }
@@ -280,12 +250,10 @@ public class MemberController {
         return result;
     }
 
-    //비밀번호 재설정용 인증코드 확인
-    @PostMapping("/password/verify-code")
-    @ResponseBody
-    public Map<String, Object> verifyPasswordResetCode(@RequestParam String email,
-                                                        @RequestParam String code,
-                                                        HttpSession session) {
+    //인증코드 확인 (아이디 찾기 / 비밀번호 찾기 공용)
+    //주의: 비밀번호 찾기는 /reset-password에서 isVerified()를 다시 확인해야 하므로
+    //      여기서는 clear()를 호출하지 않는다. clear()는 각 흐름이 끝나는 시점에 호출한다.
+    private Map<String, Object> verifyRegisteredEmailCode(String email, String code, HttpSession session) {
         Map<String, Object> result = new HashMap<>();
         boolean ok = emailAuthService.verifyCode(email, code, session);
         result.put("success", ok);

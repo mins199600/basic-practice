@@ -102,11 +102,6 @@ public class MemberService {
         return memberMapper.getRecentMembers();
     }
 
-    //아이디 찾기 - 닉네임으로 이메일 조회 (이메일 인증코드 발송/검증용 내부 조회)
-    public String findEmailByNickname(String nickname) {
-        return memberMapper.findEmailByNickname(nickname);
-    }
-
     //비밀번호 재설정
     public void resetPassword(String email, String newPassword) {
         memberMapper.updatePassword(email, passwordEncoder.encode(newPassword));
