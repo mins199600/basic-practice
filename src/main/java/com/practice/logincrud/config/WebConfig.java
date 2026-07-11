@@ -29,6 +29,8 @@ public class WebConfig implements WebMvcConfigurer {
                         "/email/send-code",
                         "/email/verify-code",
                         "/find-id",          // 아이디 찾기 -> 로그인 전 사용자가 접근해야 함
+                        "/find-id/send-code",
+                        "/find-id/verify-code",
                         "/find-password",    // 비밀번호 찾기
                         "/reset-password",   // 비밀번호 재설정 처리
                         "/password/send-code",

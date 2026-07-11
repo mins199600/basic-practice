@@ -172,17 +172,70 @@ public class MemberController {
         return "member/find-id";
     }
 
-    //아이디 찾기
-    @PostMapping("/find-id")
-    public String findId(@RequestParam String nickname, Model model) {
-        String maskedEmail = memberService.findMaskedEmailByNickname(nickname);
+    //아이디 찾기용 인증코드 발송 (닉네임으로 매칭되는 이메일에 발송, 이메일 자체는 노출하지 않음)
+    @PostMapping("/find-id/send-code")
+    @ResponseBody
+    public Map<String, Object> sendFindIdCode(@RequestParam String nickname, HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
 
-        if (maskedEmail != null) {
-            model.addAttribute("foundEmail", maskedEmail);
-        } else {
-            model.addAttribute("error", "일치하는 계정이 없습니다.");
+        String email;
+        try {
+            email = memberService.findEmailByNickname(nickname);
+        } catch (Exception e) {
+            log.error("아이디 찾기 이메일 조회 실패(DB 연결 문제) nickname={}", nickname, e);
+            result.put("success", false);
+            result.put("message", "서버 DB 연결 오류입니다. 잠시 후 다시 시도해주세요.");
+            return result;
         }
-        return "member/find-id";
+
+        if (email == null) {
+            log.warn("아이디 찾기 인증코드 발송 차단 - 일치하는 계정 없음 nickname={}", nickname);
+            result.put("success", false);
+            result.put("message", "일치하는 계정이 없습니다.");
+            return result;
+        }
+
+        try {
+            emailAuthService.sendCode(email, session);
+            result.put("success", true);
+            result.put("message", "가입된 이메일로 인증번호를 발송했습니다.");
+        } catch (Exception e) {
+            log.error("아이디 찾기 메일 발송 실패 nickname={}", nickname, e);
+            result.put("success", false);
+            result.put("message", "메일 발송 실패: 메일 설정을 확인하세요.");
+        }
+
+        return result;
+    }
+
+    //아이디 찾기용 인증코드 확인 - 인증 성공 시에만 이메일 공개
+    @PostMapping("/find-id/verify-code")
+    @ResponseBody
+    public Map<String, Object> verifyFindIdCode(@RequestParam String nickname,
+                                                @RequestParam String code,
+                                                HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+
+        String email = memberService.findEmailByNickname(nickname);
+        if (email == null) {
+            result.put("success", false);
+            result.put("message", "일치하는 계정이 없습니다.");
+            return result;
+        }
+
+        boolean ok = emailAuthService.verifyCode(email, code, session);
+        result.put("success", ok);
+
+        if (ok) {
+            result.put("message", "이메일 인증 완료");
+            result.put("email", email);
+            emailAuthService.clear(email, session);
+            log.info("아이디 찾기 성공 nickname={}", nickname);
+        } else {
+            result.put("message", "인증번호가 올바르지 않거나 만료되었습니다.");
+        }
+
+        return result;
     }
 
     //비밀번호 찾기 페이지 이동

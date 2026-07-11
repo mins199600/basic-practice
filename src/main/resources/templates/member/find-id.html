@@ -12,34 +12,46 @@
     <div class="login-card">
 
         <h1 class="login-title">아이디 찾기</h1>
-        <p class="login-description">가입 시 등록한 닉네임을 입력하세요.</p>
+        <p class="login-description">가입 시 등록한 닉네임을 입력하고 이메일 인증을 완료하면 아이디를 알려드립니다.</p>
 
-        <form class="login-form" action="/find-id" method="post">
+        <div class="login-form">
             <div class="login-input-group">
                 <label class="login-label" for="nickname">닉네임</label>
                 <input type="text"
                        id="nickname"
-                       name="nickname"
                        class="login-input"
                        placeholder="닉네임을 입력하세요">
             </div>
 
-            <button type="submit" class="login-button">아이디 찾기</button>
-        </form>
+            <div class="login-input-group">
+                <button type="button" class="login-button" onclick="sendCode()">인증번호 발송</button>
+            </div>
 
-        <!-- 찾기 성공 -->
-        <div class="find-result-box" th:if="${foundEmail}">
-            <span class="find-result-label">회원님의 아이디</span>
-            <span class="find-result-value" th:text="${foundEmail}"></span>
+            <div class="login-input-group">
+                <label class="login-label" for="code">인증번호</label>
+                <input type="text"
+                       id="code"
+                       class="login-input"
+                       placeholder="6자리 인증번호 입력">
+            </div>
+
+            <div class="login-input-group">
+                <button type="button" class="login-button" onclick="verifyCode()">인증번호 확인</button>
+            </div>
         </div>
 
-        <!-- 에러 -->
-        <p class="error-message" th:if="${error}" th:text="${error}"></p>
+        <!-- 찾기 성공 -->
+        <div class="find-result-box" id="resultBox" style="display:none;">
+            <span class="find-result-label">회원님의 아이디</span>
+            <span class="find-result-value" id="resultValue"></span>
+        </div>
 
         <a href="/" class="join-button">로그인으로 돌아가기</a>
 
     </div>
 </div>
+
+<script src="/js/find-id.js"></script>
 
 </body>
 </html>
