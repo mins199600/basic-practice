@@ -1,5 +1,7 @@
 package com.practice.logincrud.board;
 
+import com.practice.logincrud.attendance.AttendanceService;
+import com.practice.logincrud.certification.CertificationService;
 import com.practice.logincrud.comment.CommentDto;
 import com.practice.logincrud.comment.CommentService;
 import jakarta.servlet.http.HttpSession;
@@ -23,6 +25,8 @@ public class BoardController {
 
     private final BoardService boardService;
     private final CommentService commentService;
+    private final CertificationService certificationService;
+    private final AttendanceService attendanceService;
 
     // 홈 = 게시글 목록 + 페이지네이션
     @GetMapping("/home")
@@ -35,8 +39,22 @@ public class BoardController {
 
 
         String nickName = (String) session.getAttribute("nickName");
+        Long memberId = (Long) session.getAttribute("memberId");
         List<BoardDto> boardList;
         int totalCount;
+
+        // 자격증 / 출석 대시보드 데이터
+        int certTotalCount = certificationService.getTotalCount(memberId);
+        int certPassRate = certificationService.getPassRate(memberId);
+        boolean attendedToday = attendanceService.hasAttendedToday(memberId);
+        int attendanceStreak = attendanceService.getCurrentStreak(memberId);
+        int attendanceRate = attendanceService.getAttendanceRate(memberId);
+
+        model.addAttribute("certTotalCount", certTotalCount);
+        model.addAttribute("certPassRate", certPassRate);
+        model.addAttribute("attendedToday", attendedToday);
+        model.addAttribute("attendanceStreak", attendanceStreak);
+        model.addAttribute("attendanceRate", attendanceRate);
 
         if (keyword != null && !keyword.trim().isEmpty()) {
 

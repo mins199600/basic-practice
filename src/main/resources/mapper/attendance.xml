@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.practice.logincrud.attendance.AttendanceMapper">
+
+    <!-- 출석 체크인 -->
+    <insert id="insert">
+        INSERT INTO attendance(member_id, attend_date)
+        VALUES (#{memberId}, #{attendDate})
+    </insert>
+
+    <!-- 해당 날짜 출석 여부 -->
+    <select id="existsOnDate" resultType="int">
+        SELECT COUNT(*)
+        FROM attendance
+        WHERE member_id = #{memberId}
+          AND attend_date = #{attendDate}
+    </select>
+
+    <!-- 기간 내 출석 날짜 목록 -->
+    <select id="findDatesBetween" resultType="java.time.LocalDate">
+        SELECT attend_date
+        FROM attendance
+        WHERE member_id = #{memberId}
+          AND attend_date BETWEEN #{startDate} AND #{endDate}
+        ORDER BY attend_date
+    </select>
+
+    <!-- 특정 날짜 이후 출석 횟수 -->
+    <select id="countSince" resultType="int">
+        SELECT COUNT(*)
+        FROM attendance
+        WHERE member_id = #{memberId}
+          AND attend_date &gt;= #{sinceDate}
+    </select>
+
+</mapper>

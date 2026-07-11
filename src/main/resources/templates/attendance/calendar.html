@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>출석 체크</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/css/home.css">
+    <link rel="stylesheet" type="text/css" href="/css/attendance.css">
+</head>
+<body>
+
+<div class="board-container">
+    <div class="board-header">
+        <h2>출석 체크</h2>
+        <form th:action="@{/attendance/check-in}" method="post">
+            <input type="hidden" name="redirectTo" value="/attendance">
+            <button type="submit" class="write-button" th:disabled="${attendedToday}"
+                    th:text="${attendedToday} ? '오늘 출석 완료' : '오늘 출석하기'">
+                오늘 출석하기
+            </button>
+        </form>
+    </div>
+
+    <div class="attendance-summary">
+        <div class="attendance-summary-item">
+            <span class="attendance-summary-value" th:text="${streak}">0</span>
+            <span class="attendance-summary-label">연속 출석일</span>
+        </div>
+        <div class="attendance-summary-item">
+            <span class="attendance-summary-value" th:text="${rate} + '%'">0%</span>
+            <span class="attendance-summary-label">최근 30일 출석률</span>
+        </div>
+    </div>
+
+    <div class="attendance-grid">
+        <div th:each="i : ${#numbers.sequence(0, 34)}"
+             class="attendance-box"
+             th:classappend="${attendedSet.contains(start.plusDays(i))} ? ' attendance-box--filled' : ''"
+             th:title="${start.plusDays(i)}">
+        </div>
+    </div>
+    <p class="attendance-hint">최근 35일간의 출석 현황이에요. 칸이 채워질수록 꾸준히 학습하고 있다는 뜻!</p>
+</div>
+
+</body>
+</html>

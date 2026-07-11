@@ -1,173 +1,252 @@
-body {
-    margin: 0;
-    background-color: #f5f6f8;
-    font-family: Arial, sans-serif;
+/* =========================================================
+   main.css
+   - 회원가입 페이지 스타일
+   - 네이비 + 그린 + 블루그레이 톤
+   - 이메일 발송 버튼 크기 축소
+========================================================= */
+
+:root {
+    --bg: #eef3f7;
+    --surface: #ffffff;
+
+    --text: #11263f;
+    --text-muted: #607286;
+
+    --line: #d7e0ea;
+    --line-strong: #c4d0dd;
+
+    --navy: #1b3556;
+    --navy-strong: #142947;
+    --navy-soft: #eaf0f8;
+
+    --green: #1f8a68;
+    --green-strong: #176d52;
+    --green-soft: #eaf7f2;
+
+    --bluegray: #5f7893;
+    --bluegray-soft: #edf2f7;
+
+    --danger: #d64545;
+    --danger-soft: #fef2f2;
+
+    --success: #1f8a68;
+    --success-soft: #effaf5;
+
+    --radius-sm: 10px;
+    --radius-md: 14px;
+    --radius-lg: 18px;
+
+    --shadow-md: 0 14px 32px rgba(17, 38, 63, 0.12);
+    --focus: 0 0 0 3px rgba(95, 120, 147, 0.22);
 }
 
-/* 로그인 페이지 전체 영역 */
-.login-page {
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    color: var(--text);
+    font-family: "Pretendard", "Noto Sans KR", Arial, sans-serif;
+    background:
+            radial-gradient(circle at 12% 8%, #e7eef7 0%, transparent 35%),
+            radial-gradient(circle at 88% 0%, #e7f3ee 0%, transparent 32%),
+            var(--bg);
+}
+
+/* 회원가입 페이지 전체 영역 */
+.signup-page {
     min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
+    padding: 24px;
 }
 
-/* 로그인 카드 박스 */
-.login-card {
-    width: 420px;
-    padding: 40px;
-    background-color: #ffffff;
-    border-radius: 16px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+/* 회원가입 카드 박스 */
+.signup-card {
+    width: 100%;
+    max-width: 480px;
+    padding: 36px;
+    background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
 }
 
-/* 로그인 제목 */
-.login-title {
+/* 회원가입 제목 */
+.signup-title {
     margin: 0;
     text-align: center;
-    font-size: 28px;
-    font-weight: 700;
-    color: #222222;
+    font-size: 30px;
+    font-weight: 800;
+    letter-spacing: -0.4px;
+    color: var(--navy-strong);
 }
 
-/* 로그인 안내 문구 */
-.login-description {
+/* 회원가입 안내 문구 */
+.signup-description {
     margin-top: 10px;
-    margin-bottom: 30px;
+    margin-bottom: 28px;
     text-align: center;
     font-size: 14px;
-    color: #777777;
+    color: var(--text-muted);
+    line-height: 1.5;
 }
 
-/* 로그인 form */
-.login-form {
+/* 회원가입 form */
+.signup-form {
     width: 100%;
 }
 
 /* input 묶음 */
-.login-input-group {
-    margin-bottom: 18px;
+.signup-input-group {
+    margin-bottom: 16px;
 }
 
 /* label */
-.login-label {
+.signup-label {
     display: block;
     margin-bottom: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    color: #333333;
+    font-size: 13px;
+    font-weight: 700;
+    color: #2e4867;
 }
 
 /* input */
-.login-input {
+.signup-input {
     width: 100%;
-    height: 48px;
+    height: 50px;
     padding: 0 14px;
-    border: 1px solid #dddddd;
-    border-radius: 8px;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-sm);
     font-size: 15px;
-    box-sizing: border-box;
+    background-color: #ffffff;
+    color: var(--text);
+    transition: all 0.18s ease;
 }
 
-.login-input:focus {
+.signup-input::placeholder {
+    color: #8da0b4;
+}
+
+.signup-input:focus {
     outline: none;
-    border-color: #0d6efd;
-    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
+    border-color: var(--bluegray);
+    box-shadow: var(--focus);
 }
 
-/* 로그인 버튼 */
-.login-button {
+/* 회원가입 완료 버튼 (네이비) */
+.signup-submit-button {
     width: 100%;
-    height: 48px;
+    height: 50px;
     margin-top: 8px;
-    border: none;
-    border-radius: 8px;
-    background-color: #0d6efd;
+    border: 1px solid var(--navy);
+    border-radius: var(--radius-sm);
+    background: linear-gradient(135deg, var(--navy), var(--navy-strong));
     color: white;
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 700;
+    letter-spacing: 0.2px;
     cursor: pointer;
+    transition: all 0.2s ease;
 }
 
-.login-button:hover {
-    background-color: #0b5ed7;
+.signup-submit-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 18px rgba(27, 53, 86, 0.24);
 }
 
-/* 회원가입 버튼 */
-.join-button {
+/* 로그인 페이지 이동 버튼 */
+.signup-login-button {
     display: block;
     width: 100%;
-    height: 48px;
-    margin-top: 12px;
+    height: 50px;
+    margin-top: 10px;
     line-height: 48px;
     text-align: center;
     text-decoration: none;
-    border: 1px solid #bbbbbb;
-    border-radius: 8px;
-    background-color: white;
-    color: #333333;
-    font-size: 16px;
+    border: 1px solid #b7c6d5;
+    border-radius: var(--radius-sm);
+    background-color: #ffffff;
+    color: var(--bluegray);
+    font-size: 15px;
     font-weight: 700;
-    box-sizing: border-box;
+    transition: all 0.18s ease;
 }
 
-.join-button:hover {
-    background-color: #f1f1f1;
-    color: #333333;
+.signup-login-button:hover {
+    border-color: var(--navy);
+    background-color: var(--navy-soft);
+    color: var(--navy-strong);
 }
 
-/* 에러 메시지 */
-.error-message {
-    margin-top: 18px;
-    margin-bottom: 0;
-    text-align: center;
-    color: #dc3545;
-    font-size: 14px;
-    font-weight: 600;
-}
-
-/* 성공 메시지 */
-.success-message {
-    margin-top: 18px;
-    margin-bottom: 0;
-    text-align: center;
-    color: #198754;
-    font-size: 14px;
-    font-weight: 600;
-}
-
-/* 아이디 찾기 결과 박스 */
-.find-result-box {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
-    margin-top: 20px;
-    padding: 16px 18px;
-    background-color: #f1f8f4;
-    border: 1px solid #bfe3cc;
+/* 이메일 발송 버튼: 크기 축소 */
+.email-send-button,
+.signup-email-button,
+.send-email-button,
+button[name="sendEmail"],
+button[id*="email"],
+button[class*="email"] {
+    height: 40px;
+    padding: 0 12px;
     border-radius: 8px;
-    text-align: center;
-}
-
-.find-result-label {
     font-size: 13px;
-    color: #777777;
-}
-
-.find-result-value {
-    font-size: 18px;
     font-weight: 700;
-    color: #198754;
+    line-height: 38px;
 }
 
-/* 아이디/비밀번호 찾기 링크 묶음 */
-.find-links {
+/* 이메일 input + 버튼 같은 줄 구성용 (있으면 적용) */
+.email-row {
     display: flex;
     gap: 8px;
-    margin-top: 12px;
+}
+.email-row .signup-input {
+    flex: 1;
 }
 
-.find-links .join-button {
-    margin-top: 0;
+/* 회원가입 에러 메시지 */
+.signup-error-message {
+    margin-top: 16px;
+    margin-bottom: 0;
+    padding: 10px 12px;
+    text-align: center;
+    color: var(--danger);
+    background-color: var(--danger-soft);
+    border: 1px solid #f5c2c7;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+/* 회원가입 성공 메시지 */
+.signup-success-message {
+    margin-top: 16px;
+    margin-bottom: 0;
+    padding: 10px 12px;
+    text-align: center;
+    color: var(--success);
+    background-color: var(--success-soft);
+    border: 1px solid #bee6d7;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+/* 반응형 */
+@media (max-width: 520px) {
+    .signup-page {
+        padding: 16px;
+        align-items: flex-start;
+    }
+
+    .signup-card {
+        margin-top: 24px;
+        padding: 24px 20px;
+        border-radius: var(--radius-md);
+    }
+
+    .signup-title {
+        font-size: 26px;
+    }
 }

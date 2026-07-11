@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.practice.logincrud.certification.CertificationMapper">
+
+    <!-- 내 자격증 목록 -->
+    <select id="findByMemberId" resultType="com.practice.logincrud.certification.CertificationDto">
+        SELECT id, member_id, cert_name, exam_date, status, memo, created_at
+        FROM certification
+        WHERE member_id = #{memberId}
+          AND deleted = 0
+        ORDER BY id DESC
+    </select>
+
+    <!-- 단건 조회 -->
+    <select id="findById" resultType="com.practice.logincrud.certification.CertificationDto">
+        SELECT id, member_id, cert_name, exam_date, status, memo, created_at
+        FROM certification
+        WHERE id = #{id}
+          AND deleted = 0
+    </select>
+
+    <!-- 등록 -->
+    <insert id="insert" parameterType="com.practice.logincrud.certification.CertificationDto">
+        INSERT INTO certification(member_id, cert_name, exam_date, status, memo, deleted)
+        VALUES (#{memberId}, #{certName}, #{examDate}, #{status}, #{memo}, 0)
+    </insert>
+
+    <!-- 수정 -->
+    <update id="update" parameterType="com.practice.logincrud.certification.CertificationDto">
+        UPDATE certification
+        SET cert_name = #{certName},
+            exam_date = #{examDate},
+            status    = #{status},
+            memo      = #{memo}
+        WHERE id = #{id}
+          AND deleted = 0
+    </update>
+
+    <!-- 삭제 (soft delete) -->
+    <update id="delete">
+        UPDATE certification
+        SET deleted = 1
+        WHERE id = #{id}
+    </update>
+
+    <!-- 전체 개수 -->
+    <select id="countByMemberId" resultType="int">
+        SELECT COUNT(*)
+        FROM certification
+        WHERE member_id = #{memberId}
+          AND deleted = 0
+    </select>
+
+    <!-- 합격 개수 -->
+    <select id="countPassedByMemberId" resultType="int">
+        SELECT COUNT(*)
+        FROM certification
+        WHERE member_id = #{memberId}
+          AND status = '합격'
+          AND deleted = 0
+    </select>
+
+</mapper>

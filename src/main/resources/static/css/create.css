@@ -1,5 +1,53 @@
+/* =========================================================
+   create.css
+   - 게시글/자격증 작성·수정 폼 공통 스타일
+   - 네이비 + 그린 + 블루그레이 톤
+========================================================= */
+
+:root {
+    --bg: #eef3f7;
+    --surface: #ffffff;
+
+    --text: #11263f;
+    --text-muted: #607286;
+
+    --line: #d7e0ea;
+    --line-strong: #c4d0dd;
+
+    --navy: #1b3556;
+    --navy-strong: #142947;
+    --navy-soft: #eaf0f8;
+
+    --green: #1f8a68;
+    --green-strong: #176d52;
+    --green-soft: #eaf7f2;
+
+    --bluegray: #5f7893;
+    --bluegray-soft: #edf2f7;
+
+    --danger: #d64545;
+    --danger-soft: #fef2f2;
+
+    --radius-sm: 10px;
+    --radius-md: 14px;
+    --radius-lg: 18px;
+
+    --shadow-md: 0 14px 32px rgba(17, 38, 63, 0.12);
+    --focus: 0 0 0 3px rgba(95, 120, 147, 0.22);
+}
+
+body {
+    margin: 0;
+    color: var(--text);
+    font-family: "Pretendard", "Noto Sans KR", Arial, sans-serif;
+    background:
+            radial-gradient(circle at 12% 8%, #e7eef7 0%, transparent 35%),
+            radial-gradient(circle at 88% 0%, #e7f3ee 0%, transparent 32%),
+            var(--bg);
+}
+
 /* ============================= */
-/* 게시글 작성 페이지 */
+/* 게시글/자격증 작성 페이지 */
 /* ============================= */
 
 .board-form-container {
@@ -8,18 +56,18 @@
 }
 
 .board-form-card {
-    background-color: #ffffff;
-    border: 1px solid #e5e5e5;
-    border-radius: 18px;
+    background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
     padding: 32px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+    box-shadow: var(--shadow-md);
 }
 
 .form-title {
     font-size: 24px;
-    font-weight: bold;
+    font-weight: 800;
     margin-bottom: 28px;
-    color: #222;
+    color: var(--navy-strong);
 }
 
 .form-group {
@@ -28,25 +76,27 @@
 
 .form-group label {
     display: block;
-    font-weight: bold;
-    color: #333;
+    font-weight: 700;
+    color: #2e4867;
     margin-bottom: 8px;
     font-size: 14px;
 }
 
 .form-control {
     width: 100%;
-    border-radius: 8px;
-    border: 1px solid #ddd;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--line-strong);
     padding: 10px 12px;
     font-size: 14px;
-    transition: border-color 0.2s;
+    color: var(--text);
+    background-color: #ffffff;
+    transition: all 0.18s ease;
 }
 
 .form-control:focus {
     outline: none;
-    border-color: #03c75a;
-    box-shadow: 0 0 0 3px rgba(3, 199, 90, 0.1);
+    border-color: var(--bluegray);
+    box-shadow: var(--focus);
 }
 
 textarea.form-control {
@@ -65,19 +115,20 @@ textarea.form-control {
     display: block;
     text-align: center;
     text-decoration: none;
-    border: 1px solid #03c75a;
-    background-color: #03c75a;
+    border: 1px solid var(--navy);
+    background: linear-gradient(135deg, var(--navy), var(--navy-strong));
     color: #ffffff;
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     padding: 12px;
     cursor: pointer;
-    font-weight: bold;
+    font-weight: 700;
     font-size: 15px;
-    transition: background-color 0.2s;
+    transition: all 0.2s ease;
 }
 
 .submit-button:hover {
-    background-color: #02b350;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 18px rgba(27, 53, 86, 0.24);
 }
 
 .cancel-button {
@@ -85,20 +136,21 @@ textarea.form-control {
     display: block;
     text-align: center;
     text-decoration: none;
-    border: 1px solid #ddd;
+    border: 1px solid #b7c6d5;
     background-color: #ffffff;
-    color: #333;
-    border-radius: 8px;
+    color: var(--bluegray);
+    border-radius: var(--radius-sm);
     padding: 12px;
     cursor: pointer;
-    font-weight: bold;
+    font-weight: 700;
     font-size: 15px;
-    transition: background-color 0.2s;
+    transition: all 0.18s ease;
 }
 
 .cancel-button:hover {
-    background-color: #f1f3f5;
-    color: #333;
+    border-color: var(--navy);
+    background-color: var(--navy-soft);
+    color: var(--navy-strong);
 }
 
 /* 반응형 */
@@ -110,7 +162,7 @@ textarea.form-control {
 
     .board-form-card {
         padding: 24px;
-        border-radius: 14px;
+        border-radius: var(--radius-md);
     }
 
     .form-title {

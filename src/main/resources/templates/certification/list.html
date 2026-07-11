@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>자격증 관리</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/css/home.css">
+</head>
+<body>
+
+<div class="board-container">
+    <div class="board-header">
+        <h2>자격증 관리</h2>
+        <a th:href="@{/certification/create}" class="write-button">자격증 추가</a>
+    </div>
+
+    <div th:if="${certList == null or #lists.isEmpty(certList)}" class="empty-board">
+        등록된 자격증이 없습니다. 준비 중인 자격증을 추가해보세요.
+    </div>
+
+    <table th:if="${certList != null and !#lists.isEmpty(certList)}" class="board-table">
+        <thead>
+        <tr>
+            <th>자격증명</th>
+            <th>시험 예정일</th>
+            <th>상태</th>
+            <th>메모</th>
+            <th>관리</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="cert : ${certList}">
+            <td class="title-cell" th:text="${cert.certName}">정보처리기사</td>
+            <td th:text="${cert.examDate != null ? #temporals.format(cert.examDate, 'yyyy-MM-dd') : '-'}">2026-08-01</td>
+            <td th:text="${cert.status}">준비중</td>
+            <td th:text="${cert.memo}"></td>
+            <td>
+                <a th:href="@{/certification/edit/{id}(id=${cert.id})}">수정</a>
+                &nbsp;|&nbsp;
+                <form th:action="@{/certification/delete/{id}(id=${cert.id})}" method="post" style="display:inline"
+                      onsubmit="return confirm('삭제하시겠습니까?')">
+                    <button type="submit" style="border:none;background:none;color:var(--danger);cursor:pointer;padding:0;">삭제</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>

@@ -10,161 +10,288 @@
 </head>
 
 <body>
-    <!-- 사용자 카드 -->
-    <div class="container">
-        <div class="login-card">
-            <div class="profile-area">
-                <div class="profile-image">👤</div>
-                <div>
+<!-- 사용자 카드 -->
+<div class="container">
+    <div class="login-card">
+        <div class="profile-area">
+            <div class="profile-image">👤</div>
+            <div>
 
-                    <div class="nickname-text">
-                        <span id="nickname" th:text="${nickName != null and nickName != '' ? nickName : '사용자'}"></span>님 안녕하세요.
+                <div class="nickname-text">
+                    <span id="nickname" th:text="${nickName != null and nickName != '' ? nickName : '사용자'}"></span>님 안녕하세요.
+                </div>
+
+
+                <div class="email-text" id="email">
+                    이메일 정보를 불러오는 중입니다.
+                </div>
+            </div>
+        </div>
+
+        <div class="button-area">
+            <a th:href="@{/edit}" class="edit-button">수정</a>
+            <button type="button" class="logout-button" onclick="logout()">로그아웃</button>
+        </div>
+    </div>
+</div>
+
+<!-- 학습 대시보드 -->
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <h2>학습 대시보드</h2>
+        <p class="dashboard-subtitle">카테고리별로 준비 현황을 확인하고 학습을 이어가세요.</p>
+    </div>
+
+    <div class="dashboard-body">
+        <div class="dashboard-grid">
+            <!-- 1. 자격증 -->
+            <a th:href="@{/certification}" class="dashboard-card">
+                <div class="card-badge"
+                     th:text="${certTotalCount > 0} ? (${certPassRate} + '% 합격') : '준비중'">준비중</div>
+                <div class="card-icon">📜</div>
+                <h3 class="card-title">자격증</h3>
+                <p class="card-desc" th:if="${certTotalCount == 0}">정보처리기사, SQLD 등 준비 중인 자격증을 등록하고 진행 상황을 관리하세요</p>
+                <p class="card-desc" th:unless="${certTotalCount == 0}"
+                   th:text="'등록한 자격증 ' + ${certTotalCount} + '개 중 ' + ${certPassRate} + '% 합격'">등록 현황</p>
+                <ul class="card-tags">
+                    <li>정처기 필기</li>
+                    <li>정처기 실기</li>
+                    <li>SQLD</li>
+                </ul>
+            </a>
+
+            <!-- 2. 프로젝트 면접 준비 -->
+            <div class="dashboard-card">
+                <div class="card-badge">준비중</div>
+                <div class="card-icon">💬</div>
+                <h3 class="card-title">프로젝트 면접 준비</h3>
+                <p class="card-desc">깃허브 프로젝트 URL을 등록하면 AI가 기술 면접 질문을 자동 생성하고 첨삭해드려요</p>
+                <ul class="card-tags">
+                    <li>GitHub 연동</li>
+                    <li>AI 질문 생성</li>
+                    <li>Java/Spring 기초</li>
+                </ul>
+            </div>
+
+            <!-- 3. 코딩테스트 -->
+            <div class="dashboard-card">
+                <div class="card-badge">준비중</div>
+                <div class="card-icon">💻</div>
+                <h3 class="card-title">코딩테스트</h3>
+                <p class="card-desc">원하는 언어를 선택해서 코딩테스트 문제를 자유롭게 풀어보세요</p>
+                <ul class="card-tags">
+                    <li>Java</li>
+                    <li>Python</li>
+                    <li>C / C++</li>
+                </ul>
+            </div>
+
+            <!-- 4. AI 챗봇 멘토 -->
+            <div class="dashboard-card">
+                <div class="card-badge">준비중</div>
+                <div class="card-icon">🤖</div>
+                <h3 class="card-title">AI 챗봇 멘토</h3>
+                <p class="card-desc">오늘 일정, 면접 일정, 이력서 제출처 등 1:1 멘토처럼 무엇이든 물어보세요</p>
+                <ul class="card-tags">
+                    <li>일정 관리</li>
+                    <li>면접 준비</li>
+                    <li>1:1 멘토링</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="dashboard-side">
+            <!-- 프로필 사진 -->
+            <div class="profile-photo-card">
+                <div class="profile-photo-frame">
+                    <img th:if="${profileImageUrl != null and profileImageUrl != ''}" th:src="${profileImageUrl}" alt="프로필 사진" class="profile-photo-img">
+                    <span th:unless="${profileImageUrl != null and profileImageUrl != ''}" class="profile-photo-placeholder">📷</span>
+                </div>
+                <p class="profile-photo-label">내 프로필 사진</p>
+            </div>
+
+            <!-- 실력 분석 / 취업 성공률 -->
+            <div class="stats-card">
+                <h3 class="stats-title">실력 분석 &amp; 취업 성공률</h3>
+
+                <div class="stats-grade">
+                    <span class="stats-grade-value">B+</span>
+                    <span class="stats-grade-label">종합 등급</span>
+                </div>
+
+                <div class="stats-bar-list">
+                    <div class="stats-bar-item">
+                        <div class="stats-bar-label"><span>자격증</span><span th:text="${certPassRate} + '%'">0%</span></div>
+                        <div class="stats-bar-track"><div class="stats-bar-fill" th:style="'width:' + ${certPassRate} + '%'"></div></div>
                     </div>
-
-
-                    <div class="email-text" id="email">
-                        이메일 정보를 불러오는 중입니다.
+                    <div class="stats-bar-item">
+                        <div class="stats-bar-label"><span>면접 준비</span><span>40%</span></div>
+                        <div class="stats-bar-track"><div class="stats-bar-fill" style="width:40%"></div></div>
                     </div>
+                    <div class="stats-bar-item">
+                        <div class="stats-bar-label"><span>코딩테스트</span><span>55%</span></div>
+                        <div class="stats-bar-track"><div class="stats-bar-fill" style="width:55%"></div></div>
+                    </div>
+                    <div class="stats-bar-item">
+                        <div class="stats-bar-label"><span>출석률</span><span th:text="${attendanceRate} + '%'">0%</span></div>
+                        <div class="stats-bar-track"><div class="stats-bar-fill" th:style="'width:' + ${attendanceRate} + '%'"></div></div>
+                    </div>
+                </div>
+
+                <div class="stats-success-rate">
+                    <span class="stats-success-label">예상 취업 성공률</span>
+                    <span class="stats-success-value">72%</span>
                 </div>
             </div>
 
-            <div class="button-area">
-                <a th:href="@{/edit}" class="edit-button">수정</a>
-                <button type="button" class="logout-button" onclick="logout()">로그아웃</button>
+            <!-- 출석 체크 -->
+            <div class="stats-card">
+                <h3 class="stats-title">오늘의 출석</h3>
+                <p style="font-size:13px;color:var(--text-muted);margin:0 0 14px 0;">
+                    연속 <strong th:text="${attendanceStreak}">0</strong>일째 출석 중이에요.
+                </p>
+                <form th:action="@{/attendance/check-in}" method="post">
+                    <input type="hidden" name="redirectTo" value="/home">
+                    <button type="submit" class="edit-button" style="width:100%;border-radius:8px;"
+                            th:disabled="${attendedToday}"
+                            th:text="${attendedToday} ? '오늘 출석 완료' : '오늘 출석하기'">오늘 출석하기</button>
+                </form>
+                <a th:href="@{/attendance}" style="display:block;text-align:center;margin-top:10px;font-size:13px;color:var(--green-strong);">출석 캘린더 보기 →</a>
             </div>
         </div>
     </div>
+</div>
 
-    <!--board 전체 조회 내용-->
-    <div class="board-container">
-        <div class="board-header">
-            <h2>게시판</h2>
-            <a th:href="@{/board/create}" class="write-button">글쓰기</a>
-        </div>
-
-        <div class="search-area">
-            <form th:action="@{/home}" method="get" id="searchForm">
-
-                <!-- hidden: 필터 값 전달 -->
-                <input type="hidden" name="category" id="hiddenCategory" th:value="${category}">
-                <input type="hidden" name="sort"     id="hiddenSort"     th:value="${sort}">
-
-                <!-- 필터 버튼 (왼쪽) -->
-                <div class="filter-wrapper">
-                    <button type="button" class="filter-button" id="filterToggle">
-                        필터 ▼
-                    </button>
-
-                    <div class="filter-dropdown" id="filterDropdown">
-
-                        <!-- 카테고리 -->
-                        <div class="filter-section-title">카테고리</div>
-                        <label class="filter-option">
-                            <input type="radio" name="filterCategory" value=""
-                                   th:checked="${category == null or category == ''}"> 전체
-                        </label>
-                        <label class="filter-option">
-                            <input type="radio" name="filterCategory" value="일반"
-                                   th:checked="${category == '일반'}"> 일반
-                        </label>
-                        <label class="filter-option">
-                            <input type="radio" name="filterCategory" value="문의"
-                                   th:checked="${category == '문의'}"> 문의
-                        </label>
-                        <label class="filter-option">
-                            <input type="radio" name="filterCategory" value="정보"
-                                   th:checked="${category == '정보'}"> 정보
-                        </label>
-
-                        <hr class="filter-divider">
-
-                        <!-- 정렬 -->
-                        <div class="filter-section-title">정렬</div>
-                        <label class="filter-option">
-                            <input type="radio" name="filterSort" value="latest"
-                                   th:checked="${sort == null or sort == 'latest'}"> 최신순
-                        </label>
-                        <label class="filter-option">
-                            <input type="radio" name="filterSort" value="viewCount"
-                                   th:checked="${sort == 'viewCount'}"> 조회수순
-                        </label>
-                        <label class="filter-option">
-                            <input type="radio" name="filterSort" value="commentCount"
-                                   th:checked="${sort == 'commentCount'}"> 댓글순
-                        </label>
-
-                        <button type="button" class="filter-apply-btn" id="filterApply">적용</button>
-                    </div>
-                </div>
-
-                        <select name="searchType" class="search-select">
-                            <option value="title" th:selected="${searchType == 'title'}">제목</option>
-                            <option value="content" th:selected="${searchType == 'content'}">내용</option>
-                            <option value="writer" th:selected="${searchType == 'writer'}">작성자</option>
-                        </select>
-                            <input type="text" name="keyword" class="search-input"
-                               th:value="${keyword}" placeholder="검색어를 입력하세요">
-                <button type="submit" class="search-button">검색</button>
-            </form>
-        </div>
-
-
-        <!-- 게시글이 없을 때 -->
-        <div th:if="${boardList == null or #lists.isEmpty(boardList)}" class="empty-board">
-            등록된 게시글이 없습니다.
-        </div>
-
-        <!-- 게시글 목록 -->
-        <table th:if="${boardList != null and !#lists.isEmpty(boardList)}" class="board-table">
-            <thead>
-            <tr>
-                <th>번호</th>
-                <th>카테고리</th>
-                <th>제목</th>
-                <th>작성자</th>
-                <th>조회수</th>
-                <th>작성일</th>
-            </tr>
-            </thead>
-
-            <tbody>
-            <tr th:each="board, status : ${boardList}">
-                <td th:text="${startNo + status.index}">1</td>
-                <td th:text="${board.category}">일반</td>
-                <td class="title-cell">
-                    <a th:href="@{/board/view/{id}(id=${board.id})}"
-                       th:text="${board.title}">
-                        게시글 제목
-                    </a>
-                </td>
-                <td th:text="${board.nickName}">작성자</td>
-                <td th:text="${board.viewCount}">0</td>
-                <td th:text="${#temporals.format(board.createdAt, 'yyyy-MM-dd HH:mm')}">
-                    2026-05-16 13:00
-                </td>
-            </tr>
-
-            </tbody>
-        </table>
-
-        <!-- 페이지네이션 — searchType, keyword 같이 넘기기 -->
-        <div class="board-pagination" th:if="${totalPage != null and totalPage > 1}">
-            <a th:if="${currentPage > 1}"
-               th:href="@{/home(page=${currentPage - 1}, searchType=${searchType}, keyword=${keyword})}"
-               class="board-page-button board-page-button--nav">이전</a>
-
-            <a th:each="i : ${#numbers.sequence(1, totalPage)}"
-               th:href="@{/home(page=${i}, searchType=${searchType}, keyword=${keyword})}"
-               th:text="${i}"
-               th:classappend="${i == currentPage} ? ' board-page-button--active' : ''"
-               class="board-page-button"></a>
-
-            <a th:if="${currentPage < totalPage}"
-               th:href="@{/home(page=${currentPage + 1}, searchType=${searchType}, keyword=${keyword})}"
-               class="board-page-button board-page-button--nav">다음</a>
-        </div>
-
+<!--board 전체 조회 내용-->
+<div class="board-container">
+    <div class="board-header">
+        <h2>오답노트</h2>
+        <a th:href="@{/board/create}" class="write-button">글쓰기</a>
     </div>
+
+    <div class="search-area">
+        <form th:action="@{/home}" method="get" id="searchForm">
+
+            <!-- hidden: 필터 값 전달 -->
+            <input type="hidden" name="category" id="hiddenCategory" th:value="${category}">
+            <input type="hidden" name="sort"     id="hiddenSort"     th:value="${sort}">
+
+            <!-- 필터 버튼 (왼쪽) -->
+            <div class="filter-wrapper">
+                <button type="button" class="filter-button" id="filterToggle">
+                    필터 ▼
+                </button>
+
+                <div class="filter-dropdown" id="filterDropdown">
+
+                    <!-- 카테고리 -->
+                    <div class="filter-section-title">카테고리</div>
+                    <label class="filter-option">
+                        <input type="radio" name="filterCategory" value=""
+                               th:checked="${category == null or category == ''}"> 전체
+                    </label>
+                    <label class="filter-option">
+                        <input type="radio" name="filterCategory" value="일반"
+                               th:checked="${category == '일반'}"> 질문
+                    </label>
+                    <label class="filter-option">
+                        <input type="radio" name="filterCategory" value="문의"
+                               th:checked="${category == '문의'}"> 오답
+                    </label>
+                    <label class="filter-option">
+                        <input type="radio" name="filterCategory" value="정보"
+                               th:checked="${category == '정보'}"> 정보
+                    </label>
+
+                    <hr class="filter-divider">
+
+                    <!-- 정렬 -->
+                    <div class="filter-section-title">정렬</div>
+                    <label class="filter-option">
+                        <input type="radio" name="filterSort" value="latest"
+                               th:checked="${sort == null or sort == 'latest'}"> 최신순
+                    </label>
+                    <label class="filter-option">
+                        <input type="radio" name="filterSort" value="viewCount"
+                               th:checked="${sort == 'viewCount'}"> 조회수순
+                    </label>
+                    <label class="filter-option">
+                        <input type="radio" name="filterSort" value="commentCount"
+                               th:checked="${sort == 'commentCount'}"> 댓글순
+                    </label>
+
+                    <button type="button" class="filter-apply-btn" id="filterApply">적용</button>
+                </div>
+            </div>
+
+            <select name="searchType" class="search-select">
+                <option value="title" th:selected="${searchType == 'title'}">제목</option>
+                <option value="content" th:selected="${searchType == 'content'}">내용</option>
+                <option value="writer" th:selected="${searchType == 'writer'}">작성자</option>
+            </select>
+            <input type="text" name="keyword" class="search-input"
+                   th:value="${keyword}" placeholder="검색어를 입력하세요">
+            <button type="submit" class="search-button">검색</button>
+        </form>
+    </div>
+
+
+    <!-- 게시글이 없을 때 -->
+    <div th:if="${boardList == null or #lists.isEmpty(boardList)}" class="empty-board">
+        등록된 게시글이 없습니다.
+    </div>
+
+    <!-- 게시글 목록 -->
+    <table th:if="${boardList != null and !#lists.isEmpty(boardList)}" class="board-table">
+        <thead>
+        <tr>
+            <th>번호</th>
+            <th>카테고리</th>
+            <th>제목</th>
+            <th>작성자</th>
+            <th>조회수</th>
+            <th>작성일</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:each="board, status : ${boardList}">
+            <td th:text="${startNo + status.index}">1</td>
+            <td th:text="${board.category}">일반</td>
+            <td class="title-cell">
+                <a th:href="@{/board/view/{id}(id=${board.id})}"
+                   th:text="${board.title}">
+                    게시글 제목
+                </a>
+            </td>
+            <td th:text="${board.nickName}">작성자</td>
+            <td th:text="${board.viewCount}">0</td>
+            <td th:text="${#temporals.format(board.createdAt, 'yyyy-MM-dd HH:mm')}">
+                2026-05-16 13:00
+            </td>
+        </tr>
+
+        </tbody>
+    </table>
+
+    <!-- 페이지네이션 — searchType, keyword 같이 넘기기 -->
+    <div class="board-pagination" th:if="${totalPage != null and totalPage > 1}">
+        <a th:if="${currentPage > 1}"
+           th:href="@{/home(page=${currentPage - 1}, searchType=${searchType}, keyword=${keyword})}"
+           class="board-page-button board-page-button--nav">이전</a>
+
+        <a th:each="i : ${#numbers.sequence(1, totalPage)}"
+           th:href="@{/home(page=${i}, searchType=${searchType}, keyword=${keyword})}"
+           th:text="${i}"
+           th:classappend="${i == currentPage} ? ' board-page-button--active' : ''"
+           class="board-page-button"></a>
+
+        <a th:if="${currentPage < totalPage}"
+           th:href="@{/home(page=${currentPage + 1}, searchType=${searchType}, keyword=${keyword})}"
+           class="board-page-button board-page-button--nav">다음</a>
+    </div>
+
+</div>
 
 <script src="/js/board.js"></script>
 
