@@ -125,3 +125,49 @@ body {
     font-size: 14px;
     font-weight: 600;
 }
+
+/* 성공 메시지 */
+.success-message {
+    margin-top: 18px;
+    margin-bottom: 0;
+    text-align: center;
+    color: #198754;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* 아이디 찾기 결과 박스 */
+.find-result-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    margin-top: 20px;
+    padding: 16px 18px;
+    background-color: #f1f8f4;
+    border: 1px solid #bfe3cc;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.find-result-label {
+    font-size: 13px;
+    color: #777777;
+}
+
+.find-result-value {
+    font-size: 18px;
+    font-weight: 700;
+    color: #198754;
+}
+
+/* 아이디/비밀번호 찾기 링크 묶음 */
+.find-links {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.find-links .join-button {
+    margin-top: 0;
+}

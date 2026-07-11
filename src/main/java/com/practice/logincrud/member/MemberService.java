@@ -102,6 +102,24 @@ public class MemberService {
         return memberMapper.getRecentMembers();
     }
 
+    //아이디 찾기 - 닉네임으로 이메일 조회(마스킹 처리)
+    public String findMaskedEmailByNickname(String nickname) {
+        String email = memberMapper.findEmailByNickname(nickname);
+        return email != null ? maskEmail(email) : null;
+    }
 
+    private String maskEmail(String email) {
+        int atIndex = email.indexOf('@');
+        String local = email.substring(0, atIndex);
+        String domain = email.substring(atIndex);
+        String visible = local.length() <= 2 ? local.substring(0, 1) : local.substring(0, 2);
+        return visible + "***" + domain;
+    }
+
+    //비밀번호 재설정
+    public void resetPassword(String email, String newPassword) {
+        memberMapper.updatePassword(email, passwordEncoder.encode(newPassword));
+        log.info("비밀번호 재설정 완료 email={}", email);
+    }
 
 }

@@ -84,4 +84,22 @@
         LIMIT 5
     </select>
 
+    <!--아이디 찾기 - 닉네임으로 이메일 조회-->
+    <select id="findEmailByNickname" parameterType="String" resultType="String">
+        SELECT email
+        FROM member
+        WHERE nickname = #{nickname}
+          AND role = 'USER'
+          AND deleted = 0
+    </select>
+
+    <!--비밀번호 재설정-->
+    <update id="updatePassword">
+        UPDATE member
+        SET password = #{password}
+        WHERE email = #{email}
+          AND role = 'USER'
+          AND deleted = 0
+    </update>
+
 </mapper>

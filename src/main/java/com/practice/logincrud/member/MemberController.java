@@ -22,9 +22,14 @@ public class MemberController {
     EmailAuthService emailAuthService;
 
     @GetMapping("/")
-    public String home(@RequestParam(required = false) String error, Model model) {
+    public String home(@RequestParam(required = false) String error,
+                       @RequestParam(required = false) String passwordChanged,
+                       Model model) {
         if (error != null) {
             model.addAttribute("errorMessage", "아이디 또는 비밀번호가 틀렸습니다.");
+        }
+        if (passwordChanged != null) {
+            model.addAttribute("successMessage", "비밀번호가 변경되었습니다. 다시 로그인해주세요.");
         }
         return "main";
     }
@@ -159,6 +164,104 @@ public class MemberController {
         result.put("success", ok);
         result.put("message", ok ? "이메일 인증 완료" : "인증번호가 올바르지 않거나 만료되었습니다.");
         return result;
+    }
+
+    //아이디 찾기 페이지 이동
+    @GetMapping("/find-id")
+    public String findIdForm() {
+        return "member/find-id";
+    }
+
+    //아이디 찾기
+    @PostMapping("/find-id")
+    public String findId(@RequestParam String nickname, Model model) {
+        String maskedEmail = memberService.findMaskedEmailByNickname(nickname);
+
+        if (maskedEmail != null) {
+            model.addAttribute("foundEmail", maskedEmail);
+        } else {
+            model.addAttribute("error", "일치하는 계정이 없습니다.");
+        }
+        return "member/find-id";
+    }
+
+    //비밀번호 찾기 페이지 이동
+    @GetMapping("/find-password")
+    public String findPasswordForm() {
+        return "member/find-password";
+    }
+
+    //비밀번호 재설정용 인증코드 발송
+    @PostMapping("/password/send-code")
+    @ResponseBody
+    public Map<String, Object> sendPasswordResetCode(@RequestParam String email, HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+
+        UserDto existing;
+        try {
+            existing = memberService.findUserByEmail(email);
+        } catch (Exception e) {
+            log.error("가입 여부 조회 실패(DB 연결 문제) email={}", email, e);
+            result.put("success", false);
+            result.put("message", "서버 DB 연결 오류입니다. 잠시 후 다시 시도해주세요.");
+            return result;
+        }
+
+        if (existing == null) {
+            log.warn("비밀번호 재설정 인증코드 발송 차단 - 가입되지 않은 이메일 email={}", email);
+            result.put("success", false);
+            result.put("message", "가입된 이메일이 아닙니다.");
+            return result;
+        }
+
+        try {
+            emailAuthService.sendCode(email, session);
+            result.put("success", true);
+            result.put("message", "인증번호를 발송했습니다.");
+        } catch (Exception e) {
+            log.error("비밀번호 재설정 메일 발송 실패 email={}", email, e);
+            result.put("success", false);
+            result.put("message", "메일 발송 실패: 메일 설정을 확인하세요.");
+        }
+
+        return result;
+    }
+
+    //비밀번호 재설정용 인증코드 확인
+    @PostMapping("/password/verify-code")
+    @ResponseBody
+    public Map<String, Object> verifyPasswordResetCode(@RequestParam String email,
+                                                        @RequestParam String code,
+                                                        HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        boolean ok = emailAuthService.verifyCode(email, code, session);
+        result.put("success", ok);
+        result.put("message", ok ? "이메일 인증 완료" : "인증번호가 올바르지 않거나 만료되었습니다.");
+        return result;
+    }
+
+    //비밀번호 재설정
+    @PostMapping("/reset-password")
+    public String resetPassword(@RequestParam String email,
+                                @RequestParam String newPassword,
+                                @RequestParam String newPasswordCheck,
+                                HttpSession session,
+                                Model model) {
+        if (!emailAuthService.isVerified(email, session)) {
+            log.warn("비밀번호 재설정 차단 - 이메일 미인증 email={}", email);
+            model.addAttribute("error", "이메일 인증을 먼저 완료해주세요.");
+            return "member/find-password";
+        }
+
+        if (!newPassword.equals(newPasswordCheck)) {
+            model.addAttribute("error", "비밀번호가 일치하지 않습니다.");
+            return "member/find-password";
+        }
+
+        memberService.resetPassword(email, newPassword);
+        emailAuthService.clear(email, session);
+        log.info("비밀번호 재설정 성공 email={}", email);
+        return "redirect:/?passwordChanged=true";
     }
 
     //회원정보 수정 페이지 이동

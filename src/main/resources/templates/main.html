@@ -16,6 +16,7 @@
             <form action="/login" class="login-form" method="post">
 
                 <p th:if="${errorMessage}" th:text="${errorMessage}" style="color:red;"></p>
+                <p th:if="${successMessage}" th:text="${successMessage}" class="success-message"></p>
 
                 <div class="login-input-group">
                     <label for="email" class="login-label">이메일</label>
@@ -29,6 +30,11 @@
                 <button type="submit" class="login-button">로그인</button>
 
                 <a href="/join" class="join-button">회원가입</a>
+
+                <div class="find-links">
+                    <a href="/find-id" class="join-button">아이디 찾기</a>
+                    <a href="/find-password" class="join-button">비밀번호 찾기</a>
+                </div>
             </form>
 
         </div>
