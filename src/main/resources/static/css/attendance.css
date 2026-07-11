@@ -1,7 +1,6 @@
-/* =========================================================
-   attendance.css
-   - 출석 체크 페이지 (home.css와 같이 로드됨)
-========================================================= */
+/* ============================= */
+/* attendance.css */
+/* ============================= */
 
 .attendance-summary {
     display: flex;
@@ -11,9 +10,9 @@
 
 .attendance-summary-item {
     flex: 1;
-    background-color: var(--bluegray-soft, #edf2f7);
-    border: 1px solid var(--line, #d7e0ea);
-    border-radius: var(--radius-md, 14px);
+    background: #f8f9fa;
+    border: 1px solid #eee;
+    border-radius: 14px;
     padding: 18px;
     text-align: center;
 }
@@ -21,14 +20,14 @@
 .attendance-summary-value {
     display: block;
     font-size: 26px;
-    font-weight: 800;
-    color: var(--navy, #1b3556);
+    font-weight: bold;
+    color: #03c75a;
     margin-bottom: 4px;
 }
 
 .attendance-summary-label {
     font-size: 13px;
-    color: var(--text-muted, #607286);
+    color: #777;
 }
 
 .attendance-grid {
@@ -42,16 +41,16 @@
 .attendance-box {
     aspect-ratio: 1 / 1;
     border-radius: 4px;
-    background-color: #dfe7ee;
+    background: #dcdcdc;
 }
 
 .attendance-box--filled {
-    background: linear-gradient(135deg, var(--green, #1f8a68), var(--green-strong, #176d52));
+    background: linear-gradient(135deg, #03c75a, #02b350);
 }
 
 .attendance-hint {
     text-align: center;
     font-size: 13px;
-    color: var(--text-muted, #607286);
+    color: #888;
     margin: 0;
 }
