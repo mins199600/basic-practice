@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>자격증 문제풀이</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/css/create.css">
+</head>
+<body>
+
+<div class="board-form-container">
+    <div class="board-form-card" style="text-align:center;">
+        <h2 class="form-title">아직 등록된 문제가 없습니다</h2>
+        <p style="color:#777;font-size:14px;">문제 데이터가 추가되면 이 화면에서 바로 풀어볼 수 있어요.</p>
+        <div class="form-button-area">
+            <a th:href="@{/certifications(memberId=${memberId})}" class="cancel-button">목록으로</a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

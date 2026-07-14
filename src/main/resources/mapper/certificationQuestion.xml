@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.practice.logincrud.certification.CertificationQuestionMapper">
+
+    <!-- 자격증의 전체 문제 + 이 회원 기준 가중치(없으면 기본 1) -->
+    <select id="findCandidatesWithWeight" resultType="com.practice.logincrud.certification.CertificationQuestionDto">
+        SELECT
+            q.id,
+            q.certification_id,
+            q.question_text,
+            q.choice1,
+            q.choice2,
+            q.choice3,
+            q.choice4,
+            q.answer_no,
+            q.explanation,
+            COALESCE(s.weight, 1) AS weight
+        FROM certification_question q
+        LEFT JOIN member_question_stat s
+               ON s.question_id = q.id
+              AND s.member_id = #{memberId}
+        WHERE q.certification_id = #{certificationId}
+          AND q.deleted = 0
+    </select>
+
+    <!-- 채점용 단건 조회 -->
+    <select id="findById" resultType="com.practice.logincrud.certification.CertificationQuestionDto">
+        SELECT id, certification_id, question_text, choice1, choice2, choice3, choice4,
+               answer_no, explanation, created_at
+        FROM certification_question
+        WHERE id = #{id}
+          AND deleted = 0
+    </select>
+
+    <!-- 자격증에 문제가 하나라도 있는지 확인용 -->
+    <select id="countByCertificationId" resultType="int">
+        SELECT COUNT(*)
+        FROM certification_question
+        WHERE certification_id = #{certificationId}
+          AND deleted = 0
+    </select>
+
+</mapper>

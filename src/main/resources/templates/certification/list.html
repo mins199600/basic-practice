@@ -30,7 +30,10 @@
         </thead>
         <tbody>
         <tr th:each="cert : ${certList}">
-            <td class="title-cell" th:text="${cert.certName}">정보처리기사</td>
+            <td class="title-cell">
+                <a th:href="@{/certifications/{id}/quiz(id=${cert.id}, memberId=${memberId})}"
+                   th:text="${cert.certName}">정보처리기사</a>
+            </td>
             <td th:text="${cert.examDate != null ? #temporals.format(cert.examDate, 'yyyy-MM-dd') : '-'}">2026-08-01</td>
             <td th:text="${cert.status}">준비중</td>
             <td th:text="${cert.memo}"></td>

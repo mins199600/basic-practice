@@ -1,0 +1,31 @@
+[Unit]
+Description=login-crud Spring Boot Application
+After=network.target
+
+[Service]
+Type=simple
+User=ec2-user
+WorkingDirectory=/opt/app
+ExecStart=/usr/bin/java -jar /opt/app/login-crud.jar
+Restart=on-failure
+RestartSec=5
+
+# 실제 값으로 반드시 교체할 것 — 여기에 진짜 비밀번호를 커밋하지 말 것
+Environment="DB_HOST=__RDS_ENDPOINT__"
+Environment="DB_PORT=3306"
+Environment="DB_USERNAME=__SET_ME__"
+Environment="DB_PASSWORD=__SET_ME__"
+Environment="MAIL_USERNAME=__SET_ME__"
+Environment="MAIL_PASSWORD=__SET_ME__"
+
+[Install]
+WantedBy=multi-user.target
+
+# 설치 방법 (EC2에서):
+#   sudo cp login-crud.service /etc/systemd/system/login-crud.service
+#   sudo vi /etc/systemd/system/login-crud.service   # __SET_ME__ 값 채우기
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable login-crud
+#   sudo systemctl start login-crud
+#   sudo systemctl status login-crud     # 정상 기동 확인
+#   journalctl -u login-crud -f          # 실시간 로그

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>자격증 문제풀이</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/css/home.css">
+</head>
+<body>
+
+<div class="board-container">
+    <div class="board-header">
+        <h2>자격증 문제풀이</h2>
+    </div>
+
+    <div th:if="${certList == null or #lists.isEmpty(certList)}" class="empty-board">
+        등록된 자격증이 없습니다. 자격증 관리에서 먼저 추가해주세요.
+    </div>
+
+    <table th:if="${certList != null and !#lists.isEmpty(certList)}" class="board-table">
+        <thead>
+        <tr>
+            <th>자격증명</th>
+            <th>상태</th>
+            <th>문제풀이</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="cert : ${certList}">
+            <td class="title-cell" th:text="${cert.certName}">SQLD</td>
+            <td th:text="${cert.status}">준비중</td>
+            <td>
+                <a th:href="@{/certifications/{id}/quiz(id=${cert.id}, memberId=${memberId})}">문제풀기 →</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>

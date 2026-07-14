@@ -211,13 +211,13 @@ body {
     box-shadow: var(--shadow-md);
 }
 
-/* 핵심: 1번(학습대시보드), 2번(오답노트) 가로 강조 */
+/* 핵심: 1번,2번 카드 가로 강조 */
 .dashboard-grid .dashboard-card:nth-child(1),
 .dashboard-grid .dashboard-card:nth-child(2) {
     min-height: 210px;
 }
 
-/* 1번 카드(학습대시보드): 네이비톤 */
+/* 1번 카드(네이비톤) */
 .dashboard-grid .dashboard-card:nth-child(1) {
     background: linear-gradient(180deg, #ffffff 0%, #f1f6ff 100%);
     border-color: #cfddee;
@@ -227,7 +227,7 @@ body {
     box-shadow: 0 12px 30px rgba(20, 41, 71, 0.12);
 }
 
-/* 2번 카드(오답노트): 그린톤 */
+/* 2번 카드(그린톤) */
 .dashboard-grid .dashboard-card:nth-child(2) {
     background: linear-gradient(180deg, #ffffff 0%, #f2fbf7 100%);
     border-color: #cfe8dd;
@@ -250,7 +250,6 @@ body {
     border: 1px solid #d5e0eb;
 }
 
-/* 1번/2번 배지 톤 보정 */
 .dashboard-grid .dashboard-card:nth-child(1) .card-badge {
     color: var(--navy);
     background: var(--navy-soft);
@@ -300,7 +299,6 @@ body {
     font-weight: 700;
 }
 
-/* 2번 카드 태그 */
 .dashboard-grid .dashboard-card:nth-child(2) .card-tags li {
     color: var(--green-strong);
     background: #eafaf4;
@@ -438,11 +436,13 @@ body {
     box-shadow: var(--shadow-sm);
 }
 
+/* 상단: 오답노트 + 글쓰기 */
 .board-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 22px;
+    gap: 12px;
+    margin-bottom: 14px;
 }
 
 .board-header h2 {
@@ -464,6 +464,7 @@ body {
     text-decoration: none;
     cursor: pointer;
     transition: all 0.2s;
+    white-space: nowrap;
 }
 
 .write-button:hover {
@@ -476,6 +477,142 @@ body {
     cursor: default;
 }
 
+/* 핵심: 제목/글쓰기 아래 '중간줄'에 검색영역 정렬 */
+.search-area {
+    width: 100%;
+    margin-bottom: 22px;
+    padding: 12px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: #f8fbff;
+}
+
+#searchForm {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: nowrap;
+}
+
+/* 필터 */
+.filter-wrapper {
+    position: relative;
+    flex: 0 0 auto;
+}
+
+.filter-button {
+    height: 40px;
+    padding: 0 14px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    background: white;
+    font-size: 14px;
+    color: #2f455e;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.filter-dropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    z-index: 100;
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 16px;
+    min-width: 200px;
+    box-shadow: var(--shadow-sm);
+}
+
+.filter-dropdown.open {
+    display: block;
+}
+
+.filter-section-title {
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--navy-strong);
+    margin-bottom: 8px;
+}
+
+.filter-divider {
+    border: none;
+    border-top: 1px solid var(--line);
+    margin: 10px 0;
+}
+
+.filter-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #2f455e;
+    padding: 4px 0;
+    cursor: pointer;
+    margin-bottom: 2px;
+}
+
+.filter-apply-btn {
+    width: 100%;
+    margin-top: 12px;
+    padding: 8px 0;
+    background: var(--navy);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.filter-apply-btn:hover {
+    background: var(--navy-strong);
+}
+
+/* 검색 폼 내부 요소 */
+.search-select,
+.search-input {
+    height: 40px;
+    padding: 0 12px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    color: #2f455e;
+    background: #fff;
+}
+
+.search-select {
+    min-width: 98px;
+    flex: 0 0 auto;
+}
+
+.search-input {
+    flex: 1 1 auto;
+    min-width: 180px;
+}
+
+.search-button {
+    height: 40px;
+    padding: 0 16px;
+    background: var(--navy);
+    color: white;
+    border: 1px solid var(--navy);
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    flex: 0 0 auto;
+}
+
+.search-button:hover {
+    background: var(--navy-strong);
+    border-color: var(--navy-strong);
+}
+
+/* 게시판 테이블 */
 .empty-board {
     padding: 50px 20px;
     text-align: center;
@@ -533,6 +670,7 @@ body {
     text-decoration: underline;
 }
 
+/* 페이지네이션 */
 .board-pagination {
     display: flex;
     justify-content: center;
@@ -574,104 +712,6 @@ body {
     cursor: default;
 }
 
-.search-area {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 22px;
-}
-
-.search-select,
-.search-input {
-    padding: 10px 12px;
-    border: 1px solid var(--line);
-    border-radius: var(--radius-sm);
-    font-size: 14px;
-    color: #2f455e;
-    background: #fff;
-}
-
-.search-input {
-    flex: 1;
-}
-
-.search-button {
-    padding: 10px 20px;
-    background: var(--navy);
-    color: white;
-    border: 1px solid var(--navy);
-    border-radius: var(--radius-sm);
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.search-button:hover {
-    background: var(--navy-strong);
-    border-color: var(--navy-strong);
-}
-
-.filter-wrapper {
-    position: relative;
-}
-
-.filter-button {
-    padding: 10px 16px;
-    border: 1px solid var(--line);
-    border-radius: var(--radius-sm);
-    background: white;
-    font-size: 14px;
-    color: #2f455e;
-    cursor: pointer;
-    white-space: nowrap;
-}
-
-.filter-dropdown {
-    display: none;
-    position: absolute;
-    top: calc(100% + 6px);
-    left: 0;
-    z-index: 100;
-    background: white;
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    padding: 16px;
-    min-width: 180px;
-    box-shadow: var(--shadow-sm);
-}
-
-.filter-dropdown.open {
-    display: block;
-}
-
-.filter-option {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 14px;
-    color: #2f455e;
-    padding: 4px 0;
-    cursor: pointer;
-    margin-bottom: 4px;
-}
-
-.filter-apply-btn {
-    width: 100%;
-    margin-top: 12px;
-    padding: 8px 0;
-    background: var(--navy);
-    color: white;
-    border: none;
-    border-radius: var(--radius-sm);
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-}
-
-.filter-apply-btn:hover {
-    background: var(--navy-strong);
-}
-
 /* ============================= */
 /* 반응형 */
 /* ============================= */
@@ -690,15 +730,33 @@ body {
     .board-container {
         max-width: 95%;
         margin: 30px auto 60px auto;
+        padding: 20px;
+    }
+
+    .board-header {
+        align-items: center;
+    }
+
+    .board-header h2 {
+        font-size: 22px;
     }
 
     .search-area {
+        padding: 10px;
+    }
+
+    #searchForm {
         flex-wrap: wrap;
     }
 
+    .filter-wrapper,
     .search-select,
     .search-input,
     .search-button {
         width: 100%;
+    }
+
+    .search-input {
+        min-width: 0;
     }
 }

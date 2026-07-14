@@ -26,6 +26,7 @@ public class CertificationController {
         List<CertificationDto> certList = certificationService.getMyCertifications(memberId);
 
         model.addAttribute("certList", certList);
+        model.addAttribute("memberId", memberId);
         return "certification/list";
     }
 

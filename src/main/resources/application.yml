@@ -9,7 +9,7 @@ spring:
 
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
-    url: jdbc:mariadb://127.0.0.1:3306/easy?useSSL=false
+    url: jdbc:mariadb://${DB_HOST:127.0.0.1}:${DB_PORT:3306}/easy?useSSL=false
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     hikari:

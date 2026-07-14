@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.practice.logincrud.certification.MemberQuestionStatMapper">
+
+    <!--
+        정오답 결과를 회원-문제 통계에 반영.
+        최초 제출(행 없음)이면 INSERT, 이미 있으면 ON DUPLICATE KEY UPDATE로 갱신.
+        weight는 GREATEST()로 항상 최소 1을 유지한다.
+    -->
+
+
+    <insert id="upsertStat">
+        INSERT INTO member_question_stat
+            (member_id, question_id, weight, correct_count, wrong_count, last_answered_at)
+        VALUES
+            (#{memberId},
+             #{questionId},
+             GREATEST(1 + #{weightDelta}, 1),
+             #{correctInc},
+             #{wrongInc},
+             NOW())
+        ON DUPLICATE KEY UPDATE
+            weight           = GREATEST(weight + #{weightDelta}, 1),
+            correct_count    = correct_count + #{correctInc},
+            wrong_count      = wrong_count + #{wrongInc},
+            last_answered_at = NOW()
+    </insert>
+
+</mapper>
