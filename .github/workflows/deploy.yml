@@ -35,11 +35,15 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H $EC2_HOST >> ~/.ssh/known_hosts 2>/dev/null
           
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa $EC2_USER@$EC2_HOST << 'EOF'
+          mkdir -p /app
+          pkill -f java || true
+          sleep 2
+          EOF
+          
           scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa build/libs/login-crud-0.0.1-SNAPSHOT.jar $EC2_USER@$EC2_HOST:/app/
           
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa $EC2_USER@$EC2_HOST << 'EOF'
-          pkill -f java
-          sleep 2
           cd /app
           java -jar login-crud-0.0.1-SNAPSHOT.jar > app.log 2>&1 &
           echo "✅ 배포 완료!"
