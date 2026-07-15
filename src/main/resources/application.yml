@@ -15,6 +15,7 @@ spring:
     hikari:
       maximum-pool-size: 20
 
+
   mail:
     host: smtp.gmail.com
     port: 587

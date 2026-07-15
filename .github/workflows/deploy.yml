@@ -33,21 +33,27 @@ jobs:
           mkdir -p ~/.ssh
           echo "$EC2_KEY" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H $EC2_HOST >> ~/.ssh/known_hosts 2>/dev/null
-          
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa $EC2_USER@$EC2_HOST << 'EOF'
-          mkdir -p /app
-          pkill -f java || true
-          sleep 2
-          EOF
-          
-          scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa build/libs/login-crud-0.0.1-SNAPSHOT.jar $EC2_USER@$EC2_HOST:/app/
-          
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa $EC2_USER@$EC2_HOST << 'EOF'
-          cd /app
-          java -jar login-crud-0.0.1-SNAPSHOT.jar > app.log 2>&1 &
-          echo "✅ 배포 완료!"
-          EOF
+          ssh-keyscan -H "$EC2_HOST" >> ~/.ssh/known_hosts 2>/dev/null
+
+          # jar는 일단 /tmp에 올리고 (ec2-user가 바로 쓸 수 있는 경로), /opt/app으로는 sudo로 옮긴다.
+          scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa \
+              build/libs/login-crud-0.0.1-SNAPSHOT.jar \
+              "$EC2_USER@$EC2_HOST:/tmp/login-crud.jar"
+
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa "$EC2_USER@$EC2_HOST" '
+            set -e
+            sudo mkdir -p /opt/app
+            sudo mv /tmp/login-crud.jar /opt/app/login-crud.jar
+            sudo systemctl restart login-crud
+            sleep 3
+            if sudo systemctl is-active --quiet login-crud; then
+              echo "✅ 배포 성공"
+            else
+              echo "❌ 배포 실패 - 최근 로그:"
+              sudo journalctl -u login-crud -n 50 --no-pager
+              exit 1
+            fi
+          '
 
       - name: Deployment Success
         run: echo "🎉 AWS EC2에 배포되었습니다!"
