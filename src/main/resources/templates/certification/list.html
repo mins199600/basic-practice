@@ -31,7 +31,7 @@
         <tbody>
         <tr th:each="cert : ${certList}">
             <td class="title-cell">
-                <a th:href="@{/certifications/{id}/quiz(id=${cert.id}, memberId=${memberId})}"
+                <a th:href="@{/certifications/{id}/subjects(id=${cert.id}, memberId=${memberId})}"
                    th:text="${cert.certName}">정보처리기사</a>
             </td>
             <td th:text="${cert.examDate != null ? #temporals.format(cert.examDate, 'yyyy-MM-dd') : '-'}">2026-08-01</td>

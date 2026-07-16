@@ -22,10 +22,11 @@ public class CertificationQuestionService {
      *  - 직전에 낸 문제(excludeQuestionId)는 후보가 2개 이상이면 이번 회차에서 제외한다.
      *    후보가 1개뿐이면 예외 없이 그 문제를 다시 낸다.
      *  - 문제가 하나도 없으면 null을 반환한다 (호출부에서 "문제 없음" 화면 처리).
+     *  - subjectId가 null이면 자격증 전체 문제 대상 (과목 분류가 없는 자격증과의 하위 호환).
      */
-    public CertificationQuestionDto pickNextQuestion(Long certificationId, Long memberId, Long excludeQuestionId) {
+    public CertificationQuestionDto pickNextQuestion(Long certificationId, Long subjectId, Long memberId, Long excludeQuestionId) {
         List<CertificationQuestionDto> candidates =
-                certificationQuestionMapper.findCandidatesWithWeight(certificationId, memberId);
+                certificationQuestionMapper.findCandidatesWithWeight(certificationId, memberId, subjectId);
 
         if (candidates.isEmpty()) {
             log.info("출제 가능한 문제 없음 certificationId={}", certificationId);
@@ -74,8 +75,8 @@ public class CertificationQuestionService {
         return certificationQuestionMapper.findById(questionId);
     }
 
-    public boolean hasQuestions(Long certificationId) {
-        return certificationQuestionMapper.countByCertificationId(certificationId) > 0;
+    public boolean hasQuestions(Long certificationId, Long subjectId) {
+        return certificationQuestionMapper.countByCertificationId(certificationId, subjectId) > 0;
     }
 
     /**

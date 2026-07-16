@@ -12,6 +12,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
+/*
+ * subjectId 파라미터 정책:
+ *  - 과목이 등록된 자격증(예: 피부자격증)은 /subjects 화면을 거쳐 subjectId를 받아온다.
+ *  - subjectId가 없는 자격증(과목 미분류)은 기존처럼 자격증 전체 문제를 대상으로 출제한다(하위 호환).
+ *  - "직전 문제 연속 출제 방지"는 과목 단위로 독립적으로 동작해야 하므로 세션 키에 subjectId도 포함한다.
+ */
+
 /**
  * 자격증 문제풀이(오답 가중치 출제) 전용 컨트롤러.
  * 기존 CertificationController(/certification, 내 자격증 CRUD)와는 별도로,
@@ -29,6 +36,7 @@ public class CertificationQuizController {
 
     private final CertificationService certificationService;
     private final CertificationQuestionService certificationQuestionService;
+    private final SubjectService subjectService;
 
     // 자격증 목록 (문제풀이 진입점)
     @GetMapping("/certifications")
@@ -40,24 +48,44 @@ public class CertificationQuizController {
         return "certification/quiz-list";
     }
 
-    // 문제 1개 출제 (가중 랜덤 + 직전 문제 연속 출제 방지)
-    @GetMapping("/certifications/{certificationId}/quiz")
-    public String quiz(@PathVariable Long certificationId,
-                        @RequestParam Long memberId,
-                        HttpSession session,
-                        Model model) {
+    // 과목(파트) 선택 화면. 과목이 등록되어 있지 않은 자격증이면 바로 전체 문제풀이로 넘긴다.
+    @GetMapping("/certifications/{certificationId}/subjects")
+    public String subjects(@PathVariable Long certificationId,
+                            @RequestParam Long memberId,
+                            Model model) {
 
-        String sessionKey = lastQuestionSessionKey(certificationId, memberId);
-        Long lastQuestionId = (Long) session.getAttribute(sessionKey);
+        List<SubjectDto> subjectList = subjectService.getSubjects(certificationId);
 
-        CertificationQuestionDto question =
-                certificationQuestionService.pickNextQuestion(certificationId, memberId, lastQuestionId);
+        if (subjectList.isEmpty()) {
+            return "redirect:/certifications/" + certificationId + "/quiz?memberId=" + memberId;
+        }
 
         model.addAttribute("certificationId", certificationId);
         model.addAttribute("memberId", memberId);
+        model.addAttribute("subjectList", subjectList);
+        return "certification/subject-list";
+    }
+
+    // 문제 1개 출제 (가중 랜덤 + 직전 문제 연속 출제 방지, 과목 단위)
+    @GetMapping("/certifications/{certificationId}/quiz")
+    public String quiz(@PathVariable Long certificationId,
+                        @RequestParam Long memberId,
+                        @RequestParam(required = false) Long subjectId,
+                        HttpSession session,
+                        Model model) {
+
+        String sessionKey = lastQuestionSessionKey(certificationId, subjectId, memberId);
+        Long lastQuestionId = (Long) session.getAttribute(sessionKey);
+
+        CertificationQuestionDto question =
+                certificationQuestionService.pickNextQuestion(certificationId, subjectId, memberId, lastQuestionId);
+
+        model.addAttribute("certificationId", certificationId);
+        model.addAttribute("memberId", memberId);
+        model.addAttribute("subjectId", subjectId);
 
         if (question == null) {
-            log.info("문제 없음 certificationId={} memberId={}", certificationId, memberId);
+            log.info("문제 없음 certificationId={} subjectId={} memberId={}", certificationId, subjectId, memberId);
             return "certification/quiz-empty";
         }
 
@@ -72,6 +100,7 @@ public class CertificationQuizController {
     @PostMapping("/certifications/{certificationId}/quiz/submit")
     public String submit(@PathVariable Long certificationId,
                          @RequestParam Long memberId,
+                         @RequestParam(required = false) Long subjectId,
                          @RequestParam Long questionId,
                          @RequestParam Integer selectedChoice,
                          Model model) {
@@ -80,7 +109,8 @@ public class CertificationQuizController {
 
         if (question == null) {
             log.warn("존재하지 않는 문제 제출 questionId={}", questionId);
-            return "redirect:/certifications/" + certificationId + "/quiz?memberId=" + memberId;
+            return "redirect:/certifications/" + certificationId + "/quiz?memberId=" + memberId
+                    + (subjectId != null ? "&subjectId=" + subjectId : "");
         }
 
         boolean correct = question.getAnswerNo() != null && question.getAnswerNo().equals(selectedChoice);
@@ -89,6 +119,7 @@ public class CertificationQuizController {
 
         model.addAttribute("certificationId", certificationId);
         model.addAttribute("memberId", memberId);
+        model.addAttribute("subjectId", subjectId);
         model.addAttribute("mode", "result");
         model.addAttribute("question", question);
         model.addAttribute("correct", correct);
@@ -96,7 +127,7 @@ public class CertificationQuizController {
         return "certification/quiz";
     }
 
-    private String lastQuestionSessionKey(Long certificationId, Long memberId) {
-        return "lastQuestionId_" + certificationId + "_" + memberId;
+    private String lastQuestionSessionKey(Long certificationId, Long subjectId, Long memberId) {
+        return "lastQuestionId_" + certificationId + "_" + subjectId + "_" + memberId;
     }
 }

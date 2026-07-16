@@ -30,7 +30,7 @@
             <td class="title-cell" th:text="${cert.certName}">SQLD</td>
             <td th:text="${cert.status}">준비중</td>
             <td>
-                <a th:href="@{/certifications/{id}/quiz(id=${cert.id}, memberId=${memberId})}">문제풀기 →</a>
+                <a th:href="@{/certifications/{id}/subjects(id=${cert.id}, memberId=${memberId})}">문제풀기 →</a>
             </td>
         </tr>
         </tbody>

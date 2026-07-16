@@ -53,3 +53,50 @@
     color: #999;
     margin-top: 14px;
 }
+
+.subject-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 14px;
+}
+
+.subject-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    text-align: center;
+    padding: 28px 16px;
+    background: #f8f9fa;
+    border: 1px solid #eee;
+    border-radius: 14px;
+    color: #222;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.15s ease;
+}
+
+.subject-card:hover {
+    border-color: #03c75a;
+    background-color: #f3fff7;
+    color: #03c75a;
+}
+
+.subject-card-count {
+    font-size: 12px;
+    font-weight: 400;
+    color: #999;
+}
+
+.subject-card--disabled {
+    cursor: not-allowed;
+    color: #bbb;
+    background: #f2f2f2;
+}
+
+.subject-card--disabled:hover {
+    border-color: #eee;
+    background-color: #f2f2f2;
+    color: #bbb;
+}

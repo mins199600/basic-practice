@@ -13,7 +13,8 @@
         <h2 class="form-title">아직 등록된 문제가 없습니다</h2>
         <p style="color:#777;font-size:14px;">문제 데이터가 추가되면 이 화면에서 바로 풀어볼 수 있어요.</p>
         <div class="form-button-area">
-            <a th:href="@{/certifications(memberId=${memberId})}" class="cancel-button">목록으로</a>
+            <a th:href="@{/certifications/{id}/subjects(id=${certificationId}, memberId=${memberId})}" class="cancel-button">과목 선택으로</a>
+            <a th:href="@{/certifications(memberId=${memberId})}" class="cancel-button">자격증 목록으로</a>
         </div>
     </div>
 </div>

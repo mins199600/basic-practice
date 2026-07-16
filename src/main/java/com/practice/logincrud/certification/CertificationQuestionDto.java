@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 public class CertificationQuestionDto {
     private Long id;
     private Long certificationId;
+    private Long subjectId;
     private String questionText;
     private String choice1;
     private String choice2;

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>과목 선택</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/css/home.css">
+    <link rel="stylesheet" type="text/css" href="/css/quiz.css">
+</head>
+<body>
+
+<div class="board-container">
+    <div class="board-header">
+        <h2>과목 선택</h2>
+        <a th:href="@{/certifications(memberId=${memberId})}">← 자격증 목록</a>
+    </div>
+
+    <div class="subject-grid">
+        <a th:each="subject : ${subjectList}"
+           th:if="${subject.questionCount > 0}"
+           class="subject-card"
+           th:href="@{/certifications/{id}/quiz(id=${certificationId}, memberId=${memberId}, subjectId=${subject.id})}">
+            <span th:text="${subject.name}">해부생리학</span>
+            <span class="subject-card-count" th:text="${subject.questionCount} + '문제'">18문제</span>
+        </a>
+        <div th:each="subject : ${subjectList}"
+             th:if="${subject.questionCount == 0}"
+             class="subject-card subject-card--disabled">
+            <span th:text="${subject.name}">피부미용학</span>
+            <span class="subject-card-count">준비 중</span>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
