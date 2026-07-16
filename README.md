@@ -1,45 +1,261 @@
-# ERD
 
-<img width="747" height="501" alt="ERD" src="https://github.com/user-attachments/assets/24c544aa-8274-4865-8d85-979cf8df2302" />
+# ERD (Entity Relationship Diagram)
 
-## 테이블 구성
+## 📊 데이터베이스 구조 개요
+<img width="1092" height="898" alt="논리적 데이터 모델링" src="https://github.com/user-attachments/assets/d254528e-0591-4612-8538-f5117f0eb377" />
 
-### member
+--- 
 
-회원 정보를 관리하는 테이블입니다.
+<img width="1965" height="1015" alt="ERD" src="https://github.com/user-attachments/assets/820a029c-cac9-48d7-877a-c00cea4ed8ac" />
 
-- `id`: 회원 고유 ID
-- `email`: 로그인에 사용하는 이메일
-- `nickname`: 게시글 작성자명으로 표시되는 닉네임
-- `password`: 암호화된 비밀번호
-- `role`: 사용자 권한 구분 값 (`USER`, `ADMIN`)
-- `reg_date`: 회원가입일
-- `update_date`: 회원 정보 수정일
-- `address`, `detail_address`, `postcode`: 회원 주소 정보
-- `deleted`: 회원 삭제 여부를 저장하는 값
 
-### board
 
-게시글 정보를 관리하는 테이블입니다.
+본 프로젝트는 자격증 시험 준비를 위한 학습 관리 시스템 입니다.
 
-- `id`: 게시글 고유 ID
-- `title`: 게시글 제목
-- `content`: 게시글 내용
-- `created_at`: 게시글 작성일
-- `modified_at`: 게시글 수정일
-- `view_count`: 조회수
-- `category`: 게시글 카테고리
-- `is_notice`: 공지사항 여부
-- `file_path`: 첨부파일 경로
-- `member_id`: 게시글 작성자 회원 ID
+- 🔵 **회원 (Member Core)**: 회원 정보 및 시스템 관리
+- 🟢 **문제 (Question)**: 시험 문제 및 카테고리 관리
+- 🟠 **학습 (Learning)**: 학습 기록 및 통계 관리
+- 🟣 **커뮤니티 (Community)**: 게시판 및 댓글 관리
+- 🔴 **지원 (Support)**: 자격증 및 출석 관리
 
 ---
 
-## 테이블 관계
+## 📋 테이블 상세 설명
 
-- 회원 1명은 여러 개의 게시글을 작성할 수 있습니다.
-- 게시글 1개는 반드시 1명의 회원에게 속합니다.
-- `board.member_id`는 `member.id`를 참조합니다.
+### 🔵 회원 (Member Core)
+
+#### member
+회원 정보를 관리하는 테이블입니다.
+
+| 필드명 | 타입 | 제약조건 | 설명 |
+|--------|------|---------|------|
+| `member_id` | INT | PK, AUTO_INC | 회원 고유 ID |
+| `username` | VARCHAR(100) | NOT NULL, UNIQUE | 사용자명 |
+| `password` | VARCHAR(255) | NOT NULL | 암호화된 비밀번호 |
+| `email` | VARCHAR(100) | NOT NULL, UNIQUE | 로그인에 사용하는 이메일 |
+| `phone` | VARCHAR(20) | - | 전화번호 |
+| `address` | VARCHAR(255) | - | 주소 |
+| `detail_address` | VARCHAR(255) | - | 상세 주소 |
+| `postcode` | VARCHAR(10) | - | 우편번호 |
+| `created_at` | TIMESTAMP | DEFAULT NOW() | 회원가입일 |
+| `updated_at` | TIMESTAMP | DEFAULT NOW() | 회원 정보 수정일 |
+| `deleted` | TINYINT | DEFAULT 0 | 회원 삭제 여부 (0: 활성, 1: 삭제) |
+
+#### group
+회원이 생성한 학습 그룹을 관리하는 테이블입니다.
+
+| 필드명 | 타입 | 제약조건 | 설명 |
+|--------|------|---------|------|
+| `group_id` | INT | PK, AUTO_INC | 그룹 고유 ID |
+| `member_id` | INT | FK | 그룹 생성자 회원 ID |
+| `name` | VARCHAR(100) | NOT NULL | 그룹명 |
+| `created_at` | TIMESTAMP | DEFAULT NOW() | 생성일 |
+| `updated_at` | TIMESTAMP | DEFAULT NOW() | 수정일 |
+
+#### popup
+회원에게 표시할 팝업 정보를 관리하는 테이블입니다.
+
+| 필드명 | 타입 | 제약조건 | 설명 |
+|--------|------|---------|------|
+| `popup_id` | INT | PK, AUTO_INC | 팝업 고유 ID |
+| `member_id` | INT | FK | 회원 ID |
+| `content` | TEXT | NOT NULL | 팝업 내용 |
+| `start_date` | VARCHAR(10) | - | 시작 날짜 (YYYY-MM-DD) |
+| `end_date` | VARCHAR(10) | - | 종료 날짜 (YYYY-MM-DD) |
+| `created_at` | TIMESTAMP | DEFAULT NOW() | 생성일 |
+| `updated_at` | TIMESTAMP | DEFAULT NOW() | 수정일 |
+
+---
+
+### 🟢 문제 (Question)
+
+#### exam_category
+시험 카테고리(자격증 종류)를 관리하는 테이블입니다.
+
+| 필드명 | 타입 | 제약조건 | 설명 |
+|--------|------|---------|------|
+| `category_id` | INT | PK, AUTO_INC | 카테고리 고유 ID |
+| `code` | VARCHAR(50) | NOT NULL, UNIQUE | 카테고리 코드 |
+| `name` | VARCHAR(100) | NOT NULL | 카테고리명 (예: 정보처리기사) |
+| `use_yn` | CHAR(1) | DEFAULT 'Y' | 사용 여부 (Y/N) |
+| `created_at` | TIMESTAMP | DEFAULT NOW() | 생성일 |
+| `updated_at` | TIMESTAMP | DEFAULT NOW() | 수정일 |
+
+#### exam_topic
+시험 주제(카테고리 내 세부 분류)를 관리하는 테이블입니다.
+
+| 필드명 | 타입 | 제약조건 | 설명 |
+|--------|------|---------|------|
+| `topic_id` | INT | PK, AUTO_INC | 주제 고유 ID |
+| `category_id` | INT | FK | 카테고리 참조 |
+| `name` | VARCHAR(100) | NOT NULL | 주제명 (예: 데이터베이스) |
+| `created_at` | TIMESTAMP | DEFAULT NOW() | 생성일 |
+| `updated_at` | TIMESTAMP | DEFAULT NOW() | 수정일 |
+
+#### subject
+과목 정보를 관리하는 테이블입니다.
+
+| 필드명 | 타입 | 제약조건 | 설명 |
+|--------|------|---------|------|
+| `subject_id` | INT | PK, AUTO_INC | 과목 고유 ID |
+| `name` | VARCHAR(100) | NOT NULL | 과목명 |
+| `created_at` | TIMESTAMP | DEFAULT NOW() | 생성일 |
+| `updated_at` | TIMESTAMP | DEFAULT NOW() | 수정일 |
+
+#### certification_question
+자격증 시험 문제를 관리하는 테이블입니다.
+
+| 필드명 | 타입 | 제약조건 | 설명 |
+|--------|------|---------|------|
+| `question_id` | INT | PK, AUTO_INC | 문제 고유 ID |
+| `subject_id` | INT | FK | 과목 참조 |
+| `question_text` | VARCHAR(1000) | NOT NULL | 문제 텍스트 |
+| `choice1` | VARCHAR(255) | - | 선택지 1 |
+| `choice2` | VARCHAR(255) | - | 선택지 2 |
+| `choice3` | VARCHAR(255) | - | 선택지 3 |
+| `choice4` | VARCHAR(255) | - | 선택지 4 |
+| `correct_answer` | INT | - | 정답 번호 (1~4) |
+| `explanation` | TEXT | - | 해설 |
+| `created_at` | TIMESTAMP | DEFAULT NOW() | 생성일 |
+| `updated_at` | TIMESTAMP | DEFAULT NOW() | 수정일 |
+
+---
+
+### 🟠 학습 (Learning)
+
+#### exam_attempt
+회원의 시험 응시 기록을 관리하는 테이블입니다.
+
+| 필드명 | 타입 | 제약조건 | 설명 |
+|--------|------|---------|------|
+| `attempt_id` | BIGINT | PK, AUTO_INC | 응시 고유 ID |
+| `member_id` | INT | FK | 회원 참조 |
+| `category_id` | INT | FK | 카테고리 참조 |
+| `started_at` | TIMESTAMP | - | 시험 시작 시간 |
+| `submitted_at` | TIMESTAMP | - | 시험 제출 시간 |
+| `difficulty` | VARCHAR(50) | - | 난이도 (EASY/MEDIUM/HARD) |
+| `created_at` | TIMESTAMP | DEFAULT NOW() | 생성일 |
+| `updated_at` | TIMESTAMP | DEFAULT NOW() | 수정일 |
+
+#### exam_attempt_answer
+회원의 시험 응시 답변을 관리하는 테이블입니다.
+
+| 필드명 | 타입 | 제약조건 | 설명 |
+|--------|------|---------|------|
+| `answer_id` | BIGINT | PK, AUTO_INC | 답변 고유 ID |
+| `attempt_id` | BIGINT | FK | 응시 참조 |
+| `question_id` | INT | FK | 문제 참조 |
+| `user_answer_no` | INT | - | 사용자 답변 번호 (1~4) |
+| `is_correct` | TINYINT | - | 정답 여부 (0: 오답, 1: 정답) |
+| `answered_at` | TIMESTAMP | - | 답변 시간 |
+
+#### member_question_stat
+회원의 문제별 풀이 통계를 관리하는 테이블입니다.
+
+| 필드명 | 타입 | 제약조건 | 설명 |
+|--------|------|---------|------|
+| `stat_id` | BIGINT | PK, AUTO_INC | 통계 고유 ID |
+| `member_id` | INT | FK | 회원 참조 |
+| `question_id` | INT | FK | 문제 참조 |
+| `exam_date` | VARCHAR(10) | - | 시험 날짜 (YYYY-MM-DD) |
+| `correct_count` | INT | DEFAULT 0 | 정답 횟수 |
+| `total_count` | INT | DEFAULT 0 | 총 풀이 횟수 |
+| `weight` | INT | - | 가중치 (중요도) |
+| `created_at` | TIMESTAMP | DEFAULT NOW() | 생성일 |
+| `updated_at` | TIMESTAMP | DEFAULT NOW() | 수정일 |
+
+---
+
+### 🟣 커뮤니티 (Community)
+
+#### board
+게시판(오답노트) 정보를 관리하는 테이블입니다.
+
+| 필드명 | 타입 | 제약조건 | 설명 |
+|--------|------|---------|------|
+| `board_id` | INT | PK, AUTO_INC | 게시글 고유 ID |
+| `member_id` | INT | FK | 작성자 회원 ID |
+| `title` | VARCHAR(255) | NOT NULL | 게시글 제목 |
+| `content` | TEXT | NOT NULL | 게시글 내용 |
+| `view_count` | INT | DEFAULT 0 | 조회수 |
+| `created_at` | TIMESTAMP | DEFAULT NOW() | 작성일 |
+| `modified_at` | TIMESTAMP | DEFAULT NOW() | 수정일 |
+| `deleted` | TINYINT | DEFAULT 0 | 삭제 여부 (0: 활성, 1: 삭제) |
+
+#### comment
+댓글 정보를 관리하는 테이블입니다.
+
+| 필드명 | 타입 | 제약조건 | 설명 |
+|--------|------|---------|------|
+| `comment_id` | INT | PK, AUTO_INC | 댓글 고유 ID |
+| `board_id` | INT | FK | 게시글 참조 |
+| `member_id` | INT | FK | 작성자 회원 ID |
+| `parent_id` | INT | FK (Self) | 부모 댓글 ID (대댓글용) |
+| `content` | TEXT | NOT NULL | 댓글 내용 |
+| `created_at` | TIMESTAMP | DEFAULT NOW() | 작성일 |
+| `updated_at` | TIMESTAMP | DEFAULT NOW() | 수정일 |
+| `deleted` | TINYINT | DEFAULT 0 | 삭제 여부 (0: 활성, 1: 삭제) |
+
+---
+
+### 🔴 지원 (Support)
+
+#### certification
+회원의 자격증 취득 현황을 관리하는 테이블입니다.
+
+| 필드명 | 타입 | 제약조건 | 설명 |
+|--------|------|---------|------|
+| `certification_id` | INT | PK, AUTO_INC | 자격증 고유 ID |
+| `member_id` | INT | FK | 회원 참조 |
+| `subject_id` | INT | FK | 과목 참조 |
+| `status` | VARCHAR(50) | - | 상태 (PENDING/PASSED/FAILED) |
+| `created_at` | TIMESTAMP | DEFAULT NOW() | 생성일 |
+| `updated_at` | TIMESTAMP | DEFAULT NOW() | 수정일 |
+
+#### attendance
+회원의 출석 현황을 관리하는 테이블입니다.
+
+| 필드명 | 타입 | 제약조건 | 설명 |
+|--------|------|---------|------|
+| `attendance_id` | INT | PK, AUTO_INC | 출석 고유 ID |
+| `member_id` | INT | FK | 회원 참조 |
+| `attend_date` | VARCHAR(10) | - | 출석 날짜 (YYYY-MM-DD) |
+| `created_at` | TIMESTAMP | DEFAULT NOW() | 생성일 |
+| `updated_at` | TIMESTAMP | DEFAULT NOW() | 수정일 |
+
+---
+
+## 🔗 테이블 관계도
+
+### 회원 관련 관계 (1:N)
+- **member** ↔ **board**: 1명의 회원은 여러 게시글을 작성할 수 있습니다.
+- **member** ↔ **comment**: 1명의 회원은 여러 댓글을 작성할 수 있습니다.
+- **member** ↔ **group**: 1명의 회원은 여러 그룹을 생성할 수 있습니다.
+- **member** ↔ **popup**: 1명의 회원은 여러 팝업을 받을 수 있습니다.
+
+### 학습 관련 관계 (1:N)
+- **member** ↔ **exam_attempt**: 1명의 회원은 여러 번 시험에 응시할 수 있습니다.
+- **exam_attempt** ↔ **exam_attempt_answer**: 1번의 응시는 여러 답변을 포함합니다.
+- **member** ↔ **member_question_stat**: 1명의 회원은 여러 문제의 통계를 가집니다.
+- **certification_question** ↔ **exam_attempt_answer**: 1개의 문제는 여러 응시자의 답변을 받습니다.
+
+### 문제 관련 관계 (1:N)
+- **exam_category** ↔ **exam_topic**: 1개의 카테고리는 여러 주제를 가집니다.
+- **subject** ↔ **certification_question**: 1개의 과목은 여러 문제를 가집니다.
+
+### 지원 관련 관계 (1:N)
+- **member** ↔ **certification**: 1명의 회원은 여러 자격증을 취득할 수 있습니다.
+- **member** ↔ **attendance**: 1명의 회원은 여러 출석 기록을 가집니다.
+
+---
+
+## 📌 주요 특징
+
+✅ **정규화된 구조**: 데이터 중복을 최소화하고 일관성을 유지합니다.
+✅ **확장성**: 새로운 자격증이나 주제 추가가 용이합니다.
+✅ **감시 기능**: `deleted` 필드로 논리적 삭제를 구현합니다.
+✅ **타임스탬프**: 모든 테이블에 `created_at`, `updated_at`으로 변경 이력을 추적합니다.
+✅ **통계 기능**: `member_question_stat` 테이블로 학습 진도를 추적합니다.
 
 ---
 
