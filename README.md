@@ -4,7 +4,9 @@
 ## 📊 데이터베이스 구조 개요
 | 논리적 데이터 모델링 | ERD 다이어그램 |
 |:---:|:---:|
-| ![논리적 데이터 모델링](./images/논리적_데이터_모델링.jpg) | ![ERD](./images/ERD.jpg) |
+| ![논리적 데이터 모델링]("<img width="500" height="410" alt="논리적 데이터 모델링" src="https://github.com/user-attachments/assets/ca8f233e-be46-4c54-a5e2-b1b76823ee84" />
+") | ![ERD](<img width="500" height="260" alt="ERD" src="https://github.com/user-attachments/assets/63bf8bca-2e41-453d-965f-21b8e95d0707" />
+) |
 
 
 
