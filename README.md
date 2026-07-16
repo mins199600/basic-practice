@@ -10,7 +10,7 @@
     </td>
     <td align="center" width="50%">
       <b>ERD 다이어그램</b><br>
-      <img width="500" height="260" alt="ERD" src="https://github.com/user-attachments/assets/63bf8bca-2e41-453d-965f-21b8e95d0707" />
+      <img width="500" height="410" alt="ERD" src="https://github.com/user-attachments/assets/63bf8bca-2e41-453d-965f-21b8e95d0707" />
     </td>
   </tr>
 </table>
