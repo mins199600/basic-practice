@@ -2,11 +2,18 @@
 # ERD (Entity Relationship Diagram)
 
 ## 📊 데이터베이스 구조 개요
-| 논리적 데이터 모델링 | ERD 다이어그램 |
-|:---:|:---:|
-| ![논리적 데이터 모델링]("<img width="500" height="410" alt="논리적 데이터 모델링" src="https://github.com/user-attachments/assets/ca8f233e-be46-4c54-a5e2-b1b76823ee84" />
-| ![ERD](<img width="500" height="260" alt="ERD" src="https://github.com/user-attachments/assets/63bf8bca-2e41-453d-965f-21b8e95d0707" />
-|
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <b>논리적 데이터 모델링</b><br>
+      <img width="500" height="410" alt="논리적 데이터 모델링" src="https://github.com/user-attachments/assets/ca8f233e-be46-4c54-a5e2-b1b76823ee84" />
+    </td>
+    <td align="center" width="50%">
+      <b>ERD 다이어그램</b><br>
+      <img width="500" height="260" alt="ERD" src="https://github.com/user-attachments/assets/63bf8bca-2e41-453d-965f-21b8e95d0707" />
+    </td>
+  </tr>
+</table>
 
 
 
