@@ -1,0 +1,191 @@
+/* ============================= */
+/* interview.css - 프로젝트 면접 준비 */
+/* ============================= */
+
+.interview-back-link {
+    font-size: 13px;
+    color: var(--bluegray);
+    text-decoration: none;
+}
+
+.interview-back-link:hover {
+    color: var(--navy);
+}
+
+.interview-error {
+    background: #fdecec;
+    border: 1px solid var(--danger);
+    color: var(--danger);
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    font-size: 13px;
+    margin-bottom: 16px;
+}
+
+.interview-register-form {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 24px;
+}
+
+.interview-register-form input[type="text"] {
+    flex: 1;
+    padding: 10px 14px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+}
+
+.interview-register-form input[type="text"]:focus {
+    outline: none;
+    border-color: var(--green);
+}
+
+/* 프로젝트 상세 */
+.interview-project-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    margin-bottom: 28px;
+    box-shadow: var(--shadow-sm);
+}
+
+.interview-project-desc {
+    color: var(--text);
+    font-size: 14px;
+    margin: 0 0 12px 0;
+    line-height: 1.6;
+}
+
+.interview-project-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+}
+
+.interview-project-meta a {
+    color: var(--green-strong);
+    text-decoration: none;
+}
+
+.interview-section-title {
+    font-size: 16px;
+    color: var(--navy);
+    margin: 24px 0 12px 0;
+}
+
+/* 채팅 화면 */
+.interview-chat-page .board-header {
+    align-items: center;
+}
+
+.interview-chat-page .board-header > div {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.interview-question-count {
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.interview-chat-window {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    height: 520px;
+    overflow-y: auto;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow-sm);
+}
+
+.interview-bubble {
+    max-width: 75%;
+    display: flex;
+}
+
+.interview-bubble--ai {
+    align-self: flex-start;
+}
+
+.interview-bubble--user {
+    align-self: flex-end;
+}
+
+.interview-bubble--error {
+    align-self: center;
+    color: var(--danger);
+    font-size: 13px;
+    background: #fdecec;
+    border-radius: var(--radius-sm);
+    padding: 8px 12px;
+}
+
+.interview-bubble-content {
+    padding: 12px 16px;
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.interview-bubble--ai .interview-bubble-content {
+    background: var(--navy-soft);
+    color: var(--navy-strong);
+    border-bottom-left-radius: 4px;
+}
+
+.interview-bubble--user .interview-bubble-content {
+    background: var(--green);
+    color: #ffffff;
+    border-bottom-right-radius: 4px;
+}
+
+.interview-chat-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.interview-chat-form textarea {
+    width: 100%;
+    min-height: 90px;
+    padding: 12px 14px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-family: inherit;
+    resize: vertical;
+}
+
+.interview-chat-form textarea:focus {
+    outline: none;
+    border-color: var(--green);
+}
+
+.interview-chat-form-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.interview-ended-banner {
+    text-align: center;
+    padding: 16px;
+    color: var(--text-muted);
+    font-size: 14px;
+}
+
+.interview-ended-banner a {
+    color: var(--green-strong);
+}

@@ -1,6 +1,76 @@
 # ERD
 
-<img width="747" height="501" alt="ERD" src="https://github.com/user-attachments/assets/24c544aa-8274-4865-8d85-979cf8df2302" />
+> 2026-07-16 기준. 자격증 문제풀이(과목 분류 포함)까지 반영한 전체 스키마입니다.
+
+```mermaid
+erDiagram
+    MEMBER ||--o{ BOARD : writes
+    MEMBER ||--o{ COMMENT : writes
+    BOARD ||--o{ COMMENT : has
+    COMMENT ||--o{ COMMENT : "replies to"
+    MEMBER ||--o{ CERTIFICATION : registers
+    MEMBER ||--o{ ATTENDANCE : "checks in"
+    CERTIFICATION ||--o{ SUBJECT : has
+    CERTIFICATION ||--o{ CERTIFICATION_QUESTION : contains
+    SUBJECT ||--o{ CERTIFICATION_QUESTION : classifies
+    MEMBER ||--o{ MEMBER_QUESTION_STAT : tracks
+    CERTIFICATION_QUESTION ||--o{ MEMBER_QUESTION_STAT : "has stats"
+
+    MEMBER {
+        int id PK
+        varchar email
+        varchar nickname
+        varchar role
+        tinyint deleted
+    }
+    BOARD {
+        int id PK
+        varchar title
+        int member_id FK
+        tinyint is_notice
+    }
+    COMMENT {
+        int id PK
+        int board_id FK
+        int member_id FK
+        int parent_id FK
+    }
+    POPUP {
+        bigint id PK
+        varchar title
+        char use_yn
+    }
+    CERTIFICATION {
+        int id PK
+        int member_id FK
+        varchar cert_name
+        varchar status
+    }
+    ATTENDANCE {
+        int id PK
+        int member_id FK
+        date attend_date
+    }
+    SUBJECT {
+        int id PK
+        int certification_id FK
+        varchar name
+        int display_order
+    }
+    CERTIFICATION_QUESTION {
+        int id PK
+        int certification_id FK
+        int subject_id FK
+        varchar question_text
+        tinyint answer_no
+    }
+    MEMBER_QUESTION_STAT {
+        int id PK
+        int member_id FK
+        int question_id FK
+        int weight
+    }
+```
 
 ## 테이블 구성
 
@@ -20,7 +90,7 @@
 
 ### board
 
-게시글 정보를 관리하는 테이블입니다.
+게시글(오답노트) 정보를 관리하는 테이블입니다.
 
 - `id`: 게시글 고유 ID
 - `title`: 게시글 제목
@@ -31,15 +101,98 @@
 - `category`: 게시글 카테고리
 - `is_notice`: 공지사항 여부
 - `file_path`: 첨부파일 경로
-- `member_id`: 게시글 작성자 회원 ID
+- `member_id`: 게시글 작성자 회원 ID (FK → member.id)
+
+### comment
+
+댓글/대댓글 정보를 관리하는 테이블입니다. 별도 테이블 없이 `parent_id`로 자기참조하여 대댓글을 표현합니다.
+
+- `id`: 댓글 고유 ID
+- `board_id`: 게시글 ID (FK → board.id)
+- `member_id`: 작성자 회원 ID (FK → member.id)
+- `parent_id`: 부모 댓글 ID (FK → comment.id, NULL이면 최상위 댓글)
+- `content`: 댓글 내용
+- `created_at`, `updated_at`: 작성/수정일시
+
+### popup
+
+메인 화면에 노출하는 팝업 정보를 관리하는 테이블입니다. 다른 테이블과 관계가 없는 독립 테이블입니다.
+
+- `id`, `title`, `content`, `start_date`, `end_date`, `use_yn`, `reg_date`, `update_date`
+
+### certification
+
+회원이 준비 중인 자격증을 관리하는 테이블입니다.
+
+- `id`: 자격증 고유 ID
+- `member_id`: 등록한 회원 ID (FK → member.id)
+- `cert_name`: 자격증명
+- `exam_date`: 시험 예정일
+- `status`: 준비중 / 합격 / 불합격
+- `memo`, `created_at`, `deleted`
+
+### subject
+
+자격증 하위 과목(파트)을 관리하는 테이블입니다. 자격증 1개에 여러 과목이 달립니다.
+
+- `id`: 과목 고유 ID
+- `certification_id`: 자격증 ID (FK → certification.id)
+- `name`: 과목명 (예: 해부생리학, 피부학)
+- `display_order`: 화면 표시 순서
+- `created_at`, `deleted`
+
+### certification_question
+
+자격증 문제 은행 테이블입니다. 과목 단위로 분류되어 출제됩니다.
+
+- `id`: 문제 고유 ID
+- `certification_id`: 자격증 ID (FK → certification.id)
+- `subject_id`: 과목 ID (FK → subject.id, 과목 미분류 시 NULL)
+- `question_text`, `choice1~4`, `answer_no`, `explanation`, `created_at`, `deleted`
+
+### member_question_stat
+
+회원별 문제 풀이 통계 테이블입니다. 오답 가중치 기반 출제 알고리즘의 핵심 데이터입니다.
+
+- `id`: 통계 고유 ID
+- `member_id`: 회원 ID (FK → member.id)
+- `question_id`: 문제 ID (FK → certification_question.id)
+- `weight`: 출제 가중치 (오답 +2, 정답 -1, 최소 1)
+- `correct_count`, `wrong_count`, `last_answered_at`
+- `(member_id, question_id)` 조합이 유니크 — `INSERT ... ON DUPLICATE KEY UPDATE`로 갱신
+
+### attendance
+
+회원의 일별 출석 체크 테이블입니다.
+
+- `id`, `member_id`(FK → member.id), `attend_date`, `created_at`
+- `(member_id, attend_date)` 조합이 유니크 — 하루 1건만 출석 가능
+
+### question / exam_topic / exam_category / exam_attempt / exam_attempt_answer
+
+`certification_question` 계열과 별개로 존재하는 예전 시험 시스템입니다. 자격증(certification) 단위가 아니라 분류(exam_category) → 주제(exam_topic) 단위로 문제를 관리하며, 응시 이력을 `exam_attempt` / `exam_attempt_answer`에 기록합니다. 현재는 자격증 학습 시스템으로 대체되어 신규 기능 개발은 `certification_question` 쪽에서 이루어지고 있습니다.
 
 ---
 
 ## 테이블 관계
 
-- 회원 1명은 여러 개의 게시글을 작성할 수 있습니다.
-- 게시글 1개는 반드시 1명의 회원에게 속합니다.
-- `board.member_id`는 `member.id`를 참조합니다.
+모든 관계는 1:N이며, N:M(다대다) 관계는 없습니다. `popup`은 다른 테이블과 관계가 없는 독립 테이블입니다.
+
+| 부모 | 자식 | FK | 설명 |
+|---|---|---|---|
+| member | board | member_id | 회원 1명이 여러 게시글 작성 |
+| member | comment | member_id | 회원 1명이 여러 댓글 작성 |
+| board | comment | board_id | 게시글 1건에 댓글 여러 건 |
+| comment | comment | parent_id | 댓글의 대댓글 (자기참조) |
+| member | certification | member_id | 회원이 준비 중인 자격증 등록 |
+| member | attendance | member_id | 회원의 일자별 출석 기록 |
+| certification | subject | certification_id | 자격증 1개에 과목 여러 개 |
+| certification | certification_question | certification_id | 자격증 1개에 문제 여러 개 |
+| subject | certification_question | subject_id | 과목 1개에 문제 여러 개 |
+| member | member_question_stat | member_id | 회원별 출제 가중치 추적 |
+| certification_question | member_question_stat | question_id | 문제별 통계 누적 |
+
+레거시 시험 시스템(`exam_category`/`exam_topic`/`question`/`exam_attempt`/`exam_attempt_answer`) 간 관계와 전체 ERD는 위 다이어그램과 [`docs/logical_data_model.md`](docs/logical_data_model.md)를 참고하세요.
 
 ---
 

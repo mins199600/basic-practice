@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.practice.logincrud.interview.InterviewProjectMapper">
+
+    <insert id="insert" parameterType="com.practice.logincrud.interview.InterviewProjectDto"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO interview_project
+            (member_id, repo_url, repo_owner, repo_name, description, primary_language, readme_text)
+        VALUES
+            (#{memberId}, #{repoUrl}, #{repoOwner}, #{repoName}, #{description}, #{primaryLanguage}, #{readmeText})
+    </insert>
+
+    <select id="findById" resultType="com.practice.logincrud.interview.InterviewProjectDto">
+        SELECT id, member_id, repo_url, repo_owner, repo_name, description, primary_language, readme_text, created_at
+        FROM interview_project
+        WHERE id = #{id}
+          AND deleted = 0
+    </select>
+
+    <select id="findByMemberId" resultType="com.practice.logincrud.interview.InterviewProjectDto">
+        SELECT id, member_id, repo_url, repo_owner, repo_name, description, primary_language, created_at
+        FROM interview_project
+        WHERE member_id = #{memberId}
+          AND deleted = 0
+        ORDER BY created_at DESC
+    </select>
+
+    <select id="countByMemberIdAndRepoUrl" resultType="int">
+        SELECT COUNT(*)
+        FROM interview_project
+        WHERE member_id = #{memberId}
+          AND repo_url = #{repoUrl}
+          AND deleted = 0
+    </select>
+
+</mapper>

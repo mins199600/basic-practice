@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.practice.logincrud.interview.InterviewMessageMapper">
+
+    <insert id="insert" parameterType="com.practice.logincrud.interview.InterviewMessageDto"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO interview_message
+            (session_id, sender, message_type, content)
+        VALUES
+            (#{sessionId}, #{sender}, #{messageType}, #{content})
+    </insert>
+
+    <select id="findBySessionId" resultType="com.practice.logincrud.interview.InterviewMessageDto">
+        SELECT id, session_id, sender, message_type, content, created_at
+        FROM interview_message
+        WHERE session_id = #{sessionId}
+        ORDER BY created_at ASC, id ASC
+    </select>
+
+</mapper>

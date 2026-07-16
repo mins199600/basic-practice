@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>면접 진행 중</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/css/home.css">
+    <link rel="stylesheet" type="text/css" href="/css/interview.css">
+</head>
+<body>
+
+<div class="board-container interview-chat-page"
+     id="chat-app"
+     th:data-session-id="${interviewSession.id}"
+     th:data-ended="${interviewSession.status == 'ENDED'}">
+
+    <div class="board-header">
+        <h2 th:text="${interviewSession.repoName} + ' 면접'">프로젝트 면접</h2>
+        <div>
+            <span class="interview-question-count" th:text="'문항 ' + ${interviewSession.questionCount} + '개 진행'">문항 0개 진행</span>
+            <a th:href="@{/interview/{id}(id=${interviewSession.projectId})}" class="interview-back-link">← 프로젝트로</a>
+        </div>
+    </div>
+
+    <div class="interview-chat-window" id="chat-window">
+        <div th:each="m : ${messageList}"
+             th:class="${m.sender == 'AI'} ? 'interview-bubble interview-bubble--ai' : 'interview-bubble interview-bubble--user'">
+            <div class="interview-bubble-content" th:text="${m.content}">메시지 내용</div>
+        </div>
+    </div>
+
+    <form id="chat-form" class="interview-chat-form" th:unless="${interviewSession.status == 'ENDED'}">
+        <textarea id="chat-input" placeholder="답변을 입력하세요..." required></textarea>
+        <div class="interview-chat-form-actions">
+            <button type="submit" id="chat-send-btn" class="write-button">답변 제출</button>
+            <button type="button" id="chat-end-btn" class="interview-back-link" style="background:none;border:none;cursor:pointer;">면접 종료</button>
+        </div>
+    </form>
+
+    <div th:if="${interviewSession.status == 'ENDED'}" class="interview-ended-banner">
+        종료된 면접입니다. <a th:href="@{/interview/{id}(id=${interviewSession.projectId})}">새 면접을 시작해보세요 →</a>
+    </div>
+</div>
+
+<form id="end-session-form" th:action="@{/interview/sessions/{id}/end(id=${interviewSession.id})}" method="post" style="display:none;"></form>
+
+<script th:inline="javascript">
+    const SESSION_ID = /*[[${interviewSession.id}]]*/ 0;
+</script>
+<script src="/js/interview-chat.js"></script>
+
+</body>
+</html>

@@ -17,6 +17,7 @@ Environment="DB_USERNAME=__SET_ME__"
 Environment="DB_PASSWORD=__SET_ME__"
 Environment="MAIL_USERNAME=__SET_ME__"
 Environment="MAIL_PASSWORD=__SET_ME__"
+Environment="ANTHROPIC_API_KEY=__SET_ME__"
 
 [Install]
 WantedBy=multi-user.target

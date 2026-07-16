@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${project.repoOwner} + '/' + ${project.repoName}">프로젝트 상세</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/css/home.css">
+    <link rel="stylesheet" type="text/css" href="/css/interview.css">
+</head>
+<body>
+
+<div class="board-container">
+    <div class="board-header">
+        <h2 th:text="${project.repoOwner} + '/' + ${project.repoName}">owner/repo</h2>
+        <a th:href="@{/interview}" class="interview-back-link">← 목록으로</a>
+    </div>
+
+    <div th:if="${errorMessage}" class="interview-error">
+        <span th:text="${errorMessage}">에러 메시지</span>
+    </div>
+
+    <div class="interview-project-card">
+        <p class="interview-project-desc" th:text="${project.description} ?: '설명이 없는 저장소입니다.'">설명</p>
+        <div class="interview-project-meta">
+            <span th:if="${project.primaryLanguage}" th:text="'주요 언어: ' + ${project.primaryLanguage}">주요 언어: Java</span>
+            <a th:href="${project.repoUrl}" target="_blank" rel="noopener">GitHub에서 보기 ↗</a>
+        </div>
+
+        <form th:action="@{/interview/{id}/sessions(id=${project.id})}" method="post">
+            <button type="submit" class="write-button">새 면접 시작하기</button>
+        </form>
+    </div>
+
+    <h3 class="interview-section-title">지난 면접 기록</h3>
+
+    <div th:if="${sessionList == null or #lists.isEmpty(sessionList)}" class="empty-board">
+        아직 진행한 면접이 없습니다. "새 면접 시작하기"를 눌러보세요.
+    </div>
+
+    <table th:if="${sessionList != null and !#lists.isEmpty(sessionList)}" class="board-table">
+        <thead>
+        <tr>
+            <th>시작일</th>
+            <th>진행 문항 수</th>
+            <th>상태</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="s : ${sessionList}">
+            <td th:text="${#temporals.format(s.createdAt, 'yyyy-MM-dd HH:mm')}">2026-07-16 10:00</td>
+            <td th:text="${s.questionCount}">0</td>
+            <td th:text="${s.status == 'ENDED'} ? '종료' : '진행중'">진행중</td>
+            <td>
+                <a th:href="@{/interview/sessions/{id}(id=${s.id})}">이어보기 →</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>
