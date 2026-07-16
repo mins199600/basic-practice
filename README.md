@@ -69,7 +69,7 @@ ALTER TABLE member ADD COLUMN role VARCHAR(50) DEFAULT 'USER';
 
 ### 3. Soft Delete 방식 (논리적 삭제)
 
-회원 삭제 시 **물리적 삭제(Hard Delete)가 아닌 논리적 삭제(Soft Delete)**를 사용합니다.
+회원 삭제 시 **물리적 삭제(Hard Delete)가 아닌 논리적 삭제(Soft Delete)** 를 사용합니다.
 
 **이유:**
 - ✅ 회원 탈퇴 후에도 기존 게시글 이력 유지
