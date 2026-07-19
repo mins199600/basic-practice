@@ -11,5 +11,6 @@ public class UserDto {
     private String role;    //관리자 유저 역할
     private String nickName;
     private String password;
+    private String profileImage;  // 프로필 사진 URL (예: /uploads/profile/xxx.jpg), 없으면 null
     private Integer deleted;
 }

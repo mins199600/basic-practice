@@ -19,4 +19,13 @@
         ORDER BY created_at ASC, id ASC
     </select>
 
+    <select id="countAnsweredByMemberId" resultType="int">
+        SELECT COUNT(*)
+        FROM interview_message m
+            JOIN interview_session s ON s.id = m.session_id
+        WHERE s.member_id = #{memberId}
+          AND m.sender = 'USER'
+          AND m.message_type = 'ANSWER'
+    </select>
+
 </mapper>

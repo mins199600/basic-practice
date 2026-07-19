@@ -15,6 +15,27 @@
 
         <h2 id="myInfoTitle">내 정보</h2>
 
+        <div id="messageBox" th:if="${message}" th:text="${message}"></div>
+
+        <!-- 프로필 사진 카드 -->
+        <div id="profileImageCard" class="infoCard">
+            <div class="cardTitle">프로필 사진</div>
+            <div class="cardContent">
+                <div class="profileImageRow">
+                    <img th:if="${user.profileImage != null and user.profileImage != ''}"
+                         th:src="${user.profileImage}" alt="프로필 사진" class="profileImagePreview">
+                    <span th:unless="${user.profileImage != null and user.profileImage != ''}"
+                          class="profileImagePlaceholder">📷</span>
+
+                    <form th:action="@{/user/profile-image}" method="post" enctype="multipart/form-data" class="profileImageForm">
+                        <input type="file" name="profileImage" accept="image/jpeg,image/png,image/webp,image/gif" required>
+                        <button type="submit">사진 업로드</button>
+                    </form>
+                </div>
+                <p class="profileImageHint">jpg, png, webp, gif · 최대 5MB</p>
+            </div>
+        </div>
+
         <!-- 회원정보 수정 카드 -->
         <div id="editCard" class="infoCard">
             <div id="editTitle" class="cardTitle">회원정보 수정</div>

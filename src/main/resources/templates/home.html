@@ -101,46 +101,47 @@
         </div>
 
         <div class="dashboard-side">
-            <!-- 프로필 사진 -->
-            <div class="profile-photo-card">
+            <!-- 프로필 사진 - 클릭하면 사진을 올리고 바꿀 수 있는 /edit 페이지로 이동 -->
+            <a th:href="@{/edit}" class="profile-photo-card profile-photo-card--link">
                 <div class="profile-photo-frame">
                     <img th:if="${profileImageUrl != null and profileImageUrl != ''}" th:src="${profileImageUrl}" alt="프로필 사진" class="profile-photo-img">
                     <span th:unless="${profileImageUrl != null and profileImageUrl != ''}" class="profile-photo-placeholder">📷</span>
                 </div>
                 <p class="profile-photo-label">내 프로필 사진</p>
-            </div>
+                <p class="profile-photo-edit-hint">✏️ 눌러서 변경</p>
+            </a>
 
             <!-- 실력 분석 / 취업 성공률 -->
             <div class="stats-card">
                 <h3 class="stats-title">실력 분석 &amp; 취업 성공률</h3>
 
                 <div class="stats-grade">
-                    <span class="stats-grade-value">B+</span>
+                    <span class="stats-grade-value" th:text="${skillStats.grade}">B+</span>
                     <span class="stats-grade-label">종합 등급</span>
                 </div>
 
                 <div class="stats-bar-list">
                     <div class="stats-bar-item">
-                        <div class="stats-bar-label"><span>자격증</span><span th:text="${certPassRate} + '%'">0%</span></div>
-                        <div class="stats-bar-track"><div class="stats-bar-fill" th:style="'width:' + ${certPassRate} + '%'"></div></div>
+                        <div class="stats-bar-label"><span>자격증</span><span th:text="${skillStats.certRate} + '%'">0%</span></div>
+                        <div class="stats-bar-track"><div class="stats-bar-fill" th:style="'width:' + ${skillStats.certRate} + '%'"></div></div>
                     </div>
                     <div class="stats-bar-item">
-                        <div class="stats-bar-label"><span>면접 준비</span><span>40%</span></div>
-                        <div class="stats-bar-track"><div class="stats-bar-fill" style="width:40%"></div></div>
+                        <div class="stats-bar-label"><span>면접 준비</span><span th:text="${skillStats.interviewRate} + '%'">0%</span></div>
+                        <div class="stats-bar-track"><div class="stats-bar-fill" th:style="'width:' + ${skillStats.interviewRate} + '%'"></div></div>
                     </div>
                     <div class="stats-bar-item">
-                        <div class="stats-bar-label"><span>코딩테스트</span><span>55%</span></div>
-                        <div class="stats-bar-track"><div class="stats-bar-fill" style="width:55%"></div></div>
+                        <div class="stats-bar-label"><span>코딩테스트</span><span th:text="${skillStats.codingTestRate} + '%'">0%</span></div>
+                        <div class="stats-bar-track"><div class="stats-bar-fill" th:style="'width:' + ${skillStats.codingTestRate} + '%'"></div></div>
                     </div>
                     <div class="stats-bar-item">
-                        <div class="stats-bar-label"><span>출석률</span><span th:text="${attendanceRate} + '%'">0%</span></div>
-                        <div class="stats-bar-track"><div class="stats-bar-fill" th:style="'width:' + ${attendanceRate} + '%'"></div></div>
+                        <div class="stats-bar-label"><span>출석률</span><span th:text="${skillStats.attendanceRate} + '%'">0%</span></div>
+                        <div class="stats-bar-track"><div class="stats-bar-fill" th:style="'width:' + ${skillStats.attendanceRate} + '%'"></div></div>
                     </div>
                 </div>
 
                 <div class="stats-success-rate">
                     <span class="stats-success-label">예상 취업 성공률</span>
-                    <span class="stats-success-value">72%</span>
+                    <span class="stats-success-value" th:text="${skillStats.successRate} + '%'">72%</span>
                 </div>
             </div>
 

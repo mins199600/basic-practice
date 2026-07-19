@@ -10,17 +10,23 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /*
  * subjectId 파라미터 정책:
  *  - 과목이 등록된 자격증(예: 피부자격증)은 /subjects 화면을 거쳐 subjectId를 받아온다.
  *  - subjectId가 없는 자격증(과목 미분류)은 기존처럼 자격증 전체 문제를 대상으로 출제한다(하위 호환).
- *  - "직전 문제 연속 출제 방지"는 과목 단위로 독립적으로 동작해야 하므로 세션 키에 subjectId도 포함한다.
+ *
+ * 출제 방식 - "전체 → 오답만 → 또 오답만 → 100점":
+ *  - 1회차는 (자격증, 과목) 범위의 전체 문제를 id 순서대로 처음부터 끝까지 낸다.
+ *  - 한 회차가 끝났을 때 이번 회차에서 하나라도 틀렸다면, 틀린 문제만 모아 다음 회차를 시작한다.
+ *  - 틀린 문제가 하나도 없을 때까지(=100점) 이 과정을 반복한다.
+ *  - 진행 상태(QuizRoundState)는 DB가 아니라 세션에 저장한다 - 로그아웃/세션 만료 시 처음부터 다시 시작된다.
  */
 
 /**
- * 자격증 문제풀이(오답 가중치 출제) 전용 컨트롤러.
+ * 자격증 문제풀이(전체 → 오답만 반복 출제) 전용 컨트롤러.
  * 기존 CertificationController(/certification, 내 자격증 CRUD)와는 별도로,
  * 요구된 URL 스펙(/certifications, memberId 쿼리 파라미터)을 그대로 따른다.
  *
@@ -66,7 +72,7 @@ public class CertificationQuizController {
         return "certification/subject-list";
     }
 
-    // 문제 1개 출제 (가중 랜덤 + 직전 문제 연속 출제 방지, 과목 단위)
+    // 문제 1개 출제 - 현재 회차 큐의 맨 앞 문제를 꺼내 보여준다. 큐가 비었으면 다음 회차로 넘어가거나 완료 처리한다.
     @GetMapping("/certifications/{certificationId}/quiz")
     public String quiz(@PathVariable Long certificationId,
                         @RequestParam Long memberId,
@@ -74,35 +80,64 @@ public class CertificationQuizController {
                         HttpSession session,
                         Model model) {
 
-        String sessionKey = lastQuestionSessionKey(certificationId, subjectId, memberId);
-        Long lastQuestionId = (Long) session.getAttribute(sessionKey);
-
-        CertificationQuestionDto question =
-                certificationQuestionService.pickNextQuestion(certificationId, subjectId, memberId, lastQuestionId);
-
         model.addAttribute("certificationId", certificationId);
         model.addAttribute("memberId", memberId);
         model.addAttribute("subjectId", subjectId);
 
-        if (question == null) {
-            log.info("문제 없음 certificationId={} subjectId={} memberId={}", certificationId, subjectId, memberId);
-            return "certification/quiz-empty";
+        String sessionKey = quizRoundSessionKey(certificationId, subjectId);
+        QuizRoundState state = (QuizRoundState) session.getAttribute(sessionKey);
+
+        // 진행 중인 회차가 없으면(처음 시작, 또는 세션 만료) 전체 문제로 1회차를 새로 연다.
+        if (state == null) {
+            List<Long> allIds = certificationQuestionService.getQuestionIdsInOrder(certificationId, subjectId);
+            if (allIds.isEmpty()) {
+                log.info("문제 없음 certificationId={} subjectId={} memberId={}", certificationId, subjectId, memberId);
+                return "certification/quiz-empty";
+            }
+            state = new QuizRoundState(1, new ArrayList<>(allIds), new ArrayList<>(), allIds.size());
+            session.setAttribute(sessionKey, state);
         }
 
-        session.setAttribute(sessionKey, question.getId());
+        // 이번 회차 문제를 다 풀었으면: 오답이 없으면 완료(100점), 있으면 오답만 모아 다음 회차 시작
+        if (state.getRemainingQueue().isEmpty()) {
+            if (state.getWrongThisRound().isEmpty()) {
+                session.removeAttribute(sessionKey);
+                log.info("과목 100점 완료 certificationId={} subjectId={} memberId={}", certificationId, subjectId, memberId);
+                return "certification/quiz-complete";
+            }
+            List<Long> nextQueue = new ArrayList<>(state.getWrongThisRound());
+            state = new QuizRoundState(state.getRoundNumber() + 1, nextQueue, new ArrayList<>(), nextQueue.size());
+            session.setAttribute(sessionKey, state);
+        }
+
+        Long nextQuestionId = state.getRemainingQueue().get(0);
+        CertificationQuestionDto question = certificationQuestionService.findById(nextQuestionId);
+
+        if (question == null) {
+            // 방어 코드: 큐에 있던 문제가 그 사이 삭제된 경우 - 건너뛰고 다음 문제로
+            state.getRemainingQueue().remove(0);
+            return "redirect:/certifications/" + certificationId + "/quiz?memberId=" + memberId
+                    + (subjectId != null ? "&subjectId=" + subjectId : "");
+        }
+
+        int solvedInRound = state.getTotalInRound() - state.getRemainingQueue().size();
 
         model.addAttribute("mode", "question");
         model.addAttribute("question", question);
+        model.addAttribute("roundNumber", state.getRoundNumber());
+        model.addAttribute("progressCurrent", solvedInRound + 1);
+        model.addAttribute("progressTotal", state.getTotalInRound());
         return "certification/quiz";
     }
 
-    // 제출 + 즉시 채점
+    // 제출 + 즉시 채점. 큐 맨 앞과 제출된 문제가 일치할 때만 큐를 전진시킨다(새로고침/중복 제출 방지).
     @PostMapping("/certifications/{certificationId}/quiz/submit")
     public String submit(@PathVariable Long certificationId,
                          @RequestParam Long memberId,
                          @RequestParam(required = false) Long subjectId,
                          @RequestParam Long questionId,
                          @RequestParam Integer selectedChoice,
+                         HttpSession session,
                          Model model) {
 
         CertificationQuestionDto question = certificationQuestionService.findById(questionId);
@@ -114,8 +149,18 @@ public class CertificationQuizController {
         }
 
         boolean correct = question.getAnswerNo() != null && question.getAnswerNo().equals(selectedChoice);
-
         certificationQuestionService.recordAnswer(memberId, questionId, correct);
+
+        String sessionKey = quizRoundSessionKey(certificationId, subjectId);
+        QuizRoundState state = (QuizRoundState) session.getAttribute(sessionKey);
+
+        if (state != null && !state.getRemainingQueue().isEmpty()
+                && state.getRemainingQueue().get(0).equals(questionId)) {
+            state.getRemainingQueue().remove(0);
+            if (!correct) {
+                state.getWrongThisRound().add(questionId);
+            }
+        }
 
         model.addAttribute("certificationId", certificationId);
         model.addAttribute("memberId", memberId);
@@ -124,10 +169,18 @@ public class CertificationQuizController {
         model.addAttribute("question", question);
         model.addAttribute("correct", correct);
         model.addAttribute("selectedChoice", selectedChoice);
+
+        if (state != null) {
+            int solvedInRound = state.getTotalInRound() - state.getRemainingQueue().size();
+            model.addAttribute("roundNumber", state.getRoundNumber());
+            model.addAttribute("progressCurrent", solvedInRound);
+            model.addAttribute("progressTotal", state.getTotalInRound());
+        }
+
         return "certification/quiz";
     }
 
-    private String lastQuestionSessionKey(Long certificationId, Long subjectId, Long memberId) {
-        return "lastQuestionId_" + certificationId + "_" + subjectId + "_" + memberId;
+    private String quizRoundSessionKey(Long certificationId, Long subjectId) {
+        return "quizRound_" + certificationId + "_" + subjectId;
     }
 }

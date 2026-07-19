@@ -17,6 +17,9 @@ public class InterviewService {
     private final GitHubService gitHubService;
     private final ClaudeAiService claudeAiService;
 
+    // 답변 이 개수만큼 쌓이면 "면접 준비율" 100%로 간주한다 (모의면접 2회 x 질문 5개 수준).
+    private static final int PREP_TARGET_ANSWERS = 10;
+
     public List<InterviewProjectDto> getMyProjects(Long memberId) {
         return interviewProjectMapper.findByMemberId(memberId);
     }
@@ -127,6 +130,12 @@ public class InterviewService {
 
     public void endSession(Long sessionId) {
         interviewSessionMapper.endSession(sessionId);
+    }
+
+    // 홈 대시보드용 - 면접 준비율(%). 답변 제출 개수를 기준으로 계산하며 100을 넘지 않는다.
+    public int getPrepRate(Long memberId) {
+        int answeredCount = interviewMessageMapper.countAnsweredByMemberId(memberId);
+        return Math.min(100, (int) Math.round(answeredCount * 100.0 / PREP_TARGET_ANSWERS));
     }
 
     private InterviewMessageDto saveAiMessage(Long sessionId, String type, String content) {

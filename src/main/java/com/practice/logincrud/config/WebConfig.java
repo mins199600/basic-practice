@@ -2,12 +2,29 @@ package com.practice.logincrud.config;
 
 import com.practice.logincrud.admin.adminconfig.AdminInterceptor;
 import com.practice.logincrud.interceptor.LoginInterceptor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.nio.file.Paths;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
+
+    // application.yml의 file.upload-dir과 동일한 값을 참조 (프로필 사진 등 업로드 파일 저장 경로)
+    @Value("${file.upload-dir:uploads}")
+    private String uploadDir;
+
+    // /uploads/** 요청이 오면 실제 파일시스템의 업로드 디렉터리에서 찾아 응답한다.
+    // 상대경로를 절대경로로 변환해두지 않으면 실행 위치에 따라 엉뚱한 곳을 찾을 수 있어 toAbsolutePath()로 고정한다.
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        String absoluteUploadPath = Paths.get(uploadDir).toAbsolutePath().normalize().toString();
+        registry.addResourceHandler("/uploads/**")
+                .addResourceLocations("file:" + absoluteUploadPath + "/");
+    }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
@@ -25,6 +42,7 @@ public class WebConfig implements WebMvcConfigurer {
                         "/css/**",          // 로그인 여부와 상관 없기 때문에 브라우저가 불러와야 화면에 정상적으로 표시됨
                         "/js/**",
                         "/images/**",
+                        "/uploads/**",      // 프로필 사진 등 업로드 이미지 - 정적 리소스이므로 로그인 체크 제외
                         "/api/user-info",    //사용자 정보를 JS에서 호출하는데, 로그인 안 된 상태에서도 로그인 안함을 반환 해야 하기 때문에
                         "/email/send-code",
                         "/email/verify-code",

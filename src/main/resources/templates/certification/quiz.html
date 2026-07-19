@@ -14,6 +14,12 @@
 
         <!-- ============ 문제 출제 화면 ============ -->
         <div th:if="${mode == 'question'}">
+            <p class="quiz-progress">
+                <span th:text="${roundNumber} + '회차'">1회차</span>
+                ·
+                <span th:text="${progressCurrent} + ' / ' + ${progressTotal}">1 / 60</span>
+                <span th:if="${roundNumber > 1}" class="quiz-progress-hint">(지난 회차 오답만 다시 풀어요)</span>
+            </p>
             <h2 class="form-title" th:text="${question.questionText}">문제 내용이 들어갑니다.</h2>
 
             <form th:action="@{/certifications/{id}/quiz/submit(id=${certificationId})}" method="post">
@@ -54,6 +60,11 @@
 
         <!-- ============ 채점 결과 화면 ============ -->
         <div th:if="${mode == 'result'}">
+            <p class="quiz-progress" th:if="${roundNumber != null}">
+                <span th:text="${roundNumber} + '회차'">1회차</span>
+                ·
+                <span th:text="${progressCurrent} + ' / ' + ${progressTotal}">1 / 60</span>
+            </p>
             <h2 class="form-title" th:text="${question.questionText}">문제 내용이 들어갑니다.</h2>
 
             <p th:if="${correct}" class="quiz-result quiz-result--correct">정답입니다! 🎉</p>

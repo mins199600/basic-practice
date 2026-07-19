@@ -322,7 +322,21 @@ body {
     padding: 20px;
 }
 
+.profile-photo-card--link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.profile-photo-card--link:hover {
+    border-color: #b8c8dc;
+    box-shadow: var(--shadow-md);
+}
+
 .profile-photo-frame {
+    position: relative;
     width: 96px;
     height: 96px;
     margin: 0 auto 10px auto;
@@ -345,6 +359,13 @@ body {
     margin: 0;
     font-size: 13px;
     color: var(--text-muted);
+    text-align: center;
+}
+
+.profile-photo-edit-hint {
+    margin: 4px 0 0 0;
+    font-size: 11px;
+    color: var(--bluegray);
     text-align: center;
 }
 

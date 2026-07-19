@@ -1,3 +1,16 @@
+.quiz-progress {
+    font-size: 13px;
+    font-weight: 600;
+    color: #03c75a;
+    margin: 0 0 10px 0;
+}
+
+.quiz-progress-hint {
+    font-weight: 400;
+    color: #999;
+    margin-left: 4px;
+}
+
 .quiz-choice {
     margin-bottom: 12px;
 }

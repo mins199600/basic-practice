@@ -39,4 +39,7 @@ public interface MemberMapper {
     //비밀번호 재설정
     void updatePassword(@Param("email") String email, @Param("password") String password);
 
+    //프로필 사진 경로 업데이트
+    void updateProfileImage(@Param("email") String email, @Param("profileImage") String profileImage);
+
 }

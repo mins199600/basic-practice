@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.HashMap;
@@ -318,6 +319,27 @@ public class MemberController {
         return "redirect:/home";
     }
 
+
+    // 프로필 사진 업로드
+    @PostMapping("/user/profile-image")
+    public String uploadProfileImage(@RequestParam("profileImage") MultipartFile file,
+                                     HttpSession session,
+                                     RedirectAttributes redirectAttributes) {
+        String email = (String) session.getAttribute("email");
+
+        try {
+            memberService.uploadProfileImage(email, file);
+            redirectAttributes.addFlashAttribute("message", "프로필 사진이 변경되었습니다.");
+        } catch (IllegalArgumentException e) {
+            // 사용자 입력 문제(형식/용량 등) - 그대로 안내
+            redirectAttributes.addFlashAttribute("message", e.getMessage());
+        } catch (RuntimeException e) {
+            log.error("프로필 이미지 업로드 실패 email={}", email, e);
+            redirectAttributes.addFlashAttribute("message", "이미지 업로드 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+        }
+
+        return "redirect:/edit";
+    }
 
     //회원정보 삭제
     @PostMapping("/user/delete")

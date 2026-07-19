@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>과목 완료</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/css/create.css">
+    <link rel="stylesheet" type="text/css" href="/css/quiz.css">
+</head>
+<body>
+
+<div class="board-form-container">
+    <div class="board-form-card" style="text-align:center;">
+        <div style="font-size:48px;margin-bottom:8px;">🎉</div>
+        <h2 class="form-title">100점 완료!</h2>
+        <p style="color:#777;font-size:14px;">
+            전체 문제를 다 맞힐 때까지 오답만 반복해서 이 과목을 완전히 정복했어요.
+        </p>
+
+        <div class="form-button-area" style="margin-top:20px;">
+            <a th:href="@{/certifications/{id}/quiz(id=${certificationId}, memberId=${memberId}, subjectId=${subjectId})}"
+               class="submit-button" style="text-align:center;">다시 풀어보기</a>
+            <a th:href="@{/certifications/{id}/subjects(id=${certificationId}, memberId=${memberId})}"
+               class="cancel-button">다른 과목 풀기</a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

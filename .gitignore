@@ -44,3 +44,6 @@ src/main/resources/application-local.yml
 
 # Claude Code local settings
 .claude/
+
+# 로컬에서 업로드 테스트한 파일 (프로필 사진 등) - 실사용자 데이터라 커밋 대상 아님
+uploads/

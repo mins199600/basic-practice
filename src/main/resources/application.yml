@@ -32,8 +32,24 @@ spring:
           timeout: 5000
           writetimeout: 5000
 
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 6MB
+
 mybatis:
   mapper-locations: classpath:mapper/*.xml
   type-aliases-package: com.practice.logincrud
   configuration:
     map-underscore-to-camel-case: true
+
+# 업로드 파일 저장 경로. 상대경로면 애플리케이션 실행 디렉터리(WorkingDirectory) 기준으로 생성된다.
+# EC2 systemd 서비스는 WorkingDirectory=/opt/app 이므로 /opt/app/uploads 에 저장됨.
+file:
+  upload-dir: ${FILE_UPLOAD_DIR:uploads}
+
+# 프로젝트 면접 준비 기능 (com.practice.logincrud.interview) 전용 설정
+# ANTHROPIC_API_KEY는 반드시 환경변수로 주입할 것 — 절대 여기에 실제 키를 커밋하지 말 것
+anthropic:
+  api-key: ${ANTHROPIC_API_KEY:}
+  model: ${ANTHROPIC_MODEL:claude-sonnet-4-5}

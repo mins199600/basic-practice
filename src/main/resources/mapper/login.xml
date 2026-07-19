@@ -6,7 +6,7 @@
 
     <!--로그인-->
     <select id="findUserLogin" parameterType="String" resultType="com.practice.logincrud.member.UserDto">
-        SELECT id, email, password, nickname AS nickName, deleted
+        SELECT id, email, password, nickname AS nickName, profile_image AS profileImage, deleted
         FROM member
         WHERE email = #{email}
           AND deleted = 0
@@ -32,6 +32,7 @@
             nickname AS nickName,
             email,
             password,
+            profile_image AS profileImage,
             deleted
         FROM member
         WHERE email = #{email}
@@ -90,6 +91,14 @@
         SET password = #{password}
         WHERE email = #{email}
           AND role = 'USER'
+          AND deleted = 0
+    </update>
+
+    <!--프로필 사진 경로 업데이트-->
+    <update id="updateProfileImage">
+        UPDATE member
+        SET profile_image = #{profileImage}
+        WHERE email = #{email}
           AND deleted = 0
     </update>
 
