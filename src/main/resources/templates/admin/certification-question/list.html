@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>자격증 문제 관리</title>
+    <link rel="stylesheet" type="text/css" href="/css/admin-dashboard.css">
+</head>
+<body>
+
+<header class="admin-top-menu">
+    <div class="admin-logo">
+        <span class="logo-main">ADMIN</span>
+        <span class="logo-sub">MANAGER</span>
+    </div>
+    <nav class="admin-main-nav">
+        <a th:href="@{/admin/dashboard}" class="main-menu-button">대시보드</a>
+        <a th:href="@{/admin/certification-questions}" class="main-menu-button active">자격증 문제 관리</a>
+    </nav>
+</header>
+
+<main class="admin-content admin-content--full">
+    <div class="page-location">홈 &gt; 자격증 문제 관리</div>
+    <h1 class="page-title">자격증 문제 관리</h1>
+
+    <div class="warning-message" th:if="${message}" th:text="${message}"></div>
+
+    <div class="admin-box">
+        <div class="box-header">
+            <h2 class="box-title">자격증 선택</h2>
+        </div>
+        <div style="padding:16px 18px;">
+            <form th:action="@{/admin/certification-questions}" method="get">
+                <select name="certificationId" class="form-input" onchange="this.form.submit()"
+                        style="max-width:420px;">
+                    <option th:each="c : ${certList}"
+                            th:value="${c.id}"
+                            th:text="'#' + ${c.id} + ' ' + ${c.certName} + ' (회원 ' + ${c.memberId} + ')'"
+                            th:selected="${c.id == selectedCertificationId}">
+                    </option>
+                </select>
+            </form>
+            <p th:if="${certList == null or #lists.isEmpty(certList)}" style="color:#5a6478;margin-top:10px;">
+                등록된 자격증이 없습니다. 먼저 자격증을 하나 등록해주세요.
+            </p>
+        </div>
+    </div>
+
+    <div class="admin-box" th:if="${selectedCertificationId != null}">
+        <div class="box-header">
+            <h2 class="box-title">문제 목록 (<span th:text="${totalCount}">0</span>개)</h2>
+            <a th:href="@{/admin/certification-questions/new(certificationId=${selectedCertificationId})}"
+               class="btn-save">+ 새 문제 추가</a>
+        </div>
+
+        <!-- 과목 탭 — 자격증 하나에 과목이 여러 개 섞여 있을 때 이걸로 좁혀서 본다 -->
+        <div class="admin-subject-tabs" th:if="${subjectList != null and !#lists.isEmpty(subjectList)}">
+            <a th:href="@{/admin/certification-questions(certificationId=${selectedCertificationId})}"
+               th:classappend="${selectedSubjectId == null} ? ' admin-subject-tab--active' : ''"
+               class="admin-subject-tab">전체</a>
+            <a th:each="s : ${subjectList}"
+               th:href="@{/admin/certification-questions(certificationId=${selectedCertificationId}, subjectId=${s.id})}"
+               th:text="${s.name} + (${s.questionCount} != null ? ' (' + ${s.questionCount} + ')' : '')"
+               th:classappend="${s.id == selectedSubjectId} ? ' admin-subject-tab--active' : ''"
+               class="admin-subject-tab">과목명</a>
+        </div>
+
+        <p th:if="${questionList == null or #lists.isEmpty(questionList)}" style="padding:18px;color:#5a6478;">
+            등록된 문제가 없습니다. "새 문제 추가"로 첫 문제를 등록해보세요.
+        </p>
+
+        <table th:if="${questionList != null and !#lists.isEmpty(questionList)}" class="admin-table">
+            <thead>
+            <tr>
+                <th>번호</th>
+                <th>과목</th>
+                <th>문제</th>
+                <th>정답</th>
+                <th>관리</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="q : ${questionList}">
+                <td th:text="${q.id}">1</td>
+                <td th:text="${q.subjectName} ?: '-'">과목</td>
+                <td class="question-text-cell" th:text="${q.questionText}">문제 내용</td>
+                <td th:text="${q.answerNo} + '번'">1번</td>
+                <td>
+                    <div class="table-button-group">
+                        <a th:href="@{/admin/certification-questions/{id}/edit(id=${q.id})}"
+                           class="btn-edit-member">수정</a>
+                        <form th:action="@{/admin/certification-questions/{id}/delete(id=${q.id})}" method="post"
+                              onsubmit="return confirm('이 문제를 삭제하시겠습니까?');" style="display:inline;">
+                            <input type="hidden" name="certificationId" th:value="${selectedCertificationId}">
+                            <input type="hidden" name="subjectId" th:value="${selectedSubjectId}" th:if="${selectedSubjectId != null}">
+                            <button type="submit" class="btn-delete-member">삭제</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <!-- 페이지네이션 — 선택된 자격증(certificationId)+과목(subjectId)을 유지한 채 페이지만 이동 -->
+        <div class="admin-pagination" th:if="${totalPage != null and totalPage > 1}">
+            <a th:if="${currentPage > 1}"
+               th:href="@{/admin/certification-questions(certificationId=${selectedCertificationId}, subjectId=${selectedSubjectId}, page=${currentPage - 1})}"
+               class="admin-page-button admin-page-button--nav">이전</a>
+
+            <a th:each="i : ${#numbers.sequence(1, totalPage)}"
+               th:href="@{/admin/certification-questions(certificationId=${selectedCertificationId}, subjectId=${selectedSubjectId}, page=${i})}"
+               th:text="${i}"
+               th:classappend="${i == currentPage} ? ' admin-page-button--active' : ''"
+               class="admin-page-button"></a>
+
+            <a th:if="${currentPage < totalPage}"
+               th:href="@{/admin/certification-questions(certificationId=${selectedCertificationId}, subjectId=${selectedSubjectId}, page=${currentPage + 1})}"
+               class="admin-page-button admin-page-button--nav">다음</a>
+        </div>
+    </div>
+</main>
+
+</body>
+</html>

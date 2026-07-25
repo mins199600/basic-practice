@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>문제 등록</title>
+    <link rel="stylesheet" type="text/css" href="/css/admin-dashboard.css">
+</head>
+<body>
+
+<header class="admin-top-menu">
+    <div class="admin-logo">
+        <span class="logo-main">ADMIN</span>
+        <span class="logo-sub">MANAGER</span>
+    </div>
+    <nav class="admin-main-nav">
+        <a th:href="@{/admin/dashboard}" class="main-menu-button">대시보드</a>
+        <a th:href="@{/admin/certification-questions}" class="main-menu-button active">자격증 문제 관리</a>
+    </nav>
+</header>
+
+<main class="admin-content admin-content--full">
+    <div class="page-location">홈 &gt; 자격증 문제 관리 &gt; 문제 등록</div>
+    <h1 class="page-title">문제 등록</h1>
+
+    <div class="warning-message" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+
+    <div class="admin-box">
+        <div class="box-header">
+            <h2 class="box-title">문제 정보</h2>
+        </div>
+
+        <form th:action="@{/admin/certification-questions/new}" method="post" style="padding:18px;">
+
+            <div class="form-group">
+                <label class="form-label">자격증</label>
+                <select name="certificationId" class="form-input" required>
+                    <option th:each="c : ${certList}"
+                            th:value="${c.id}"
+                            th:text="'#' + ${c.id} + ' ' + ${c.certName} + ' (회원 ' + ${c.memberId} + ')'"
+                            th:selected="${c.id == selectedCertificationId}">
+                    </option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">과목 (선택)</label>
+                <select name="subjectId" class="form-input">
+                    <option value="">과목 없음</option>
+                    <option th:each="s : ${subjectList}"
+                            th:value="${s.id}"
+                            th:text="${s.name}"
+                            th:selected="${question.subjectId != null and question.subjectId == s.id}">
+                    </option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">문제 내용</label>
+                <textarea name="questionText" class="form-textarea" required th:text="${question.questionText}"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">선택지 1</label>
+                <input type="text" name="choice1" class="form-input" required th:value="${question.choice1}">
+            </div>
+            <div class="form-group">
+                <label class="form-label">선택지 2</label>
+                <input type="text" name="choice2" class="form-input" required th:value="${question.choice2}">
+            </div>
+            <div class="form-group">
+                <label class="form-label">선택지 3</label>
+                <input type="text" name="choice3" class="form-input" required th:value="${question.choice3}">
+            </div>
+            <div class="form-group">
+                <label class="form-label">선택지 4</label>
+                <input type="text" name="choice4" class="form-input" required th:value="${question.choice4}">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">정답 번호</label>
+                <select name="answerNo" class="form-input" required>
+                    <option value="">선택</option>
+                    <option value="1" th:selected="${question.answerNo == 1}">1번</option>
+                    <option value="2" th:selected="${question.answerNo == 2}">2번</option>
+                    <option value="3" th:selected="${question.answerNo == 3}">3번</option>
+                    <option value="4" th:selected="${question.answerNo == 4}">4번</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">해설 (오답 시 표시, 선택)</label>
+                <textarea name="explanation" class="form-textarea" th:text="${question.explanation}"></textarea>
+            </div>
+
+            <div class="modal-button-area">
+                <a th:href="@{/admin/certification-questions(certificationId=${selectedCertificationId})}"
+                   class="btn-cancel">취소</a>
+                <button type="submit" class="btn-save">문제 등록</button>
+            </div>
+        </form>
+    </div>
+</main>
+
+</body>
+</html>

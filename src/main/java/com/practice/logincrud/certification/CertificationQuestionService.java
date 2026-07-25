@@ -30,6 +30,56 @@ public class CertificationQuestionService {
         return certificationQuestionMapper.countByCertificationId(certificationId, subjectId) > 0;
     }
 
+    // 관리자용 - 자격증의 문제 목록 (과목명 포함, 페이지 단위). subjectId가 null이면 전체 과목.
+    public List<CertificationQuestionDto> getAllForAdmin(Long certificationId, Long subjectId, int offset, int pageSize) {
+        return certificationQuestionMapper.findAllByCertificationId(certificationId, subjectId, offset, pageSize);
+    }
+
+    // 관리자용 - 자격증의 문제 개수 (총 페이지 수 계산용). subjectId가 null이면 전체 과목.
+    public int getTotalCountForAdmin(Long certificationId, Long subjectId) {
+        return certificationQuestionMapper.countAllByCertificationId(certificationId, subjectId);
+    }
+
+    // 관리자용 - 문제 등록
+    public void create(CertificationQuestionDto dto) {
+        validate(dto);
+        certificationQuestionMapper.insert(dto);
+        log.info("문제 등록 certificationId={} subjectId={}", dto.getCertificationId(), dto.getSubjectId());
+    }
+
+    // 관리자용 - 문제 수정
+    public void update(CertificationQuestionDto dto) {
+        validate(dto);
+        certificationQuestionMapper.update(dto);
+        log.info("문제 수정 id={}", dto.getId());
+    }
+
+    // 관리자용 - 문제 삭제 (soft delete)
+    public void delete(Long id) {
+        certificationQuestionMapper.softDelete(id);
+        log.info("문제 삭제 id={}", id);
+    }
+
+    // 문제 등록/수정 공통 입력값 검증 - 잘못된 데이터가 그대로 저장되어 퀴즈 화면에서 깨지는 것을 미리 막는다.
+    private void validate(CertificationQuestionDto dto) {
+        if (dto.getCertificationId() == null) {
+            throw new IllegalArgumentException("자격증을 선택해주세요.");
+        }
+        if (dto.getQuestionText() == null || dto.getQuestionText().isBlank()) {
+            throw new IllegalArgumentException("문제 내용을 입력해주세요.");
+        }
+        if (isBlank(dto.getChoice1()) || isBlank(dto.getChoice2()) || isBlank(dto.getChoice3()) || isBlank(dto.getChoice4())) {
+            throw new IllegalArgumentException("선택지 4개를 모두 입력해주세요.");
+        }
+        if (dto.getAnswerNo() == null || dto.getAnswerNo() < 1 || dto.getAnswerNo() > 4) {
+            throw new IllegalArgumentException("정답 번호는 1~4 중에서 선택해주세요.");
+        }
+    }
+
+    private boolean isBlank(String value) {
+        return value == null || value.isBlank();
+    }
+
     /**
      * 채점 결과를 회원-문제 통계에 반영한다.
      * 정답: weight -1 (최소 1) / 오답: weight +2

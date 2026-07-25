@@ -19,6 +19,7 @@
         <button type="button" class="main-menu-button" data-tab="posts">게시글 관리</button>
         <button type="button" class="main-menu-button" data-tab="notices">공지사항</button>
         <button type="button" class="main-menu-button" data-tab="popups">팝업 관리</button>
+        <a th:href="@{/admin/certification-questions}" class="main-menu-button">자격증 문제 관리</a>
     </nav>
 </header>
 
@@ -39,6 +40,10 @@
         <div class="sidebar-section">
             <div class="sidebar-title">팝업 관리</div>
             <button type="button" class="sidebar-menu-button" data-tab="popups">팝업 등록/관리</button>
+        </div>
+        <div class="sidebar-section">
+            <div class="sidebar-title">자격증 문제 관리</div>
+            <a th:href="@{/admin/certification-questions}" class="sidebar-menu-button">문제 목록/등록/수정</a>
         </div>
     </aside>
 

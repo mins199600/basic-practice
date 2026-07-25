@@ -828,6 +828,108 @@ body {
 }
 
 /* =========================
+   자격증 문제 관리 (링크를 버튼처럼 쓰는 화면들)
+========================= */
+
+.admin-main-nav a.main-menu-button {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+.sidebar-section a.sidebar-menu-button {
+    text-decoration: none;
+}
+
+a.btn-save,
+a.btn-cancel,
+a.btn-edit-member {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+.admin-content--full {
+    margin-left: 0;
+    margin-top: 48px;
+}
+
+.question-text-cell {
+    max-width: 420px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.admin-pagination {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    padding: 16px 18px;
+}
+
+.admin-page-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    height: 32px;
+    padding: 0 8px;
+    background-color: rgba(255, 255, 255, 0.04);
+    border: 1px solid #2a3040;
+    border-radius: 5px;
+    color: #9aa3b8;
+    font-size: 0.78rem;
+    text-decoration: none;
+}
+
+.admin-page-button:hover {
+    background-color: rgba(0, 200, 180, 0.1);
+    color: #00c8b4;
+}
+
+.admin-page-button--active {
+    background-color: rgba(0, 200, 180, 0.18);
+    border-color: rgba(0, 200, 180, 0.4);
+    color: #00c8b4;
+    font-weight: 700;
+}
+
+.admin-page-button--nav {
+    color: #c7cede;
+}
+
+.admin-subject-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 14px 18px;
+    border-bottom: 1px solid #1c212f;
+}
+
+.admin-subject-tab {
+    padding: 6px 14px;
+    background-color: rgba(255, 255, 255, 0.04);
+    border: 1px solid #2a3040;
+    border-radius: 999px;
+    color: #9aa3b8;
+    font-size: 0.78rem;
+    text-decoration: none;
+}
+
+.admin-subject-tab:hover {
+    background-color: rgba(0, 200, 180, 0.1);
+    color: #00c8b4;
+}
+
+.admin-subject-tab--active {
+    background-color: rgba(0, 200, 180, 0.18);
+    border-color: rgba(0, 200, 180, 0.4);
+    color: #00c8b4;
+    font-weight: 700;
+}
+
+/* =========================
    스크롤바
 ========================= */
 
