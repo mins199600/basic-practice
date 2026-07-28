@@ -14,4 +14,12 @@ public interface MemberQuestionStatMapper {
                      @Param("weightDelta") int weightDelta,
                      @Param("correctInc") int correctInc,
                      @Param("wrongInc") int wrongInc);
+
+    // 홈 "오늘의 학습 요약"용 - 오늘/이번 주(월요일 시작) 안에 답을 제출한 서로 다른 문제 개수
+    int countTodayByMemberId(@Param("memberId") Long memberId);
+
+    int countThisWeekByMemberId(@Param("memberId") Long memberId);
+
+    // 과목별 정답률이 가장 낮은 과목 1개 (최소 3문제 이상 풀어본 과목만 대상 - 표본이 너무 적으면 제외)
+    WeakestSubjectDto findWeakestSubject(@Param("memberId") Long memberId);
 }

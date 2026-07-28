@@ -17,4 +17,7 @@ public class CertificationQuestionDto {
     private Integer answerNo;      // 정답 번호 1~4
     private String explanation;    // 오답일 때 보여줄 해설
     private LocalDateTime createdAt;
+
+    // 관리자 목록 화면에서 과목명을 같이 보여주기 위한 조인 전용 필드 (DB 컬럼 아님)
+    private String subjectName;
 }

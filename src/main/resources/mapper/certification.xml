@@ -62,4 +62,12 @@
           AND deleted = 0
     </select>
 
+    <!-- 관리자용 - 회원 구분 없이 전체 자격증(문제은행) 목록 -->
+    <select id="findAllForAdmin" resultType="com.practice.logincrud.certification.CertificationDto">
+        SELECT id, member_id, cert_name, exam_date, status, memo, created_at
+        FROM certification
+        WHERE deleted = 0
+        ORDER BY id ASC
+    </select>
+
 </mapper>

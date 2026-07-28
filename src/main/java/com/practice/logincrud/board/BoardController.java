@@ -2,6 +2,7 @@ package com.practice.logincrud.board;
 
 import com.practice.logincrud.attendance.AttendanceService;
 import com.practice.logincrud.certification.CertificationService;
+import com.practice.logincrud.codingtest.CodingTestService;
 import com.practice.logincrud.comment.CommentDto;
 import com.practice.logincrud.comment.CommentService;
 import com.practice.logincrud.interview.InterviewService;
@@ -9,6 +10,8 @@ import com.practice.logincrud.member.MemberService;
 import com.practice.logincrud.member.UserDto;
 import com.practice.logincrud.stats.SkillStatsDto;
 import com.practice.logincrud.stats.StatsService;
+import com.practice.logincrud.stats.StudySummaryDto;
+import com.practice.logincrud.stats.StudySummaryService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,8 +36,10 @@ public class BoardController {
     private final CertificationService certificationService;
     private final AttendanceService attendanceService;
     private final InterviewService interviewService;
+    private final CodingTestService codingTestService;
     private final MemberService memberService;
     private final StatsService statsService;
+    private final StudySummaryService studySummaryService;
 
     // 홈 = 게시글 목록 + 페이지네이션
     @GetMapping("/home")
@@ -65,13 +70,18 @@ public class BoardController {
         model.addAttribute("attendanceStreak", attendanceStreak);
         model.addAttribute("attendanceRate", attendanceRate);
 
-        // 실력 분석 & 취업 성공률 - 각 항목을 실제 데이터로 계산해서 종합 (코딩테스트는 기능 미구현이라 0점 고정)
+        // 실력 분석 & 취업 성공률 - 각 항목을 실제 데이터로 계산해서 종합
         int interviewPrepRate = interviewService.getPrepRate(memberId);
-        int codingTestRate = 0; // TODO: 코딩테스트 기능 구현되면 실제 점수로 교체
+        int codingTestRate = codingTestService.getPrepRate(memberId);
         SkillStatsDto skillStats = statsService.calculate(certPassRate, interviewPrepRate, codingTestRate, attendanceRate);
         model.addAttribute("skillStats", skillStats);
+        model.addAttribute("codingTestRate", codingTestRate);
 
-        // 프로필 사진
+        // 오늘의 학습 요약 (대시보드 카드 - 프로필 사진 대신 노출)
+        StudySummaryDto studySummary = studySummaryService.getSummary(memberId);
+        model.addAttribute("studySummary", studySummary);
+
+        // 상단 카드의 작은 프로필 사진 (클릭해서 바로 변경 가능)
         UserDto currentUser = memberService.findUserByEmail(email);
         model.addAttribute("profileImageUrl", currentUser != null ? currentUser.getProfileImage() : null);
 

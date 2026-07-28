@@ -1,0 +1,167 @@
+/* ============================= */
+/* codingtest.css - AI 코딩테스트 */
+/* ============================= */
+
+.codingtest-start-form {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 24px;
+}
+
+.codingtest-start-form select {
+    flex: 1;
+    padding: 10px 14px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    background: #fff;
+}
+
+.codingtest-start-form select:focus {
+    outline: none;
+    border-color: var(--green);
+}
+
+/* 문제 카드 */
+.codingtest-problem-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-sm);
+}
+
+.codingtest-problem-title {
+    font-size: 15px;
+    color: var(--navy);
+    margin: 0 0 10px 0;
+}
+
+.codingtest-problem-text {
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+/* 대화/제출 이력 */
+.codingtest-chat-window {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    min-height: 160px;
+    max-height: 480px;
+    overflow-y: auto;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow-sm);
+}
+
+.codingtest-bubble {
+    max-width: 85%;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.codingtest-bubble--ai {
+    align-self: flex-start;
+}
+
+.codingtest-bubble--user {
+    align-self: flex-end;
+}
+
+.codingtest-bubble--error {
+    align-self: center;
+    color: var(--danger);
+    font-size: 13px;
+    background: #fdecec;
+    border-radius: var(--radius-sm);
+    padding: 8px 12px;
+}
+
+.codingtest-bubble-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    padding: 0 4px;
+}
+
+.codingtest-bubble-content {
+    padding: 12px 16px;
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.codingtest-bubble-content--code {
+    font-family: "Consolas", "Menlo", "Monaco", monospace;
+    font-size: 13px;
+}
+
+.codingtest-bubble--ai .codingtest-bubble-content {
+    background: var(--navy-soft);
+    color: var(--navy-strong);
+    border-bottom-left-radius: 4px;
+}
+
+.codingtest-bubble--user .codingtest-bubble-content {
+    background: var(--green);
+    color: #ffffff;
+    border-bottom-right-radius: 4px;
+}
+
+/* 답안 제출 폼 */
+.codingtest-answer-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.codingtest-answer-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.codingtest-answer-row label {
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.codingtest-answer-row select {
+    padding: 8px 12px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    background: #fff;
+}
+
+.codingtest-answer-form textarea {
+    width: 100%;
+    min-height: 160px;
+    padding: 12px 14px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-family: "Consolas", "Menlo", "Monaco", monospace;
+    resize: vertical;
+}
+
+.codingtest-answer-form textarea:focus {
+    outline: none;
+    border-color: var(--green);
+}
+
+.codingtest-answer-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}

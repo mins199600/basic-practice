@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${testSession.difficulty} + ' 코딩테스트'">코딩테스트</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/css/home.css">
+    <link rel="stylesheet" type="text/css" href="/css/interview.css">
+    <link rel="stylesheet" type="text/css" href="/css/codingtest.css">
+</head>
+<body>
+
+<div class="board-container codingtest-page"
+     id="codingtest-app"
+     th:data-session-id="${testSession.id}">
+
+    <div class="board-header">
+        <h2 th:text="${testSession.difficulty} + ' 코딩테스트'">코딩테스트</h2>
+        <div>
+            <span class="interview-question-count" th:text="${testSession.status == 'ANSWERED'} ? '답안 제출 완료' : '진행중'">진행중</span>
+            <a th:href="@{/codingtest}" class="interview-back-link">← 목록으로</a>
+        </div>
+    </div>
+
+    <div class="codingtest-problem-card">
+        <h3 class="codingtest-problem-title">문제</h3>
+        <div class="codingtest-problem-text" th:text="${testSession.problemText}">문제 내용</div>
+    </div>
+
+    <div class="codingtest-chat-window" id="codingtest-window">
+        <div th:each="m : ${messageList}" th:if="${m.messageType != 'PROBLEM'}"
+             th:class="${m.sender == 'AI'} ? 'codingtest-bubble codingtest-bubble--ai' : 'codingtest-bubble codingtest-bubble--user'">
+            <div class="codingtest-bubble-label" th:if="${m.messageType == 'ANSWER'}"
+                 th:text="'제출한 답안 (' + ${m.language} + ')'">제출한 답안</div>
+            <div class="codingtest-bubble-label" th:if="${m.messageType == 'FEEDBACK'}">AI 첨삭</div>
+            <div class="codingtest-bubble-label" th:if="${m.messageType == 'SOLUTIONS'}">3개 언어 모범답안</div>
+            <div th:class="${m.messageType == 'ANSWER' or m.messageType == 'SOLUTIONS'} ? 'codingtest-bubble-content codingtest-bubble-content--code' : 'codingtest-bubble-content'"
+                 th:text="${m.content}">내용</div>
+        </div>
+    </div>
+
+    <form id="answer-form" class="codingtest-answer-form">
+        <div class="codingtest-answer-row">
+            <label for="language-select">언어 선택</label>
+            <select id="language-select" required>
+                <option value="JAVA">자바</option>
+                <option value="PYTHON">파이썬</option>
+                <option value="C">C/C++</option>
+            </select>
+        </div>
+        <textarea id="code-input" placeholder="여기에 답안 코드를 작성하세요..." required></textarea>
+        <div class="codingtest-answer-actions">
+            <button type="submit" id="submit-btn" class="write-button">답안 제출 및 첨삭받기</button>
+            <button type="button" id="solutions-btn" class="interview-back-link" style="background:none;border:none;cursor:pointer;">
+                3개 언어 모범답안 보기
+            </button>
+        </div>
+    </form>
+</div>
+
+<script th:inline="javascript">
+    const CODINGTEST_SESSION_ID = /*[[${testSession.id}]]*/ 0;
+</script>
+<script src="/js/codingtest-detail.js"></script>
+
+</body>
+</html>

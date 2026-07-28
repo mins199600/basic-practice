@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.practice.logincrud.codingtest.CodingTestMessageMapper">
+
+    <insert id="insert" parameterType="com.practice.logincrud.codingtest.CodingTestMessageDto"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO coding_test_message
+            (session_id, sender, message_type, language, content)
+        VALUES
+            (#{sessionId}, #{sender}, #{messageType}, #{language}, #{content})
+    </insert>
+
+    <select id="findBySessionId" resultType="com.practice.logincrud.codingtest.CodingTestMessageDto">
+        SELECT id, session_id, sender, message_type, language, content, created_at
+        FROM coding_test_message
+        WHERE session_id = #{sessionId}
+        ORDER BY created_at ASC, id ASC
+    </select>
+
+</mapper>

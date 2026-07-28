@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>AI 코딩테스트</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/css/home.css">
+    <link rel="stylesheet" type="text/css" href="/css/interview.css">
+    <link rel="stylesheet" type="text/css" href="/css/codingtest.css">
+</head>
+<body>
+
+<div class="board-container">
+    <div class="board-header">
+        <h2>AI 코딩테스트</h2>
+        <a th:href="@{/home}" class="interview-back-link">← 홈으로</a>
+    </div>
+
+    <p style="color:var(--text-muted);font-size:14px;margin:-8px 0 20px 0;">
+        난이도를 고르면 AI가 매번 새 문제를 출제해요. 자바/파이썬/C·C++ 중 원하는 언어로 답안을 제출하면
+        AI가 코드를 읽고 첨삭해 드리고, 원하면 3개 언어 모범답안도 함께 볼 수 있어요.
+        (실제로 코드를 실행하지는 않고, AI가 코드를 읽고 판단하는 방식이에요.)
+    </p>
+
+    <div th:if="${errorMessage}" class="interview-error">
+        <span th:text="${errorMessage}">에러 메시지</span>
+    </div>
+
+    <form th:action="@{/codingtest/start}" method="post" class="codingtest-start-form">
+        <select name="difficulty" required>
+            <option value="기초">기초</option>
+            <option value="초급">초급</option>
+            <option value="중급">중급</option>
+            <option value="고급">고급</option>
+        </select>
+        <button type="submit" class="write-button">새 문제 받기</button>
+    </form>
+
+    <h3 class="interview-section-title">지난 코딩테스트 기록</h3>
+
+    <div th:if="${sessionList == null or #lists.isEmpty(sessionList)}" class="empty-board">
+        아직 진행한 코딩테스트가 없습니다. "새 문제 받기"를 눌러보세요.
+    </div>
+
+    <table th:if="${sessionList != null and !#lists.isEmpty(sessionList)}" class="board-table">
+        <thead>
+        <tr>
+            <th>난이도</th>
+            <th>시작일</th>
+            <th>상태</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="s : ${sessionList}">
+            <td th:text="${s.difficulty}">기초</td>
+            <td th:text="${#temporals.format(s.createdAt, 'yyyy-MM-dd HH:mm')}">2026-07-16 10:00</td>
+            <td th:text="${s.status == 'ANSWERED'} ? '답안 제출 완료' : '진행중'">진행중</td>
+            <td>
+                <a th:href="@{/codingtest/sessions/{id}(id=${s.id})}">이어보기 →</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>

@@ -49,4 +49,9 @@ public class CertificationService {
     public int getTotalCount(Long memberId) {
         return certificationMapper.countByMemberId(memberId);
     }
+
+    // 관리자용 - 회원 구분 없이 전체 자격증(문제은행) 목록
+    public List<CertificationDto> getAllForAdmin() {
+        return certificationMapper.findAllForAdmin();
+    }
 }

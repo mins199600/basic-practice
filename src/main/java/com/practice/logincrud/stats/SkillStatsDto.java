@@ -11,7 +11,7 @@ import lombok.Data;
 public class SkillStatsDto {
     private int certRate;         // 자격증 합격률(%)
     private int interviewRate;    // 면접 준비율(%)
-    private int codingTestRate;   // 코딩테스트 준비율(%) - 기능 미구현으로 항상 0
+    private int codingTestRate;   // 코딩테스트 준비율(%) - 답안 제출 완료 세션 수 기준
     private int attendanceRate;   // 출석률(%)
     private int overallScore;     // 위 4개 항목의 평균(0~100)
     private String grade;         // overallScore를 등급(A+~D)으로 환산한 값

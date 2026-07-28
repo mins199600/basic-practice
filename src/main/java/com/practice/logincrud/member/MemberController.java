@@ -323,6 +323,7 @@ public class MemberController {
     // 프로필 사진 업로드
     @PostMapping("/user/profile-image")
     public String uploadProfileImage(@RequestParam("profileImage") MultipartFile file,
+                                     @RequestParam(defaultValue = "/edit") String redirectTo,
                                      HttpSession session,
                                      RedirectAttributes redirectAttributes) {
         String email = (String) session.getAttribute("email");
@@ -338,7 +339,7 @@ public class MemberController {
             redirectAttributes.addFlashAttribute("message", "이미지 업로드 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
         }
 
-        return "redirect:/edit";
+        return "redirect:" + redirectTo;
     }
 
     //회원정보 삭제

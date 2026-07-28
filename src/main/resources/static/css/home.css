@@ -81,6 +81,60 @@ body {
     align-items: center;
     justify-content: center;
     font-size: 34px;
+    overflow: hidden;
+}
+
+/* 상단 카드 프로필 사진 - 눌러서 바로 변경 */
+#profileMessageBox {
+    background: #fff3cd;
+    color: #664d03;
+    border: 1px solid #ffecb5;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 16px;
+    font-size: 14px;
+}
+
+.avatar-upload-form {
+    position: relative;
+    display: inline-block;
+    flex-shrink: 0;
+}
+
+.profile-image--editable {
+    position: relative;
+    cursor: pointer;
+    transition: opacity 0.15s ease;
+}
+
+.profile-image--editable:hover {
+    opacity: 0.85;
+}
+
+.profile-image-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-image-edit-badge {
+    position: absolute;
+    right: -2px;
+    bottom: -2px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    box-shadow: var(--shadow-sm);
+}
+
+.avatar-file-input {
+    display: none;
 }
 
 .nickname-text {
@@ -314,7 +368,6 @@ body {
     gap: 16px;
 }
 
-.profile-photo-card,
 .stats-card {
     background: #f8fbff;
     border: 1px solid var(--line);
@@ -322,51 +375,57 @@ body {
     padding: 20px;
 }
 
-.profile-photo-card--link {
-    display: block;
-    text-decoration: none;
-    color: inherit;
-    cursor: pointer;
-    transition: border-color 0.15s ease, box-shadow 0.15s ease;
-}
-
-.profile-photo-card--link:hover {
-    border-color: #b8c8dc;
-    box-shadow: var(--shadow-md);
-}
-
-.profile-photo-frame {
-    position: relative;
-    width: 96px;
-    height: 96px;
-    margin: 0 auto 10px auto;
-    border-radius: 50%;
-    background: #e6edf6;
-    overflow: hidden;
+.study-summary-counts {
     display: flex;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.study-summary-count-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    font-size: 34px;
+    gap: 4px;
+    background: #ffffff;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    padding: 12px 8px;
 }
 
-.profile-photo-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+.study-summary-count-value {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--green-strong);
 }
 
-.profile-photo-label {
+.study-summary-count-label {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.study-summary-goal {
+    background: var(--navy-soft);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+}
+
+.study-summary-goal-badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--navy-strong);
+    background: #ffffff;
+    border-radius: 999px;
+    padding: 2px 10px;
+    margin-bottom: 6px;
+}
+
+.study-summary-goal-text {
     margin: 0;
     font-size: 13px;
-    color: var(--text-muted);
-    text-align: center;
-}
-
-.profile-photo-edit-hint {
-    margin: 4px 0 0 0;
-    font-size: 11px;
-    color: var(--bluegray);
-    text-align: center;
+    line-height: 1.6;
+    color: var(--navy-strong);
 }
 
 .stats-title {

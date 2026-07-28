@@ -12,11 +12,26 @@
 <body>
 <!-- 사용자 카드 -->
 <div class="container">
+
+    <div id="profileMessageBox" th:if="${message}" th:text="${message}"></div>
+
     <div class="login-card">
         <div class="profile-area">
-            <div class="profile-image">👤</div>
-            <div>
+            <form th:action="@{/user/profile-image}" method="post" enctype="multipart/form-data"
+                  id="avatarUploadForm" class="avatar-upload-form">
+                <input type="hidden" name="redirectTo" value="/home">
+                <label for="avatarFileInput" class="profile-image profile-image--editable" title="눌러서 프로필 사진 변경">
+                    <img th:if="${profileImageUrl != null and profileImageUrl != ''}"
+                         th:src="${profileImageUrl}" alt="프로필 사진" class="profile-image-img">
+                    <span th:unless="${profileImageUrl != null and profileImageUrl != ''}">👤</span>
+                    <span class="profile-image-edit-badge">✏️</span>
+                </label>
+                <input type="file" id="avatarFileInput" name="profileImage"
+                       accept="image/jpeg,image/png,image/webp,image/gif" class="avatar-file-input"
+                       onchange="document.getElementById('avatarUploadForm').submit()">
+            </form>
 
+            <div>
                 <div class="nickname-text">
                     <span id="nickname" th:text="${nickName != null and nickName != '' ? nickName : '사용자'}"></span>님 안녕하세요.
                 </div>
@@ -74,17 +89,17 @@
             </a>
 
             <!-- 3. 코딩테스트 -->
-            <div class="dashboard-card">
-                <div class="card-badge">준비중</div>
+            <a th:href="@{/codingtest}" class="dashboard-card">
+                <div class="card-badge" th:text="${codingTestRate} + '% 준비'">준비중</div>
                 <div class="card-icon">💻</div>
                 <h3 class="card-title">코딩테스트</h3>
-                <p class="card-desc">원하는 언어를 선택해서 코딩테스트 문제를 자유롭게 풀어보세요</p>
+                <p class="card-desc">AI가 매번 새 문제를 출제해요. 원하는 언어로 답안을 제출하면 AI가 첨삭하고, 3개 언어 모범답안도 볼 수 있어요</p>
                 <ul class="card-tags">
                     <li>Java</li>
                     <li>Python</li>
                     <li>C / C++</li>
                 </ul>
-            </div>
+            </a>
 
             <!-- 4. AI 챗봇 멘토 -->
             <div class="dashboard-card">
@@ -101,15 +116,34 @@
         </div>
 
         <div class="dashboard-side">
-            <!-- 프로필 사진 - 클릭하면 사진을 올리고 바꿀 수 있는 /edit 페이지로 이동 -->
-            <a th:href="@{/edit}" class="profile-photo-card profile-photo-card--link">
-                <div class="profile-photo-frame">
-                    <img th:if="${profileImageUrl != null and profileImageUrl != ''}" th:src="${profileImageUrl}" alt="프로필 사진" class="profile-photo-img">
-                    <span th:unless="${profileImageUrl != null and profileImageUrl != ''}" class="profile-photo-placeholder">📷</span>
+            <!-- 오늘의 학습 요약 - 자격증 문제풀이 + 코딩테스트 활동을 합산해서 보여줌 (프로필 사진 카드 대체) -->
+            <div class="stats-card study-summary-card">
+                <h3 class="stats-title">오늘의 학습 요약</h3>
+
+                <div class="study-summary-counts">
+                    <div class="study-summary-count-item">
+                        <span class="study-summary-count-value" th:text="${studySummary.todayCount}">0</span>
+                        <span class="study-summary-count-label">오늘 학습</span>
+                    </div>
+                    <div class="study-summary-count-item">
+                        <span class="study-summary-count-value" th:text="${studySummary.weekCount}">0</span>
+                        <span class="study-summary-count-label">이번 주 학습</span>
+                    </div>
                 </div>
-                <p class="profile-photo-label">내 프로필 사진</p>
-                <p class="profile-photo-edit-hint">✏️ 눌러서 변경</p>
-            </a>
+
+                <div class="study-summary-goal" th:if="${studySummary.weakestSubjectName != null}">
+                    <span class="study-summary-goal-badge">추천 학습 목표</span>
+                    <p class="study-summary-goal-text">
+                        <strong th:text="${studySummary.weakestSubjectName}">과목명</strong> 과목의 정답률이
+                        <strong th:text="${studySummary.weakestSubjectAccuracy} + '%'">0%</strong>로 가장 낮아요. 오늘은 이 과목부터 복습해보세요.
+                    </p>
+                </div>
+                <div class="study-summary-goal" th:unless="${studySummary.weakestSubjectName != null}">
+                    <p class="study-summary-goal-text">
+                        아직 취약 과목을 분석할 만큼 데이터가 쌓이지 않았어요. 문제를 몇 개 더 풀어보면 추천 학습 목표를 알려드릴게요.
+                    </p>
+                </div>
+            </div>
 
             <!-- 실력 분석 / 취업 성공률 -->
             <div class="stats-card">

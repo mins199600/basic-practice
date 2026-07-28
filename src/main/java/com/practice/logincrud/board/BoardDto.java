@@ -17,5 +17,4 @@ public class BoardDto {
     private String category;
     private boolean isNotice;
     private String filePath;
-
 }
