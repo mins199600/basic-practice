@@ -42,8 +42,10 @@ src/main/resources/application-local.yml
 .env.*
 *.log
 
-# Claude Code local settings
-.claude/
+# Claude Code local settings (skills는 팀/저장소 공용 자산이라 예외로 추적)
+.claude/*
+!.claude/skills/
+!.claude/skills/**
 
 # 로컬에서 업로드 테스트한 파일 (프로필 사진 등) - 실사용자 데이터라 커밋 대상 아님
 uploads/
