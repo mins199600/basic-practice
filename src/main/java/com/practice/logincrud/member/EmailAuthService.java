@@ -1,11 +1,7 @@
 package com.practice.logincrud.member;
 
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
@@ -19,21 +15,18 @@ public class EmailAuthService {
     private static final long EXPIRE_MILLIS = 5 * 60 * 1000; // 5분
 
     @Autowired
-    private JavaMailSender mailSender;
+    private EmailSender emailSender;
 
-    public void sendCode(String email, HttpSession session) throws MessagingException {
+    // 인증코드를 세션에 즉시 기록하고, SMTP 발송(느림)은 EmailSender가 별도 스레드에서 처리하도록 넘겨
+    // 컨트롤러가 메일 전송 완료를 기다리지 않고 바로 응답할 수 있게 한다.
+    public void sendCode(String email, HttpSession session) {
         String code = createCode();
 
         session.setAttribute(CODE_PREFIX + email, code);
         session.setAttribute(EXPIRE_PREFIX + email, System.currentTimeMillis() + EXPIRE_MILLIS);
         session.setAttribute(VERIFIED_PREFIX + email, false);
 
-        MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message, false, "UTF-8");
-        helper.setTo(email);
-        helper.setSubject("이메일 인증번호");
-        helper.setText("인증번호는 [" + code + "] 입니다. 5분 내 입력해주세요.");
-        mailSender.send(message);
+        emailSender.sendVerificationCode(email, code);
     }
 
     public boolean verifyCode(String email, String inputCode, HttpSession session) {

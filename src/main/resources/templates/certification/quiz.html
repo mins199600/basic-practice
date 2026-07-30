@@ -12,6 +12,10 @@
 <div class="board-form-container">
     <div class="board-form-card">
 
+        <div style="text-align:right;margin-bottom:8px;">
+            <a th:href="@{/home}" class="interview-back-link">← 홈으로</a>
+        </div>
+
         <!-- ============ 문제 출제 화면 ============ -->
         <div th:if="${mode == 'question'}">
             <p class="quiz-progress">

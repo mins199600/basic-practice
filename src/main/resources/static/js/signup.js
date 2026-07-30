@@ -10,6 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("signupForm");
     const emailInput = document.getElementById("email");
     const codeInput = document.getElementById("code");
+    const sendCodeBtn = document.getElementById("sendCodeBtn");
 
     window.sendCode = async function () {
         const email = emailInput.value.trim();
@@ -18,15 +19,24 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        const res = await fetch("/email/send-code", {
-            method: "POST",
-            headers: {"Content-Type": "application/x-www-form-urlencoded"},
-            body: new URLSearchParams({ email })
-        });
+        const originalLabel = sendCodeBtn.textContent;
+        sendCodeBtn.disabled = true;
+        sendCodeBtn.textContent = "발송 중...";
 
-        const data = await res.json();
-        alert(data.message);
-        if (!data.success) emailVerified = false;
+        try {
+            const res = await fetch("/email/send-code", {
+                method: "POST",
+                headers: {"Content-Type": "application/x-www-form-urlencoded"},
+                body: new URLSearchParams({ email })
+            });
+
+            const data = await res.json();
+            alert(data.message);
+            if (!data.success) emailVerified = false;
+        } finally {
+            sendCodeBtn.disabled = false;
+            sendCodeBtn.textContent = originalLabel;
+        }
     };
 
     window.verifyCode = async function () {

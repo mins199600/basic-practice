@@ -11,6 +11,7 @@
 <div class="board-container">
     <div class="board-header">
         <h2>자격증 문제풀이</h2>
+        <a th:href="@{/home}" class="interview-back-link">← 홈으로</a>
     </div>
 
     <div th:if="${certList == null or #lists.isEmpty(certList)}" class="empty-board">
