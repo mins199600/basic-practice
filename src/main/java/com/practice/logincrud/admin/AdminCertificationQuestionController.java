@@ -1,10 +1,10 @@
 package com.practice.logincrud.admin;
 
 import com.practice.logincrud.board.PageDto;
-import com.practice.logincrud.certification.CertificationDto;
+import com.practice.logincrud.certification.CertificationCatalogDto;
+import com.practice.logincrud.certification.CertificationCatalogService;
 import com.practice.logincrud.certification.CertificationQuestionDto;
 import com.practice.logincrud.certification.CertificationQuestionService;
-import com.practice.logincrud.certification.CertificationService;
 import com.practice.logincrud.certification.SubjectDto;
 import com.practice.logincrud.certification.SubjectService;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +24,10 @@ import java.util.List;
  * /admin/** 경로는 WebConfig의 AdminInterceptor가 이미 ADMIN 권한을 검사하므로,
  * 이 컨트롤러에서는 별도의 권한 체크 없이 편집 기능만 구현한다.
  * (자격증 문제풀이용 CertificationQuizController와는 별개의 관리자 화면)
+ *
+ * 2026-07-28: 드롭다운 소스를 "회원 개인 자격증 기록 전체"에서 "자격증 카탈로그(종류) 목록"으로 변경.
+ * 예전엔 다른 회원의 개인 기록(certification) id를 그대로 문제은행 식별자로 썼는데,
+ * 그게 이번 리팩터링으로 고친 버그의 원인이었다 - 관리자 화면도 같은 원인을 갖고 있었음.
  */
 @Controller
 @Slf4j
@@ -31,22 +35,22 @@ import java.util.List;
 public class AdminCertificationQuestionController {
 
     private final CertificationQuestionService certificationQuestionService;
-    private final CertificationService certificationService;
+    private final CertificationCatalogService certificationCatalogService;
     private final SubjectService subjectService;
 
-    // 문제 목록 - 상단에서 자격증을 선택하고, 과목 탭으로 좁혀서 페이지 단위로 보여준다.
+    // 문제 목록 - 상단에서 자격증(카탈로그)을 선택하고, 과목 탭으로 좁혀서 페이지 단위로 보여준다.
     @GetMapping("/admin/certification-questions")
-    public String list(@RequestParam(required = false) Long certificationId,
+    public String list(@RequestParam(required = false) Long catalogId,
                         @RequestParam(required = false) Long subjectId,
                         PageDto pageDto, Model model) {
-        List<CertificationDto> certList = certificationService.getAllForAdmin();
+        List<CertificationCatalogDto> catalogList = certificationCatalogService.getAll();
 
-        if (certificationId == null && !certList.isEmpty()) {
-            certificationId = certList.get(0).getId();
+        if (catalogId == null && !catalogList.isEmpty()) {
+            catalogId = catalogList.get(0).getId();
         }
 
-        List<SubjectDto> subjectList = certificationId != null
-                ? subjectService.getSubjects(certificationId)
+        List<SubjectDto> subjectList = catalogId != null
+                ? subjectService.getSubjects(catalogId)
                 : List.of();
 
         // 과목 탭에 없는(다른 자격증의) subjectId가 URL로 들어오면 무시하고 "전체"로 되돌린다.
@@ -59,15 +63,15 @@ public class AdminCertificationQuestionController {
 
         List<CertificationQuestionDto> questionList = List.of();
         int totalCount = 0;
-        if (certificationId != null) {
+        if (catalogId != null) {
             questionList = certificationQuestionService.getAllForAdmin(
-                    certificationId, subjectId, pageDto.getOffset(), pageDto.getPageSize());
-            totalCount = certificationQuestionService.getTotalCountForAdmin(certificationId, subjectId);
+                    catalogId, subjectId, pageDto.getOffset(), pageDto.getPageSize());
+            totalCount = certificationQuestionService.getTotalCountForAdmin(catalogId, subjectId);
         }
         int totalPage = (int) Math.ceil((double) totalCount / pageDto.getPageSize());
 
-        model.addAttribute("certList", certList);
-        model.addAttribute("selectedCertificationId", certificationId);
+        model.addAttribute("certList", catalogList);
+        model.addAttribute("selectedCatalogId", catalogId);
         model.addAttribute("subjectList", subjectList);
         model.addAttribute("selectedSubjectId", subjectId);
         model.addAttribute("questionList", questionList);
@@ -79,11 +83,11 @@ public class AdminCertificationQuestionController {
 
     // 문제 등록 폼
     @GetMapping("/admin/certification-questions/new")
-    public String newForm(@RequestParam Long certificationId, Model model) {
+    public String newForm(@RequestParam Long catalogId, Model model) {
         model.addAttribute("question", new CertificationQuestionDto());
-        model.addAttribute("certList", certificationService.getAllForAdmin());
-        model.addAttribute("selectedCertificationId", certificationId);
-        model.addAttribute("subjectList", subjectService.getSubjects(certificationId));
+        model.addAttribute("certList", certificationCatalogService.getAll());
+        model.addAttribute("selectedCatalogId", catalogId);
+        model.addAttribute("subjectList", subjectService.getSubjects(catalogId));
         return "admin/certification-question/create";
     }
 
@@ -93,15 +97,15 @@ public class AdminCertificationQuestionController {
         try {
             certificationQuestionService.create(question);
             redirectAttributes.addFlashAttribute("message", "문제가 등록되었습니다.");
-            return "redirect:/admin/certification-questions?certificationId=" + question.getCertificationId();
+            return "redirect:/admin/certification-questions?catalogId=" + question.getCatalogId();
         } catch (IllegalArgumentException e) {
-            log.warn("문제 등록 실패 certificationId={} reason={}", question.getCertificationId(), e.getMessage());
+            log.warn("문제 등록 실패 catalogId={} reason={}", question.getCatalogId(), e.getMessage());
             model.addAttribute("question", question);
             model.addAttribute("errorMessage", e.getMessage());
-            model.addAttribute("certList", certificationService.getAllForAdmin());
-            model.addAttribute("selectedCertificationId", question.getCertificationId());
-            model.addAttribute("subjectList", question.getCertificationId() != null
-                    ? subjectService.getSubjects(question.getCertificationId()) : List.of());
+            model.addAttribute("certList", certificationCatalogService.getAll());
+            model.addAttribute("selectedCatalogId", question.getCatalogId());
+            model.addAttribute("subjectList", question.getCatalogId() != null
+                    ? subjectService.getSubjects(question.getCatalogId()) : List.of());
             return "admin/certification-question/create";
         }
     }
@@ -115,9 +119,9 @@ public class AdminCertificationQuestionController {
         }
 
         model.addAttribute("question", question);
-        model.addAttribute("certList", certificationService.getAllForAdmin());
-        model.addAttribute("selectedCertificationId", question.getCertificationId());
-        model.addAttribute("subjectList", subjectService.getSubjects(question.getCertificationId()));
+        model.addAttribute("certList", certificationCatalogService.getAll());
+        model.addAttribute("selectedCatalogId", question.getCatalogId());
+        model.addAttribute("subjectList", subjectService.getSubjects(question.getCatalogId()));
         return "admin/certification-question/edit";
     }
 
@@ -131,27 +135,27 @@ public class AdminCertificationQuestionController {
             certificationQuestionService.update(question);
             redirectAttributes.addFlashAttribute("message", "문제가 수정되었습니다.");
             String subjectParam = question.getSubjectId() != null ? "&subjectId=" + question.getSubjectId() : "";
-            return "redirect:/admin/certification-questions?certificationId=" + question.getCertificationId() + subjectParam;
+            return "redirect:/admin/certification-questions?catalogId=" + question.getCatalogId() + subjectParam;
         } catch (IllegalArgumentException e) {
             log.warn("문제 수정 실패 id={} reason={}", id, e.getMessage());
             model.addAttribute("question", question);
             model.addAttribute("errorMessage", e.getMessage());
-            model.addAttribute("certList", certificationService.getAllForAdmin());
-            model.addAttribute("selectedCertificationId", question.getCertificationId());
-            model.addAttribute("subjectList", question.getCertificationId() != null
-                    ? subjectService.getSubjects(question.getCertificationId()) : List.of());
+            model.addAttribute("certList", certificationCatalogService.getAll());
+            model.addAttribute("selectedCatalogId", question.getCatalogId());
+            model.addAttribute("subjectList", question.getCatalogId() != null
+                    ? subjectService.getSubjects(question.getCatalogId()) : List.of());
             return "admin/certification-question/edit";
         }
     }
 
     // 문제 삭제 (soft delete)
     @PostMapping("/admin/certification-questions/{id}/delete")
-    public String delete(@PathVariable Long id, @RequestParam Long certificationId,
+    public String delete(@PathVariable Long id, @RequestParam Long catalogId,
                           @RequestParam(required = false) Long subjectId,
                           RedirectAttributes redirectAttributes) {
         certificationQuestionService.delete(id);
         redirectAttributes.addFlashAttribute("message", "문제가 삭제되었습니다.");
         String subjectParam = subjectId != null ? "&subjectId=" + subjectId : "";
-        return "redirect:/admin/certification-questions?certificationId=" + certificationId + subjectParam;
+        return "redirect:/admin/certification-questions?catalogId=" + catalogId + subjectParam;
     }
 }

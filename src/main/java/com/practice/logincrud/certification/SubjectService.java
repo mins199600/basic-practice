@@ -11,7 +11,7 @@ public class SubjectService {
 
     private final SubjectMapper subjectMapper;
 
-    public List<SubjectDto> getSubjects(Long certificationId) {
-        return subjectMapper.findByCertificationId(certificationId);
+    public List<SubjectDto> getSubjects(Long catalogId) {
+        return subjectMapper.findByCatalogId(catalogId);
     }
 }

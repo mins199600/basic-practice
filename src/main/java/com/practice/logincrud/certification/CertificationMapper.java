@@ -28,7 +28,4 @@ public interface CertificationMapper {
 
     // 합격 개수
     int countPassedByMemberId(@Param("memberId") Long memberId);
-
-    // 관리자용 - 회원 구분 없이 전체 자격증(문제은행) 목록 (id 오름차순)
-    List<CertificationDto> findAllForAdmin();
 }

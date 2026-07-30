@@ -6,7 +6,7 @@
 
     <!-- 내 자격증 목록 -->
     <select id="findByMemberId" resultType="com.practice.logincrud.certification.CertificationDto">
-        SELECT id, member_id, cert_name, exam_date, status, memo, created_at
+        SELECT id, member_id, catalog_id, cert_name, exam_date, status, memo, created_at
         FROM certification
         WHERE member_id = #{memberId}
           AND deleted = 0
@@ -15,7 +15,7 @@
 
     <!-- 단건 조회 -->
     <select id="findById" resultType="com.practice.logincrud.certification.CertificationDto">
-        SELECT id, member_id, cert_name, exam_date, status, memo, created_at
+        SELECT id, member_id, catalog_id, cert_name, exam_date, status, memo, created_at
         FROM certification
         WHERE id = #{id}
           AND deleted = 0
@@ -23,17 +23,18 @@
 
     <!-- 등록 -->
     <insert id="insert" parameterType="com.practice.logincrud.certification.CertificationDto">
-        INSERT INTO certification(member_id, cert_name, exam_date, status, memo, deleted)
-        VALUES (#{memberId}, #{certName}, #{examDate}, #{status}, #{memo}, 0)
+        INSERT INTO certification(member_id, catalog_id, cert_name, exam_date, status, memo, deleted)
+        VALUES (#{memberId}, #{catalogId}, #{certName}, #{examDate}, #{status}, #{memo}, 0)
     </insert>
 
     <!-- 수정 -->
     <update id="update" parameterType="com.practice.logincrud.certification.CertificationDto">
         UPDATE certification
-        SET cert_name = #{certName},
-            exam_date = #{examDate},
-            status    = #{status},
-            memo      = #{memo}
+        SET cert_name  = #{certName},
+            catalog_id = #{catalogId},
+            exam_date  = #{examDate},
+            status     = #{status},
+            memo       = #{memo}
         WHERE id = #{id}
           AND deleted = 0
     </update>
@@ -60,14 +61,6 @@
         WHERE member_id = #{memberId}
           AND status = '합격'
           AND deleted = 0
-    </select>
-
-    <!-- 관리자용 - 회원 구분 없이 전체 자격증(문제은행) 목록 -->
-    <select id="findAllForAdmin" resultType="com.practice.logincrud.certification.CertificationDto">
-        SELECT id, member_id, cert_name, exam_date, status, memo, created_at
-        FROM certification
-        WHERE deleted = 0
-        ORDER BY id ASC
     </select>
 
 </mapper>

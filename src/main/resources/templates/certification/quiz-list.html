@@ -31,7 +31,9 @@
             <td class="title-cell" th:text="${cert.certName}">SQLD</td>
             <td th:text="${cert.status}">준비중</td>
             <td>
-                <a th:href="@{/certifications/{id}/subjects(id=${cert.id}, memberId=${memberId})}">문제풀기 →</a>
+                <a th:if="${cert.catalogId != null}"
+                   th:href="@{/certifications/{id}/subjects(id=${cert.catalogId}, memberId=${memberId})}">문제풀기 →</a>
+                <span th:if="${cert.catalogId == null}" style="color:var(--text-muted);">문제은행 없음</span>
             </td>
         </tr>
         </tbody>

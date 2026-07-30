@@ -33,11 +33,11 @@
 
             <div class="form-group">
                 <label class="form-label">자격증</label>
-                <select name="certificationId" class="form-input" required>
+                <select name="catalogId" class="form-input" required>
                     <option th:each="c : ${certList}"
                             th:value="${c.id}"
-                            th:text="'#' + ${c.id} + ' ' + ${c.certName} + ' (회원 ' + ${c.memberId} + ')'"
-                            th:selected="${c.id == question.certificationId}">
+                            th:text="${c.name} + ' (#' + ${c.id} + ')'"
+                            th:selected="${c.id == question.catalogId}">
                     </option>
                 </select>
             </div>
@@ -92,7 +92,7 @@
             </div>
 
             <div class="modal-button-area">
-                <a th:href="@{/admin/certification-questions(certificationId=${selectedCertificationId})}"
+                <a th:href="@{/admin/certification-questions(catalogId=${question.catalogId})}"
                    class="btn-cancel">취소</a>
                 <button type="submit" class="btn-save">수정 저장</button>
             </div>

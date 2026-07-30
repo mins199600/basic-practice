@@ -12,6 +12,7 @@ import java.util.List;
 public class CertificationService {
 
     private final CertificationMapper certificationMapper;
+    private final CertificationCatalogService certificationCatalogService;
 
     public List<CertificationDto> getMyCertifications(Long memberId) {
         return certificationMapper.findByMemberId(memberId);
@@ -21,15 +22,26 @@ public class CertificationService {
         return certificationMapper.findById(id);
     }
 
+    // 자격증명을 카탈로그(자격증 종류 마스터)와 이름 기준으로 매칭/자동 생성해서 연결한다.
+    // 이렇게 해야 서로 다른 회원이 같은 이름으로 등록해도 같은 문제은행을 볼 수 있다.
     public void save(CertificationDto certificationDto) {
         if (certificationDto.getStatus() == null || certificationDto.getStatus().isBlank()) {
             certificationDto.setStatus("준비중");
         }
+        certificationDto.setCatalogId(resolveCatalogId(certificationDto.getCertName()));
         certificationMapper.insert(certificationDto);
     }
 
     public void update(CertificationDto certificationDto) {
+        certificationDto.setCatalogId(resolveCatalogId(certificationDto.getCertName()));
         certificationMapper.update(certificationDto);
+    }
+
+    private Long resolveCatalogId(String certName) {
+        if (certName == null || certName.isBlank()) {
+            return null;
+        }
+        return certificationCatalogService.getOrCreateByName(certName.trim()).getId();
     }
 
     public void delete(Long id) {
@@ -48,10 +60,5 @@ public class CertificationService {
 
     public int getTotalCount(Long memberId) {
         return certificationMapper.countByMemberId(memberId);
-    }
-
-    // 관리자용 - 회원 구분 없이 전체 자격증(문제은행) 목록
-    public List<CertificationDto> getAllForAdmin() {
-        return certificationMapper.findAllForAdmin();
     }
 }

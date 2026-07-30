@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class SubjectDto {
     private Long id;
-    private Long certificationId;
+    private Long catalogId;
     private String name;
     private Integer displayOrder;
 

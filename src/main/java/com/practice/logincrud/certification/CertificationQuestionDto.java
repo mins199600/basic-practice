@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 @Data
 public class CertificationQuestionDto {
     private Long id;
-    private Long certificationId;
+    private Long catalogId;
     private Long subjectId;
     private String questionText;
     private String choice1;

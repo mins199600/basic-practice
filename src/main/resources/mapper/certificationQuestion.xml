@@ -12,7 +12,7 @@
     <select id="findQuestionIdsInOrder" resultType="long">
         SELECT id
         FROM certification_question
-        WHERE certification_id = #{certificationId}
+        WHERE catalog_id = #{catalogId}
           AND deleted = 0
         <if test="subjectId != null">
             AND subject_id = #{subjectId}
@@ -22,35 +22,35 @@
 
     <!-- 채점용 단건 조회 -->
     <select id="findById" resultType="com.practice.logincrud.certification.CertificationQuestionDto">
-        SELECT id, certification_id, subject_id, question_text, choice1, choice2, choice3, choice4,
+        SELECT id, catalog_id, subject_id, question_text, choice1, choice2, choice3, choice4,
                answer_no, explanation, created_at
         FROM certification_question
         WHERE id = #{id}
           AND deleted = 0
     </select>
 
-    <!-- 자격증(+ 과목)에 문제가 하나라도 있는지 확인용 -->
+    <!-- 자격증(카탈로그) (+ 과목)에 문제가 하나라도 있는지 확인용 -->
     <select id="countByCertificationId" resultType="int">
         SELECT COUNT(*)
         FROM certification_question
-        WHERE certification_id = #{certificationId}
+        WHERE catalog_id = #{catalogId}
           AND deleted = 0
         <if test="subjectId != null">
             AND subject_id = #{subjectId}
         </if>
     </select>
 
-    <!-- 관리자용 - 자격증의 문제 목록 (과목명 포함, 삭제되지 않은 것만, id 오름차순, 페이지 단위)
-         subjectId가 null이면 그 자격증의 전체 과목을 대상으로 한다. -->
+    <!-- 관리자용 - 자격증(카탈로그)의 문제 목록 (과목명 포함, 삭제되지 않은 것만, id 오름차순, 페이지 단위)
+         subjectId가 null이면 그 카탈로그의 전체 과목을 대상으로 한다. -->
     <select id="findAllByCertificationId" resultType="com.practice.logincrud.certification.CertificationQuestionDto">
         SELECT
-            q.id, q.certification_id, q.subject_id, q.question_text,
+            q.id, q.catalog_id, q.subject_id, q.question_text,
             q.choice1, q.choice2, q.choice3, q.choice4,
             q.answer_no, q.explanation, q.created_at,
             sub.name AS subjectName
         FROM certification_question q
         LEFT JOIN subject sub ON sub.id = q.subject_id
-        WHERE q.certification_id = #{certificationId}
+        WHERE q.catalog_id = #{catalogId}
           AND q.deleted = 0
         <if test="subjectId != null">
             AND q.subject_id = #{subjectId}
@@ -59,12 +59,12 @@
         LIMIT #{pageSize} OFFSET #{offset}
     </select>
 
-    <!-- 관리자용 - 자격증의 문제 개수 (페이지네이션 총 페이지 수 계산용)
+    <!-- 관리자용 - 자격증(카탈로그)의 문제 개수 (페이지네이션 총 페이지 수 계산용)
          subjectId가 null이면 전체 과목 합계, 있으면 그 과목만. -->
     <select id="countAllByCertificationId" resultType="int">
         SELECT COUNT(*)
         FROM certification_question
-        WHERE certification_id = #{certificationId}
+        WHERE catalog_id = #{catalogId}
           AND deleted = 0
         <if test="subjectId != null">
             AND subject_id = #{subjectId}
@@ -75,9 +75,9 @@
     <insert id="insert" parameterType="com.practice.logincrud.certification.CertificationQuestionDto"
             useGeneratedKeys="true" keyProperty="id">
         INSERT INTO certification_question
-            (certification_id, subject_id, question_text, choice1, choice2, choice3, choice4, answer_no, explanation, deleted)
+            (catalog_id, subject_id, question_text, choice1, choice2, choice3, choice4, answer_no, explanation, deleted)
         VALUES
-            (#{certificationId}, #{subjectId}, #{questionText}, #{choice1}, #{choice2}, #{choice3}, #{choice4},
+            (#{catalogId}, #{subjectId}, #{questionText}, #{choice1}, #{choice2}, #{choice3}, #{choice4},
              #{answerNo}, #{explanation}, 0)
     </insert>
 

@@ -4,11 +4,11 @@
 
 <mapper namespace="com.practice.logincrud.certification.SubjectMapper">
 
-    <!-- 자격증에 등록된 과목(파트) 목록 + 과목별 문제 개수, 표시 순서대로 -->
-    <select id="findByCertificationId" resultType="com.practice.logincrud.certification.SubjectDto">
+    <!-- 자격증(카탈로그)에 등록된 과목(파트) 목록 + 과목별 문제 개수, 표시 순서대로 -->
+    <select id="findByCatalogId" resultType="com.practice.logincrud.certification.SubjectDto">
         SELECT
             s.id,
-            s.certification_id,
+            s.catalog_id,
             s.name,
             s.display_order,
             COUNT(q.id) AS question_count
@@ -16,9 +16,9 @@
         LEFT JOIN certification_question q
                ON q.subject_id = s.id
               AND q.deleted = 0
-        WHERE s.certification_id = #{certificationId}
+        WHERE s.catalog_id = #{catalogId}
           AND s.deleted = 0
-        GROUP BY s.id, s.certification_id, s.name, s.display_order
+        GROUP BY s.id, s.catalog_id, s.name, s.display_order
         ORDER BY s.display_order ASC
     </select>
 

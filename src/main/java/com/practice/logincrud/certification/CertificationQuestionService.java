@@ -18,33 +18,33 @@ public class CertificationQuestionService {
      * "전체 → 오답만 → 또 오답만 → 100점" 방식 문제풀이의 1회차 큐를 구성할 때 쓰는 id 목록(id 오름차순).
      * subjectId가 null이면 자격증 전체 문제 대상 (과목 분류가 없는 자격증과의 하위 호환).
      */
-    public List<Long> getQuestionIdsInOrder(Long certificationId, Long subjectId) {
-        return certificationQuestionMapper.findQuestionIdsInOrder(certificationId, subjectId);
+    public List<Long> getQuestionIdsInOrder(Long catalogId, Long subjectId) {
+        return certificationQuestionMapper.findQuestionIdsInOrder(catalogId, subjectId);
     }
 
     public CertificationQuestionDto findById(Long questionId) {
         return certificationQuestionMapper.findById(questionId);
     }
 
-    public boolean hasQuestions(Long certificationId, Long subjectId) {
-        return certificationQuestionMapper.countByCertificationId(certificationId, subjectId) > 0;
+    public boolean hasQuestions(Long catalogId, Long subjectId) {
+        return certificationQuestionMapper.countByCertificationId(catalogId, subjectId) > 0;
     }
 
-    // 관리자용 - 자격증의 문제 목록 (과목명 포함, 페이지 단위). subjectId가 null이면 전체 과목.
-    public List<CertificationQuestionDto> getAllForAdmin(Long certificationId, Long subjectId, int offset, int pageSize) {
-        return certificationQuestionMapper.findAllByCertificationId(certificationId, subjectId, offset, pageSize);
+    // 관리자용 - 자격증(카탈로그)의 문제 목록 (과목명 포함, 페이지 단위). subjectId가 null이면 전체 과목.
+    public List<CertificationQuestionDto> getAllForAdmin(Long catalogId, Long subjectId, int offset, int pageSize) {
+        return certificationQuestionMapper.findAllByCertificationId(catalogId, subjectId, offset, pageSize);
     }
 
-    // 관리자용 - 자격증의 문제 개수 (총 페이지 수 계산용). subjectId가 null이면 전체 과목.
-    public int getTotalCountForAdmin(Long certificationId, Long subjectId) {
-        return certificationQuestionMapper.countAllByCertificationId(certificationId, subjectId);
+    // 관리자용 - 자격증(카탈로그)의 문제 개수 (총 페이지 수 계산용). subjectId가 null이면 전체 과목.
+    public int getTotalCountForAdmin(Long catalogId, Long subjectId) {
+        return certificationQuestionMapper.countAllByCertificationId(catalogId, subjectId);
     }
 
     // 관리자용 - 문제 등록
     public void create(CertificationQuestionDto dto) {
         validate(dto);
         certificationQuestionMapper.insert(dto);
-        log.info("문제 등록 certificationId={} subjectId={}", dto.getCertificationId(), dto.getSubjectId());
+        log.info("문제 등록 catalogId={} subjectId={}", dto.getCatalogId(), dto.getSubjectId());
     }
 
     // 관리자용 - 문제 수정
@@ -62,7 +62,7 @@ public class CertificationQuestionService {
 
     // 문제 등록/수정 공통 입력값 검증 - 잘못된 데이터가 그대로 저장되어 퀴즈 화면에서 깨지는 것을 미리 막는다.
     private void validate(CertificationQuestionDto dto) {
-        if (dto.getCertificationId() == null) {
+        if (dto.getCatalogId() == null) {
             throw new IllegalArgumentException("자격증을 선택해주세요.");
         }
         if (dto.getQuestionText() == null || dto.getQuestionText().isBlank()) {

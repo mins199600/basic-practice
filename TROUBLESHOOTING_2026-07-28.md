@@ -1,13 +1,13 @@
 # 트러블슈팅 로그 — 2026-07-28
-## 자격증 문제풀이 매칭 실패 — 스키마 설계 결함 진단 및 개선 구조 설계
+## 자격증 문제풀이 매칭 실패 — 스키마 설계 결함 진단 및 마스터 테이블 분리로 수정
 
 ### 배경
 
-회원가입 후 로그인한 신규 회원이 "자격증 문제풀이"에서 "피부(스킨케어) 자격증"을 등록해도 "아직 등록된 문제가 없습니다" 화면만 뜨는 문제가 보고됨. 그런데 다른(먼저 가입한) 회원 계정에서는 동일한 이름의 자격증으로 문제풀이가 정상 동작함 — 같은 기능인데 계정에 따라 되고 안 되는 현상.
+회원가입 후 로그인한 신규 회원이 "자격증 문제풀이"에서 "피부(스킨케어) 자격증"을 등록하면, 실제로는 해당 문제(157건)가 DB에 있는데도 "아직 등록된 문제가 없습니다" 화면만 뜨는 문제가 보고됨. 그런데 다른(먼저 가입한) 회원 계정에서는 동일한 이름의 자격증으로 문제풀이가 정상 동작함 — 같은 기능인데 계정에 따라 되고 안 되는 현상.
 
 ### 목표
 
-증상의 원인을 스키마 레벨에서 진단하고, AS-IS/TO-BE ERD로 문제 구조와 개선 구조를 문서화한다. (이 문서는 설계 단계 기록이며, 실제 마이그레이션/코드 구현은 별도 작업으로 진행한다.)
+증상의 원인을 스키마 레벨에서 진단하고, `certification_catalog`(자격증 종류 마스터) 테이블을 도입해 실제로 수정한다. AS-IS/TO-BE ERD로 구조 변화를 남기고, 실제 마이그레이션 적용 과정에서 만난 에러와 로컬 검증 결과까지 기록한다.
 
 ---
 
@@ -105,24 +105,71 @@ erDiagram
 
 ---
 
-### 검증 (설계 단계 검증)
+### 에러 — 로컬에 마이그레이션 적용 중 FK 제약으로 컬럼 삭제 실패
 
-- 12개 전문가 역할 스킬(`.claude/skills/review-*`)로 계획을 각각 검토 → 종합 판정 **조건부 승인**
-- 지적된 3가지 보완사항(FK 축소, `catalog_id`가 null인 개인 기록의 화면 처리, 이름 매칭 실패 케이스 테스트)을 이 문서의 FK 설계 조정에 반영함
-- 실제 마이그레이션 적용 후 검증은 별도로 진행 예정 — 배포 전 아래를 반드시 확인:
-  ```sql
-  -- 백필 전 이름 편차 확인
-  SELECT DISTINCT TRIM(cert_name) FROM certification WHERE deleted = 0;
-  -- 백필 후 고아 데이터(카탈로그 매칭 실패) 확인
-  SELECT COUNT(*) FROM certification WHERE catalog_id IS NULL AND deleted = 0;
-  ```
+설계대로 `src/main/resources/db/migration/V12__certification_catalog.sql`을 작성해 로컬에서 첫 적용을 시도했을 때, `certification_question` 테이블에서 아래 에러로 마이그레이션이 실패했다.
+
+```
+Message    : (conn=3) Cannot drop column 'certification_id': needed in a foreign key constraint 'fk_certification_question_cert'
+Location   : db/migration/V12__certification_catalog.sql
+Line       : 61
+```
+
+**원인**: `subject` 테이블 쪽은 FK(`fk_subject_cert`)와 인덱스(`idx_subject_cert`)를 먼저 `DROP`한 뒤 `certification_id` 컬럼을 지우도록 작성했는데, `certification_question` 쪽은 그 순서를 빠뜨리고 바로 `DROP COLUMN certification_id`부터 실행하도록 썼다. `sql/003_certification_question_and_stat.sql`에 정의된 `fk_certification_question_cert` FK가 그 컬럼을 물고 있어서 MariaDB가 삭제를 거부함.
+
+**해결**: `ALTER TABLE certification_question`에 `DROP FOREIGN KEY fk_certification_question_cert`, `DROP KEY idx_certification_question_cert`를 컬럼 삭제보다 먼저 추가하고, 새 인덱스(`idx_certification_question_catalog`)도 같이 만들도록 수정.
+
+**부수 문제 — 실패한 마이그레이션이 남긴 반쪽 상태**: MariaDB는 DDL을 트랜잭션으로 묶지 않기 때문에, 실패 지점 이전 statement(카탈로그 테이블 생성, `certification`/`subject` 백필 등)는 이미 반영된 채로 남았다. `flyway_schema_history`에도 V12가 `success=0`으로 기록됨(V11 때와 동일한 패턴). 로컬에서만 겪은 문제라, 반쪽 상태를 SQL로 직접 되돌리고(`certification_question.catalog_id` 컬럼 제거, `subject`를 `certification_id` 기준으로 복원, `certification.catalog_id` 제거, `certification_catalog` 테이블 삭제) 실패 이력(`flyway_schema_history`에서 `success=0` 행 삭제)을 지운 뒤 수정한 마이그레이션을 재실행해서 성공시켰다.
+
+---
+
+### 검증
+
+**마이그레이션 성공 로그**
+```
+Migrating schema `easy` to version "12 - certification catalog"
+Successfully applied 1 migration to schema `easy`, now at version v12
+Started LoginCrudApplication in 4.428 seconds
+```
+
+**백필 결과 검증 쿼리 실행 결과**
+```sql
+SELECT COUNT(*) FROM certification WHERE catalog_id IS NULL AND deleted = 0;   -- 0
+SELECT COUNT(*) FROM subject WHERE catalog_id IS NULL;                          -- 0
+SELECT COUNT(*) FROM certification_question WHERE catalog_id IS NULL;           -- 0
+```
+고아 데이터 없이 전부 카탈로그에 정상 연결됨을 확인.
+
+```sql
+SELECT * FROM certification_catalog ORDER BY id;
+-- 1  정보처리기사
+-- 2  SQLD
+-- 3  피부자격증
+```
+기존에 흩어져 있던 자격증명이 이름 기준으로 정확히 3종류로 정리됨.
+
+앱 기동 후 `curl http://localhost:8081/` → `200 OK` 확인, 회귀 없이 정상 기동.
+
+**12개 역할 리뷰(설계 단계)에서 나온 3가지 보완사항 반영 결과**:
+- FK 축소: `subject`/`certification_question`은 강한 FK, `certification`은 인덱스만(느슨한 연결) — 계획대로 구현
+- `catalog_id`가 null인 개인 기록: `certification/quiz-list.html`에서 문제풀이 링크 대신 "문제은행 없음" 텍스트로 표시하도록 처리
+- 이름 매칭 실패 케이스: 로컬 데이터에서는 편차 없이 3종류 모두 정확히 매칭됨을 위 쿼리로 확인. 트림(`TRIM`) 처리는 마이그레이션과 `CertificationService.save()` 양쪽에 모두 적용
 
 ### 재발 방지 체크리스트
 
-- [ ] 여러 회원이 공유해야 하는 데이터(문제은행 등)를 "회원 개인 레코드의 id"에 직접 의존시키지 않는다 — 공유 개념은 항상 별도 마스터 테이블로 분리
-- [ ] FK를 추가할 때 "이 제약이 실제로 막아주는 이상 데이터가 무엇인지"를 먼저 확인하고, 막연히 정규화 원칙만으로 FK를 걸지 않는다
-- [ ] 이름(문자열) 기준으로 데이터를 매칭할 때는 트림/대소문자 편차를 반드시 사전 확인한다
-- [ ] 스키마 설계는 코딩 착수 전에 다중 관점(백엔드/DB/아키텍처 등) 리뷰를 거친다
+- [x] 여러 회원이 공유해야 하는 데이터(문제은행 등)를 "회원 개인 레코드의 id"에 직접 의존시키지 않는다 — 공유 개념은 항상 별도 마스터 테이블로 분리
+- [x] FK를 추가할 때 "이 제약이 실제로 막아주는 이상 데이터가 무엇인지"를 먼저 확인하고, 막연히 정규화 원칙만으로 FK를 걸지 않는다
+- [x] 이름(문자열) 기준으로 데이터를 매칭할 때는 트림/대소문자 편차를 반드시 사전 확인한다
+- [x] 스키마 설계는 코딩 착수 전에 다중 관점(백엔드/DB/아키텍처 등) 리뷰를 거친다
+- [ ] **신규**: 컬럼을 삭제하는 마이그레이션을 쓸 때는 그 컬럼을 물고 있는 FK/인덱스 이름을 먼저 `SHOW CREATE TABLE`로 확인하고, `DROP FOREIGN KEY` → `DROP KEY` → `DROP COLUMN` 순서를 테이블마다 빠짐없이 지킨다
+- [ ] **신규**: DDL 실패 시 반쪽 상태가 남는 MariaDB 특성상, 로컬에서 마이그레이션을 여러 번 테스트할 땐 매번 "실패 이력 삭제 + 반쪽 스키마 수동 롤백"이 필요할 수 있음을 감안해 작업 시간을 여유 있게 잡는다
+
+### 면접 어필 포인트
+
+- 서로 다른 계정에서 같은 기능이 되고 안 되는 비일관적 버그를, 재현 조건(계정별 차이)을 단서로 스키마 레벨까지 추적해 근본 원인을 특정함
+- "임시 패치를 반복해온 이력(과거 마이그레이션 3건)"을 근거로, 증상 치료가 아닌 구조적 원인 해결(마스터 테이블 분리)을 선택한 의사결정 과정을 설명할 수 있음
+- FK를 무조건 추가하지 않고, 각 관계마다 "강한 제약이 필요한 지점 vs 유연성이 더 중요한 지점"을 구분해 설계한 트레이드오프 판단 경험
+- 마이그레이션 실행 중 FK 제약 위반을 만나 원인(문 순서 누락)을 파악하고, MariaDB의 비트랜잭션 DDL 특성 때문에 생긴 반쪽 스키마 상태까지 직접 진단·복구한 뒤 재실행에 성공시킨 실전 디버깅 경험
 
 ### 면접 어필 포인트
 

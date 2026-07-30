@@ -30,12 +30,12 @@
         </div>
         <div style="padding:16px 18px;">
             <form th:action="@{/admin/certification-questions}" method="get">
-                <select name="certificationId" class="form-input" onchange="this.form.submit()"
+                <select name="catalogId" class="form-input" onchange="this.form.submit()"
                         style="max-width:420px;">
                     <option th:each="c : ${certList}"
                             th:value="${c.id}"
-                            th:text="'#' + ${c.id} + ' ' + ${c.certName} + ' (회원 ' + ${c.memberId} + ')'"
-                            th:selected="${c.id == selectedCertificationId}">
+                            th:text="${c.name} + ' (#' + ${c.id} + ')'"
+                            th:selected="${c.id == selectedCatalogId}">
                     </option>
                 </select>
             </form>
@@ -45,20 +45,20 @@
         </div>
     </div>
 
-    <div class="admin-box" th:if="${selectedCertificationId != null}">
+    <div class="admin-box" th:if="${selectedCatalogId != null}">
         <div class="box-header">
             <h2 class="box-title">문제 목록 (<span th:text="${totalCount}">0</span>개)</h2>
-            <a th:href="@{/admin/certification-questions/new(certificationId=${selectedCertificationId})}"
+            <a th:href="@{/admin/certification-questions/new(catalogId=${selectedCatalogId})}"
                class="btn-save">+ 새 문제 추가</a>
         </div>
 
         <!-- 과목 탭 — 자격증 하나에 과목이 여러 개 섞여 있을 때 이걸로 좁혀서 본다 -->
         <div class="admin-subject-tabs" th:if="${subjectList != null and !#lists.isEmpty(subjectList)}">
-            <a th:href="@{/admin/certification-questions(certificationId=${selectedCertificationId})}"
+            <a th:href="@{/admin/certification-questions(catalogId=${selectedCatalogId})}"
                th:classappend="${selectedSubjectId == null} ? ' admin-subject-tab--active' : ''"
                class="admin-subject-tab">전체</a>
             <a th:each="s : ${subjectList}"
-               th:href="@{/admin/certification-questions(certificationId=${selectedCertificationId}, subjectId=${s.id})}"
+               th:href="@{/admin/certification-questions(catalogId=${selectedCatalogId}, subjectId=${s.id})}"
                th:text="${s.name} + (${s.questionCount} != null ? ' (' + ${s.questionCount} + ')' : '')"
                th:classappend="${s.id == selectedSubjectId} ? ' admin-subject-tab--active' : ''"
                class="admin-subject-tab">과목명</a>
@@ -90,7 +90,7 @@
                            class="btn-edit-member">수정</a>
                         <form th:action="@{/admin/certification-questions/{id}/delete(id=${q.id})}" method="post"
                               onsubmit="return confirm('이 문제를 삭제하시겠습니까?');" style="display:inline;">
-                            <input type="hidden" name="certificationId" th:value="${selectedCertificationId}">
+                            <input type="hidden" name="catalogId" th:value="${selectedCatalogId}">
                             <input type="hidden" name="subjectId" th:value="${selectedSubjectId}" th:if="${selectedSubjectId != null}">
                             <button type="submit" class="btn-delete-member">삭제</button>
                         </form>
@@ -100,20 +100,20 @@
             </tbody>
         </table>
 
-        <!-- 페이지네이션 — 선택된 자격증(certificationId)+과목(subjectId)을 유지한 채 페이지만 이동 -->
+        <!-- 페이지네이션 — 선택된 자격증(catalogId)+과목(subjectId)을 유지한 채 페이지만 이동 -->
         <div class="admin-pagination" th:if="${totalPage != null and totalPage > 1}">
             <a th:if="${currentPage > 1}"
-               th:href="@{/admin/certification-questions(certificationId=${selectedCertificationId}, subjectId=${selectedSubjectId}, page=${currentPage - 1})}"
+               th:href="@{/admin/certification-questions(catalogId=${selectedCatalogId}, subjectId=${selectedSubjectId}, page=${currentPage - 1})}"
                class="admin-page-button admin-page-button--nav">이전</a>
 
             <a th:each="i : ${#numbers.sequence(1, totalPage)}"
-               th:href="@{/admin/certification-questions(certificationId=${selectedCertificationId}, subjectId=${selectedSubjectId}, page=${i})}"
+               th:href="@{/admin/certification-questions(catalogId=${selectedCatalogId}, subjectId=${selectedSubjectId}, page=${i})}"
                th:text="${i}"
                th:classappend="${i == currentPage} ? ' admin-page-button--active' : ''"
                class="admin-page-button"></a>
 
             <a th:if="${currentPage < totalPage}"
-               th:href="@{/admin/certification-questions(certificationId=${selectedCertificationId}, subjectId=${selectedSubjectId}, page=${currentPage + 1})}"
+               th:href="@{/admin/certification-questions(catalogId=${selectedCatalogId}, subjectId=${selectedSubjectId}, page=${currentPage + 1})}"
                class="admin-page-button admin-page-button--nav">다음</a>
         </div>
     </div>
