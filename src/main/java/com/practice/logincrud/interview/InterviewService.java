@@ -1,5 +1,13 @@
 package com.practice.logincrud.interview;
 
+import com.practice.logincrud.interview.github.GitHubRepoInfo;
+import com.practice.logincrud.interview.github.GitHubService;
+import com.practice.logincrud.interview.message.InterviewMessageDto;
+import com.practice.logincrud.interview.message.InterviewMessageMapper;
+import com.practice.logincrud.interview.project.InterviewProjectDto;
+import com.practice.logincrud.interview.project.InterviewProjectMapper;
+import com.practice.logincrud.interview.session.InterviewSessionDto;
+import com.practice.logincrud.interview.session.InterviewSessionMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

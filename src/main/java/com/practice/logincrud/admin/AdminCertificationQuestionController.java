@@ -1,12 +1,12 @@
 package com.practice.logincrud.admin;
 
 import com.practice.logincrud.board.PageDto;
-import com.practice.logincrud.certification.CertificationCatalogDto;
-import com.practice.logincrud.certification.CertificationCatalogService;
-import com.practice.logincrud.certification.CertificationQuestionDto;
-import com.practice.logincrud.certification.CertificationQuestionService;
-import com.practice.logincrud.certification.SubjectDto;
-import com.practice.logincrud.certification.SubjectService;
+import com.practice.logincrud.certification.catalog.CertificationCatalogDto;
+import com.practice.logincrud.certification.catalog.CertificationCatalogService;
+import com.practice.logincrud.certification.question.CertificationQuestionDto;
+import com.practice.logincrud.certification.question.CertificationQuestionService;
+import com.practice.logincrud.certification.subject.SubjectDto;
+import com.practice.logincrud.certification.subject.SubjectService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;

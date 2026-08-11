@@ -1,8 +1,8 @@
 package com.practice.logincrud.stats;
 
-import com.practice.logincrud.certification.MemberQuestionStatMapper;
-import com.practice.logincrud.certification.WeakestSubjectDto;
-import com.practice.logincrud.codingtest.CodingTestSessionMapper;
+import com.practice.logincrud.certification.membercert.MemberQuestionStatMapper;
+import com.practice.logincrud.certification.subject.WeakestSubjectDto;
+import com.practice.logincrud.codingtest.session.CodingTestSessionMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

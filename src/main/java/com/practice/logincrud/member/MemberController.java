@@ -1,5 +1,6 @@
 package com.practice.logincrud.member;
 
+import com.practice.logincrud.member.email.EmailAuthService;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

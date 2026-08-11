@@ -1,6 +1,9 @@
 package com.practice.logincrud.interview;
 
 import com.practice.logincrud.config.SessionConst;
+import com.practice.logincrud.interview.message.InterviewMessageDto;
+import com.practice.logincrud.interview.project.InterviewProjectDto;
+import com.practice.logincrud.interview.session.InterviewSessionDto;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

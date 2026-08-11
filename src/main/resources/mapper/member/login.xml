@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.practice.logincrud.member.MemberMapper">
+
+    <!--로그인-->
+    <select id="findUserLogin" parameterType="String" resultType="com.practice.logincrud.member.UserDto">
+        SELECT id, email, password, nickname AS nickName, profile_image AS profileImage, deleted
+        FROM member
+        WHERE email = #{email}
+          AND deleted = 0
+    </select>
+
+    <!--회원 가입-->
+    <insert id="insertMember" parameterType="com.practice.logincrud.member.UserDto">
+        INSERT INTO member(email, password, nickname, deleted)
+        VALUES (#{email}, #{password}, #{nickName}, 0)
+    </insert>
+
+    <!--회원정보 이메일 중복 처리-->
+    <select id="countByEmail" parameterType="string" resultType="int">
+        SELECT COUNT(*)
+        FROM member
+        WHERE email = #{email}
+    </select>
+
+    <!--회원정보 수정-->
+    <select id="findUserByEmail" resultType="com.practice.logincrud.member.UserDto">
+        SELECT
+            id,
+            nickname AS nickName,
+            email,
+            password,
+            profile_image AS profileImage,
+            deleted
+        FROM member
+        WHERE email = #{email}
+          AND deleted = 0
+    </select>
+
+    <!--회원 수정 로직-->
+    <update id="updateUser">
+        UPDATE member
+        <set>
+            email = #{user.email},
+            nickname = #{user.nickName}
+            <if test="user.password != null and user.password != ''">
+                , password = #{user.password}
+            </if>
+        </set>
+        WHERE email = #{oldEmail}
+        AND deleted = 0
+    </update>
+
+    <!--회원 삭제-->
+    <update id="deleteUser">
+        UPDATE member
+        SET deleted = 1
+        WHERE email = #{email}
+          AND deleted = 0
+    </update>
+
+    <!-- 전체 회원 수 (탈퇴 제외) -->
+    <select id="getTotalMemberCount" resultType="int">
+        SELECT COUNT(*)
+        FROM member
+        WHERE deleted = 0
+    </select>
+
+    <!-- 전체 회원 목록 -->
+    <select id="getAllMembers" resultType="com.practice.logincrud.member.UserDto">
+        SELECT id, email, nickname AS nickName, role, deleted
+        FROM member
+        WHERE deleted = 0
+        ORDER BY id DESC
+    </select>
+
+    <!-- 최근 가입 회원 5명 -->
+    <select id="getRecentMembers" resultType="com.practice.logincrud.member.UserDto">
+        SELECT id, email, nickname AS nickName, role, deleted
+        FROM member
+        WHERE deleted = 0
+        ORDER BY id DESC
+        LIMIT 5
+    </select>
+
+    <!--비밀번호 재설정-->
+    <update id="updatePassword">
+        UPDATE member
+        SET password = #{password}
+        WHERE email = #{email}
+          AND role = 'USER'
+          AND deleted = 0
+    </update>
+
+    <!--프로필 사진 경로 업데이트-->
+    <update id="updateProfileImage">
+        UPDATE member
+        SET profile_image = #{profileImage}
+        WHERE email = #{email}
+          AND deleted = 0
+    </update>
+
+</mapper>

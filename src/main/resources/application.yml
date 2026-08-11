@@ -44,7 +44,7 @@ spring:
     locations: classpath:db/migration
 
 mybatis:
-  mapper-locations: classpath:mapper/*.xml
+  mapper-locations: classpath:mapper/**/*.xml
   type-aliases-package: com.practice.logincrud
   configuration:
     map-underscore-to-camel-case: true
@@ -58,4 +58,4 @@ file:
 # ANTHROPIC_API_KEY는 반드시 환경변수로 주입할 것 — 절대 여기에 실제 키를 커밋하지 말 것
 anthropic:
   api-key: ${ANTHROPIC_API_KEY:}
-  model: ${ANTHROPIC_MODEL:claude-sonnet-4-5}
+  model: ${ANTHROPIC_MODEL:claude-haiku-4-5}

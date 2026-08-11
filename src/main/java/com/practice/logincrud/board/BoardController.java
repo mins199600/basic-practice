@@ -2,7 +2,7 @@ package com.practice.logincrud.board;
 
 import com.practice.logincrud.attendance.AttendanceService;
 import com.practice.logincrud.certification.CertificationService;
-import com.practice.logincrud.codingtest.CodingTestService;
+import com.practice.logincrud.codingtest.test.CodingTestService;
 import com.practice.logincrud.comment.CommentDto;
 import com.practice.logincrud.comment.CommentService;
 import com.practice.logincrud.interview.InterviewService;

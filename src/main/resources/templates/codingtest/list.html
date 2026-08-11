@@ -26,15 +26,23 @@
         <span th:text="${errorMessage}">에러 메시지</span>
     </div>
 
-    <form th:action="@{/codingtest/start}" method="post" class="codingtest-start-form">
+    <form th:action="@{/codingtest/start}" method="post" class="codingtest-start-form" id="startForm">
         <select name="difficulty" required>
             <option value="기초">기초</option>
             <option value="초급">초급</option>
             <option value="중급">중급</option>
             <option value="고급">고급</option>
         </select>
-        <button type="submit" class="write-button">새 문제 받기</button>
+        <button type="submit" class="write-button" id="startButton">새 문제 받기</button>
     </form>
+
+    <script>
+        document.getElementById('startForm').addEventListener('submit', function () {
+            var btn = document.getElementById('startButton');
+            btn.disabled = true;
+            btn.textContent = 'AI가 문제를 만드는 중입니다...';
+        });
+    </script>
 
     <h3 class="interview-section-title">지난 코딩테스트 기록</h3>
 

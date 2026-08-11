@@ -1,6 +1,8 @@
 package com.practice.logincrud.interview;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.practice.logincrud.interview.github.GitHubRepoInfo;
+import com.practice.logincrud.interview.message.InterviewMessageDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
