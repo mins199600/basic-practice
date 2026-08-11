@@ -1,76 +1,8 @@
 # ERD
 
-> 2026-07-16 기준. 자격증 문제풀이(과목 분류 포함)까지 반영한 전체 스키마입니다.
+> 2026-08-11 기준. 실제 DB 스키마를 덤프한 물리 ERD입니다.
 
-```mermaid
-erDiagram
-    MEMBER ||--o{ BOARD : writes
-    MEMBER ||--o{ COMMENT : writes
-    BOARD ||--o{ COMMENT : has
-    COMMENT ||--o{ COMMENT : "replies to"
-    MEMBER ||--o{ CERTIFICATION : registers
-    MEMBER ||--o{ ATTENDANCE : "checks in"
-    CERTIFICATION ||--o{ SUBJECT : has
-    CERTIFICATION ||--o{ CERTIFICATION_QUESTION : contains
-    SUBJECT ||--o{ CERTIFICATION_QUESTION : classifies
-    MEMBER ||--o{ MEMBER_QUESTION_STAT : tracks
-    CERTIFICATION_QUESTION ||--o{ MEMBER_QUESTION_STAT : "has stats"
-
-    MEMBER {
-        int id PK
-        varchar email
-        varchar nickname
-        varchar role
-        tinyint deleted
-    }
-    BOARD {
-        int id PK
-        varchar title
-        int member_id FK
-        tinyint is_notice
-    }
-    COMMENT {
-        int id PK
-        int board_id FK
-        int member_id FK
-        int parent_id FK
-    }
-    POPUP {
-        bigint id PK
-        varchar title
-        char use_yn
-    }
-    CERTIFICATION {
-        int id PK
-        int member_id FK
-        varchar cert_name
-        varchar status
-    }
-    ATTENDANCE {
-        int id PK
-        int member_id FK
-        date attend_date
-    }
-    SUBJECT {
-        int id PK
-        int certification_id FK
-        varchar name
-        int display_order
-    }
-    CERTIFICATION_QUESTION {
-        int id PK
-        int certification_id FK
-        int subject_id FK
-        varchar question_text
-        tinyint answer_no
-    }
-    MEMBER_QUESTION_STAT {
-        int id PK
-        int member_id FK
-        int question_id FK
-        int weight
-    }
-```
+![ERD](docs/erd.jpg)
 
 ## 테이블 구성
 
@@ -120,12 +52,21 @@ erDiagram
 
 - `id`, `title`, `content`, `start_date`, `end_date`, `use_yn`, `reg_date`, `update_date`
 
+### certification_catalog
+
+"자격증 종류"를 표준화한 마스터 테이블입니다. 회원 개인의 자격증 기록(`certification`)과 문제은행(`subject`, `certification_question`)이 공통으로 바라보는 기준점입니다 ([TROUBLESHOOTING_2026-07-28.md](TROUBLESHOOTING_2026-07-28.md) 참고).
+
+- `id`: 자격증 종류 고유 ID
+- `name`: 자격증명 (유니크)
+- `created_at`
+
 ### certification
 
 회원이 준비 중인 자격증을 관리하는 테이블입니다.
 
-- `id`: 자격증 고유 ID
+- `id`: 자격증 고유 ID (회원마다 개별 발급)
 - `member_id`: 등록한 회원 ID (FK → member.id)
+- `catalog_id`: 자격증 종류 ID (→ certification_catalog.id, 느슨한 연결 — 강한 FK 없음)
 - `cert_name`: 자격증명
 - `exam_date`: 시험 예정일
 - `status`: 준비중 / 합격 / 불합격
@@ -133,10 +74,10 @@ erDiagram
 
 ### subject
 
-자격증 하위 과목(파트)을 관리하는 테이블입니다. 자격증 1개에 여러 과목이 달립니다.
+자격증 하위 과목(파트)을 관리하는 테이블입니다. 자격증 종류 1개에 여러 과목이 달립니다.
 
 - `id`: 과목 고유 ID
-- `certification_id`: 자격증 ID (FK → certification.id)
+- `catalog_id`: 자격증 종류 ID (FK → certification_catalog.id)
 - `name`: 과목명 (예: 해부생리학, 피부학)
 - `display_order`: 화면 표시 순서
 - `created_at`, `deleted`
@@ -146,7 +87,7 @@ erDiagram
 자격증 문제 은행 테이블입니다. 과목 단위로 분류되어 출제됩니다.
 
 - `id`: 문제 고유 ID
-- `certification_id`: 자격증 ID (FK → certification.id)
+- `catalog_id`: 자격증 종류 ID (FK → certification_catalog.id)
 - `subject_id`: 과목 ID (FK → subject.id, 과목 미분류 시 NULL)
 - `question_text`, `choice1~4`, `answer_no`, `explanation`, `created_at`, `deleted`
 
@@ -168,6 +109,60 @@ erDiagram
 - `id`, `member_id`(FK → member.id), `attend_date`, `created_at`
 - `(member_id, attend_date)` 조합이 유니크 — 하루 1건만 출석 가능
 
+### coding_test_session
+
+AI 코딩테스트 세션(문제 1건 단위) 테이블입니다.
+
+- `id`: 세션 고유 ID
+- `member_id`: 회원 ID (FK → member.id)
+- `difficulty`: 기초 / 초급 / 중급 / 고급
+- `problem_text`: AI가 생성한 문제 원문 (특정 언어에 종속되지 않음)
+- `status`: `IN_PROGRESS`(문제만 있음) / `ANSWERED`(답안 제출+첨삭 완료)
+- `created_at`
+
+### coding_test_message
+
+코딩테스트 세션 안의 대화 메시지(문제/답안/첨삭/모범답안) 테이블입니다.
+
+- `id`: 메시지 고유 ID
+- `session_id`: 세션 ID (FK → coding_test_session.id)
+- `sender`: AI / USER
+- `message_type`: PROBLEM / ANSWER / FEEDBACK / SOLUTIONS
+- `language`: ANSWER 타입일 때만 채움 (JAVA / PYTHON / C)
+- `content`, `created_at`
+
+### interview_project
+
+회원이 등록한 GitHub 프로젝트(AI 면접 준비용) 테이블입니다.
+
+- `id`: 프로젝트 고유 ID
+- `member_id`: 회원 ID (FK → member.id)
+- `repo_url`, `repo_owner`, `repo_name`: GitHub 저장소 정보
+- `description`, `primary_language`: GitHub API에서 가져온 저장소 메타데이터
+- `readme_text`: README 발췌 (AI 프롬프트 컨텍스트로 재사용, 매 요청마다 GitHub 재조회 방지)
+- `created_at`, `deleted`
+
+### interview_session
+
+프로젝트 1개당 여러 번 진행할 수 있는 면접 연습 세션(대화방) 테이블입니다.
+
+- `id`: 세션 고유 ID
+- `project_id`: 프로젝트 ID (FK → interview_project.id)
+- `member_id`: 회원 ID (FK → member.id, 조회 시 매번 project 조인 안 해도 되도록 비정규화)
+- `status`: `IN_PROGRESS` / `ENDED`
+- `question_count`: 누적 질문 수
+- `created_at`, `ended_at`
+
+### interview_message
+
+면접 세션 안의 대화 메시지(질문/답변/첨삭) 테이블입니다.
+
+- `id`: 메시지 고유 ID
+- `session_id`: 세션 ID (FK → interview_session.id)
+- `sender`: AI / USER
+- `message_type`: QUESTION / ANSWER / FEEDBACK
+- `content`, `created_at`
+
 ### question / exam_topic / exam_category / exam_attempt / exam_attempt_answer
 
 `certification_question` 계열과 별개로 존재하는 예전 시험 시스템입니다. 자격증(certification) 단위가 아니라 분류(exam_category) → 주제(exam_topic) 단위로 문제를 관리하며, 응시 이력을 `exam_attempt` / `exam_attempt_answer`에 기록합니다. 현재는 자격증 학습 시스템으로 대체되어 신규 기능 개발은 `certification_question` 쪽에서 이루어지고 있습니다.
@@ -186,11 +181,20 @@ erDiagram
 | comment | comment | parent_id | 댓글의 대댓글 (자기참조) |
 | member | certification | member_id | 회원이 준비 중인 자격증 등록 |
 | member | attendance | member_id | 회원의 일자별 출석 기록 |
-| certification | subject | certification_id | 자격증 1개에 과목 여러 개 |
-| certification | certification_question | certification_id | 자격증 1개에 문제 여러 개 |
+| certification_catalog | certification | catalog_id | 자격증 종류 1개를 여러 회원이 각자 등록 (느슨한 연결, 강한 FK 없음) |
+| certification_catalog | subject | catalog_id | 자격증 종류 1개에 과목 여러 개 |
+| certification_catalog | certification_question | catalog_id | 자격증 종류 1개에 문제 여러 개 |
 | subject | certification_question | subject_id | 과목 1개에 문제 여러 개 |
 | member | member_question_stat | member_id | 회원별 출제 가중치 추적 |
 | certification_question | member_question_stat | question_id | 문제별 통계 누적 |
+| member | coding_test_session | member_id | 회원이 AI로부터 받은 코딩테스트 세션 |
+| coding_test_session | coding_test_message | session_id | 세션 1건에 문제/답안/첨삭/모범답안 메시지 여러 건 |
+| member | interview_project | member_id | 회원이 등록한 GitHub 프로젝트 |
+| interview_project | interview_session | project_id | 프로젝트 1개에 면접 연습 세션 여러 건 |
+| member | interview_session | member_id | 조회 편의를 위한 비정규화 FK |
+| interview_session | interview_message | session_id | 세션 1건에 질문/답변/첨삭 메시지 여러 건 |
+
+`subject`/`certification_question`은 회원 개인 기록(`certification`)이 아니라 자격증 종류 마스터(`certification_catalog`)에 강한 FK로 고정되어 있어, 회원마다 다르게 발급되는 `certification.id`와 무관하게 항상 같은 문제은행을 공유합니다 (배경: [TROUBLESHOOTING_2026-07-28.md](TROUBLESHOOTING_2026-07-28.md)).
 
 레거시 시험 시스템(`exam_category`/`exam_topic`/`question`/`exam_attempt`/`exam_attempt_answer`) 간 관계와 전체 ERD는 위 다이어그램과 [`docs/logical_data_model.md`](docs/logical_data_model.md)를 참고하세요.
 
