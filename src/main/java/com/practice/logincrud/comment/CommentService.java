@@ -1,5 +1,6 @@
 package com.practice.logincrud.comment;
 
+import com.practice.logincrud.admin.AdminRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -66,7 +67,8 @@ public class CommentService {
     public boolean deleteComment(Long id, Long memberId, String role, Long boardWriterId) {
         Long commentWriterId = commentMapper.getCommentMemberId(id);
 
-        boolean isAdmin       = "ADMIN".equals(role);
+        AdminRole parsedRole = AdminRole.fromRaw(role);
+        boolean isAdmin       = parsedRole != null && parsedRole.isAdminOrAbove();
         boolean isBoardWriter = boardWriterId.equals(memberId);  // 게시글 작성자
         boolean isCommentWriter = commentWriterId.equals(memberId); // 댓글 작성자 (본인)
 

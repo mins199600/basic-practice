@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>관리자 승인</title>
+    <link rel="stylesheet" type="text/css" href="/css/admin-dashboard.css">
+</head>
+<body>
+
+<header class="admin-top-menu">
+    <div class="admin-logo">
+        <span class="logo-main">ADMIN</span>
+        <span class="logo-sub">MANAGER</span>
+    </div>
+    <nav class="admin-main-nav">
+        <a th:href="@{/admin/dashboard}" class="main-menu-button">대시보드</a>
+        <a th:href="@{/admin/approvals}" class="main-menu-button active">관리자 승인</a>
+    </nav>
+</header>
+
+<main class="admin-content admin-content--full">
+    <div class="page-location">홈 &gt; 관리자 승인</div>
+    <h1 class="page-title">관리자 가입 승인</h1>
+
+    <div class="admin-box">
+        <div class="box-header">
+            <h2 class="box-title">승인 대기 목록 (<span th:text="${#lists.size(pendingAdmins)}">0</span>건)</h2>
+        </div>
+
+        <p th:if="${pendingAdmins == null or #lists.isEmpty(pendingAdmins)}" style="padding:18px;color:#5a6478;">
+            승인 대기 중인 관리자 가입 신청이 없습니다.
+        </p>
+
+        <table th:if="${pendingAdmins != null and !#lists.isEmpty(pendingAdmins)}" class="admin-table">
+            <thead>
+            <tr>
+                <th>번호</th>
+                <th>이메일</th>
+                <th>닉네임</th>
+                <th>신청일</th>
+                <th>처리</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="admin : ${pendingAdmins}">
+                <td th:text="${admin.id}">1</td>
+                <td th:text="${admin.email}">admin@example.com</td>
+                <td th:text="${admin.nickname} ?: '-'">닉네임</td>
+                <td th:text="${admin.regDate} ?: '-'">2026-01-01</td>
+                <td>
+                    <div class="table-button-group">
+                        <form th:action="@{/admin/approvals/{id}/approve(id=${admin.id})}" method="post"
+                              onsubmit="return confirm('이 관리자를 승인하시겠습니까?');" style="display:inline;">
+                            <button type="submit" class="btn-save">승인</button>
+                        </form>
+                        <form th:action="@{/admin/approvals/{id}/reject(id=${admin.id})}" method="post"
+                              onsubmit="return confirm('이 가입 신청을 거부하시겠습니까?');" style="display:inline;">
+                            <button type="submit" class="btn-delete-member">거부</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+
+</body>
+</html>

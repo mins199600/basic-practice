@@ -65,6 +65,18 @@ class AdminControllerTest {
     }
 
     @Test
+    void 승인_대기_계정이면_인증코드를_보내지_않고_승인대기_안내로_돌아간다() {
+        when(adminService.adminAccess(EMAIL, "pw1234"))
+                .thenThrow(new IllegalStateException("승인 대기 중인 계정입니다."));
+
+        String view = adminController.login(EMAIL, "pw1234", session);
+
+        assertThat(view).isEqualTo("redirect:/admin?pending=true");
+        assertThat(session.getAttribute("pendingAdminEmail")).isNull();
+        verify(emailAuthService, never()).sendCode(anyString(), any());
+    }
+
+    @Test
     void 인증코드가_맞으면_세션에_관리자_정보가_세팅되고_대시보드로_이동한다() {
         session.setAttribute("pendingAdminEmail", EMAIL);
         when(emailAuthService.verifyCode(EMAIL, "123456", session)).thenReturn(true);
@@ -99,5 +111,83 @@ class AdminControllerTest {
         String view = adminController.verifyForm(session, new ExtendedModelMap());
 
         assertThat(view).isEqualTo("redirect:/admin");
+    }
+
+    @Test
+    void 이메일_인증을_안_하면_가입_신청이_거부된다() {
+        when(emailAuthService.isVerified(EMAIL, session)).thenReturn(false);
+        Model model = new ExtendedModelMap();
+
+        String view = adminController.join(EMAIL, "pw1234", "pw1234", "닉네임", model, session);
+
+        assertThat(view).isEqualTo("admin/admin-create");
+        assertThat(model.getAttribute("error")).isNotNull();
+        verify(adminService, never()).joinAdmin(anyString(), anyString(), anyString());
+    }
+
+    @Test
+    void 비번확인이_다르면_DB에_저장되지_않고_거부된다() {
+        when(emailAuthService.isVerified(EMAIL, session)).thenReturn(true);
+        Model model = new ExtendedModelMap();
+
+        String view = adminController.join(EMAIL, "pw1234", "다른비번", "닉네임", model, session);
+
+        assertThat(view).isEqualTo("admin/admin-create");
+        assertThat(model.getAttribute("error")).isNotNull();
+        verify(adminService, never()).joinAdmin(anyString(), anyString(), anyString());
+    }
+
+    @Test
+    void 가입_신청이_성공하면_승인대기로_저장되고_인증정보가_정리된다() {
+        when(emailAuthService.isVerified(EMAIL, session)).thenReturn(true);
+        when(adminService.joinAdmin(EMAIL, "pw1234", "닉네임")).thenReturn(true);
+        Model model = new ExtendedModelMap();
+
+        String view = adminController.join(EMAIL, "pw1234", "pw1234", "닉네임", model, session);
+
+        assertThat(view).isEqualTo("redirect:/admin?joinRequested=true");
+        verify(adminService).joinAdmin(EMAIL, "pw1234", "닉네임");
+        verify(emailAuthService).clear(EMAIL, session);
+    }
+
+    @Test
+    void 최고관리자가_아니면_승인_목록에_접근할_수_없다() {
+        session.setAttribute("role", "ADMIN");
+
+        String view = adminController.approvals(session, new ExtendedModelMap());
+
+        assertThat(view).isEqualTo("redirect:/admin/dashboard");
+        verify(adminService, never()).findPendingAdmins();
+    }
+
+    @Test
+    void 최고관리자는_승인_목록에_접근할_수_있다() {
+        session.setAttribute("role", "2");
+        when(adminService.findPendingAdmins()).thenReturn(java.util.List.of());
+
+        String view = adminController.approvals(session, new ExtendedModelMap());
+
+        assertThat(view).isEqualTo("admin/admin-approvals");
+        verify(adminService).findPendingAdmins();
+    }
+
+    @Test
+    void 최고관리자가_승인하면_서비스에_승인_처리가_위임된다() {
+        session.setAttribute("role", "2");
+
+        String view = adminController.approve(1L, session);
+
+        assertThat(view).isEqualTo("redirect:/admin/approvals");
+        verify(adminService).approveAdmin(1L);
+    }
+
+    @Test
+    void 일반_관리자는_승인_처리를_할_수_없다() {
+        session.setAttribute("role", "ADMIN");
+
+        String view = adminController.approve(1L, session);
+
+        assertThat(view).isEqualTo("redirect:/admin/dashboard");
+        verify(adminService, never()).approveAdmin(anyLong());
     }
 }

@@ -20,6 +20,7 @@
         <button type="button" class="main-menu-button" data-tab="notices">공지사항</button>
         <button type="button" class="main-menu-button" data-tab="popups">팝업 관리</button>
         <a th:href="@{/admin/certification-questions}" class="main-menu-button">자격증 문제 관리</a>
+        <a th:if="${session.role == '2'}" th:href="@{/admin/approvals}" class="main-menu-button">관리자 승인</a>
     </nav>
 </header>
 
@@ -152,8 +153,10 @@
                             <span th:if="${member.deleted != 0}" class="status-disabled">비활성</span>
                         </td>
                         <td>
+                            <span th:if="${member.role == '2'}" class="role-admin">최고관리자</span>
                             <span th:if="${member.role == 'ADMIN'}" class="role-admin">관리자</span>
-                            <span th:if="${member.role != 'ADMIN'}" class="role-user">일반</span>
+                            <span th:if="${member.role == 'PENDING_ADMIN'}" class="status-disabled">승인대기</span>
+                            <span th:if="${member.role == 'USER'}" class="role-user">일반</span>
                         </td>
                         <td>
                             <div class="table-button-group">

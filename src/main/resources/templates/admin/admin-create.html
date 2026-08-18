@@ -6,7 +6,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="/css/admin-create.css">
 </head>
-<body>
+<body th:attr="data-error-message=${error}">
 <div class="admin-join-page">
 
     <header class="admin-join-header">
@@ -26,7 +26,7 @@
                 <p class="join-sub-title">관리자 계정을 생성합니다.</p>
             </div>
 
-            <form class="join-form" action="/admin/join" method="post">
+            <form id="joinForm" class="join-form" action="/admin/join" method="post">
 
                 <div class="join-form-group">
                     <label for="email" class="join-form-label">이메일</label>
@@ -36,6 +36,22 @@
                            class="join-form-input"
                            placeholder="관리자 이메일을 입력하세요"
                            required>
+                </div>
+
+                <div class="join-form-group">
+                    <button type="button" id="sendCodeBtn" class="btn-join-submit" onclick="sendCode()">인증번호 발송</button>
+                </div>
+
+                <div class="join-form-group">
+                    <label for="code" class="join-form-label">인증번호</label>
+                    <input type="text"
+                           id="code"
+                           class="join-form-input"
+                           placeholder="6자리 인증번호를 입력하세요">
+                </div>
+
+                <div class="join-form-group">
+                    <button type="button" class="btn-join-submit" onclick="verifyCode()">인증번호 확인</button>
                 </div>
 
                 <div class="join-form-group">
@@ -62,19 +78,16 @@
                     <label for="nickname" class="join-form-label">관리자 이름</label>
                     <input type="text"
                            id="nickname"
-                           name="nickname"
+                           name="nickName"
                            class="join-form-input"
                            placeholder="관리자 이름 또는 닉네임을 입력하세요">
                 </div>
 
-                <!-- role은 사용자가 직접 고르는 게 아니라 hidden으로 ADMIN 고정 -->
-                <input type="hidden" name="role" value="ADMIN">
-
                 <div class="join-warning-message">
-                    관리자 계정은 회원 관리, 게시글 수정/삭제, 공지사항, 팝업 관리 권한을 가집니다.
+                    가입 신청 후 최고관리자 승인이 완료되어야 관리자 권한(회원 관리, 게시글 수정/삭제, 공지사항, 팝업 관리)이 활성화됩니다.
                 </div>
 
-                <button type="submit" class="btn-join-submit">관리자 가입</button>
+                <button type="submit" class="btn-join-submit">관리자 가입 신청</button>
 
             </form>
 
@@ -91,6 +104,8 @@
     </footer>
 
 </div>
+
+<script src="/js/admin-join.js"></script>
 
 </body>
 </html>

@@ -31,4 +31,19 @@ public class EmailSender {
             log.error("인증코드 메일 비동기 발송 실패 email={}", email, e);
         }
     }
+
+    @Async
+    public void sendAdminApprovalRequest(String superAdminEmail, String requesterEmail) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, false, "UTF-8");
+            helper.setTo(superAdminEmail);
+            helper.setSubject("[관리자 승인 요청] 신규 관리자 가입 신청이 도착했습니다");
+            helper.setText("관리자 계정(" + requesterEmail + ")이 가입을 신청했습니다.\n"
+                    + "관리자 대시보드의 승인 목록에서 확인 후 승인/거부해주세요.");
+            mailSender.send(message);
+        } catch (Exception e) {
+            log.error("관리자 승인 요청 메일 비동기 발송 실패 superAdminEmail={}, requesterEmail={}", superAdminEmail, requesterEmail, e);
+        }
+    }
 }

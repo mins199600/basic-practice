@@ -1,5 +1,6 @@
 package com.practice.logincrud.board;
 
+import com.practice.logincrud.admin.AdminRole;
 import com.practice.logincrud.attendance.AttendanceService;
 import com.practice.logincrud.certification.CertificationService;
 import com.practice.logincrud.codingtest.test.CodingTestService;
@@ -143,12 +144,12 @@ public class BoardController {
         }
 
         List<CommentDto> commentList = commentService.getCommentList(id);
-        String role = (String) session.getAttribute("role");
+        AdminRole role = AdminRole.fromRaw(session.getAttribute("role"));
 
         model.addAttribute("board", board);
         model.addAttribute("commentList", commentList);
         model.addAttribute("loginMemberId", memberId);
-        model.addAttribute("isAdmin", "ADMIN".equals(role));
+        model.addAttribute("isAdmin", role != null && role.isAdminOrAbove());
 
         boolean isAuthor = board.getMemberId() != null && board.getMemberId().equals(memberId);
         model.addAttribute("isAuthor", isAuthor);

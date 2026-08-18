@@ -34,12 +34,8 @@
                 <p class="login-sub-title">관리자 계정으로 로그인 후 이용해 주세요.</p>
             </div>
 
-            <!-- 에러 메시지 예시 -->
-            <!--
-            <div class="login-error-message" th:if="${loginError}">
-                아이디 또는 비밀번호가 일치하지 않습니다.
-            </div>
-            -->
+            <div class="login-error-message" th:if="${loginError}" th:text="${loginError}"></div>
+            <div class="login-info-message" th:if="${infoMessage}" th:text="${infoMessage}"></div>
 
             <form class="login-form" action="/admin/login" method="post">
 

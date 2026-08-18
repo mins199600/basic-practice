@@ -13,7 +13,7 @@
             #{role})
     </insert>
 
-    <!--로그인-->
+    <!--로그인 - 승인된 관리자(ADMIN) + 최고관리자(2) 둘 다 로그인 가능-->
     <select id="adminLogin" parameterType="String" resultType="com.practice.logincrud.admin.AdminDto">
         SELECT id,
                email,
@@ -24,33 +24,88 @@
         FROM member
         WHERE email = #{email}
           AND deleted = 0
-          AND role = 'ADMIN'
+          AND role IN ('ADMIN', '2')
     </select>
 
-    <!--아이디 찾기-->
+    <!--로그인 시도용 조회 - 승인대기(PENDING_ADMIN)까지 포함해서, "비번이 틀림"과 "승인 대기 중"을 구분할 수 있게 한다-->
+    <select id="findAccountForLogin" parameterType="String" resultType="com.practice.logincrud.admin.AdminDto">
+        SELECT id,
+               email,
+               password,
+               nickname,
+               role,
+               deleted
+        FROM member
+        WHERE email = #{email}
+          AND deleted = 0
+          AND role IN ('ADMIN', '2', 'PENDING_ADMIN')
+    </select>
+
+    <!--관리자 가입 시 이미 사용 중인 이메일인지 확인 (일반회원/승인대기/관리자 통틀어)-->
+    <select id="existsByEmail" parameterType="String" resultType="int">
+        SELECT COUNT(*)
+        FROM member
+        WHERE email = #{email}
+          AND deleted = 0
+    </select>
+
+    <!--승인 대기 중인 관리자 목록-->
+    <select id="findPendingAdmins" resultType="com.practice.logincrud.admin.AdminDto">
+        SELECT id, email, nickname, role, reg_date AS regDate
+        FROM member
+        WHERE role = 'PENDING_ADMIN'
+          AND deleted = 0
+        ORDER BY id DESC
+    </select>
+
+    <!--관리자 승인 - 승인대기 상태일 때만 ADMIN으로 전환-->
+    <update id="approveAdmin" parameterType="Long">
+        UPDATE member
+        SET role = 'ADMIN'
+        WHERE id = #{id}
+          AND role = 'PENDING_ADMIN'
+    </update>
+
+    <!--관리자 승인 거부 - 승인대기 상태일 때만 소프트 삭제-->
+    <update id="rejectAdmin" parameterType="Long">
+        UPDATE member
+        SET deleted = 1
+        WHERE id = #{id}
+          AND role = 'PENDING_ADMIN'
+    </update>
+
+    <!--최고관리자 이메일 목록 - 승인 요청 알림 발송용-->
+    <select id="findSuperAdminEmails" resultType="String">
+        SELECT email
+        FROM member
+        WHERE role = '2'
+          AND deleted = 0
+    </select>
+
+    <!--아이디 찾기 - 최고관리자도 자기 아이디를 찾을 수 있어야 하므로 ADMIN/2 둘 다 대상-->
     <select id="findEmailByNickname" parameterType="String" resultType="String">
         SELECT email
         FROM member
         WHERE nickname = #{nickname}
-            AND role = 'ADMIN'
+            AND role IN ('ADMIN', '2')
             AND deleted = 0
     </select>
 
-    <!--비밀번호 찾기 - 본인 확인-->
+    <!--비밀번호 찾기 - 본인 확인 (ADMIN/최고관리자 둘 다 대상)-->
     <select id="findByEmailAndNickname" resultType="com.practice.logincrud.admin.AdminDto">
         SELECT id, email, nickname, role
         FROM member
         WHERE email = #{email}
           AND nickname = #{nickname}
-          AND role = 'ADMIN'
+          AND role IN ('ADMIN', '2')
           AND deleted = 0
     </select>
 
-    <!--비밀번호 변경-->
+    <!--비밀번호 변경 (ADMIN/최고관리자 둘 다 대상)-->
     <update id="updatePassword">
         update member
         set password = #{password}
         where email = #{email}
-        and role = 'ADMIN'
+        and role IN ('ADMIN', '2')
     </update>
 </mapper>
