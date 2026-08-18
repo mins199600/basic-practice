@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>관리자 로그인 - 이메일 인증</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+          crossorigin="anonymous">
+
+    <link rel="stylesheet" type="text/css" href="/css/admin-login.css">
+</head>
+<body>
+
+<div class="admin-login-page">
+
+    <!-- 상단 로고 영역 -->
+    <header class="admin-login-header">
+        <div class="admin-logo-box">
+            <span class="logo-main-text">ADMIN</span>
+            <span class="logo-sub-text">MANAGER</span>
+        </div>
+    </header>
+
+    <!-- 인증코드 입력 중앙 영역 -->
+    <main class="admin-login-container">
+
+        <section class="login-card">
+
+            <div class="login-card-header">
+                <div class="login-icon">📧</div>
+                <h1 class="login-title">이메일 인증</h1>
+                <p class="login-sub-title">
+                    <span th:text="${email}">admin@example.com</span> 로 전송된 인증번호를 입력해주세요.
+                </p>
+            </div>
+
+            <div class="login-error-message" th:if="${error}" th:text="${error}"></div>
+
+            <form class="login-form" action="/admin/verify" method="post">
+
+                <div class="login-form-group">
+                    <label for="code" class="login-form-label">인증번호</label>
+                    <input type="text"
+                           id="code"
+                           name="code"
+                           class="login-form-input"
+                           placeholder="6자리 인증번호를 입력하세요"
+                           maxlength="6"
+                           inputmode="numeric"
+                           autocomplete="one-time-code"
+                           autofocus>
+                </div>
+
+                <button type="submit" class="btn-login-submit">인증하고 로그인</button>
+
+            </form>
+
+            <div class="login-link-area">
+                <a href="/admin" class="login-link-button">처음으로 돌아가기</a>
+            </div>
+
+        </section>
+
+    </main>
+
+    <footer class="admin-login-footer">
+        <p>Copyright © Admin Manager. All Rights Reserved.</p>
+    </footer>
+
+</div>
+
+</body>
+</html>

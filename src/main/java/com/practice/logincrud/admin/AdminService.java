@@ -47,6 +47,11 @@ public class AdminService {
         return null;  // 비밀번호 불일치
     }
 
+    //이메일 인증코드 확인 후 세션에 채울 관리자 정보 재조회 (비번은 로그인 1단계에서 이미 검증됨)
+    public AdminDto findByEmail(String email) {
+        return adminMapper.adminLogin(email);
+    }
+
     //아이디 찾기
     public String findEmail(String nickname) {
         return adminMapper.findEmailByNickname(nickname);

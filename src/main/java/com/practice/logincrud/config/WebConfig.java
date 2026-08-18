@@ -61,6 +61,7 @@ public class WebConfig implements WebMvcConfigurer {
                 .excludePathPatterns(
                         "/admin",           // 관리자 로그인 페이지
                         "/admin/login",     // 관리자 로그인 처리
+                        "/admin/verify",    // 관리자 로그인 2단계(이메일 인증코드) - 아직 role 없는 상태에서 접근해야 함
                         "/admin/join",      // 관리자 회원가입
                         "/admin/find-id",    // 관리자 아이디 찾기
                         "/admin/find-password",  //관리자 비번 찾기
