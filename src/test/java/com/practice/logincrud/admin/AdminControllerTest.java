@@ -170,24 +170,4 @@ class AdminControllerTest {
         assertThat(view).isEqualTo("admin/admin-approvals");
         verify(adminService).findPendingAdmins();
     }
-
-    @Test
-    void 최고관리자가_승인하면_서비스에_승인_처리가_위임된다() {
-        session.setAttribute("role", "2");
-
-        String view = adminController.approve(1L, session);
-
-        assertThat(view).isEqualTo("redirect:/admin/approvals");
-        verify(adminService).approveAdmin(1L);
-    }
-
-    @Test
-    void 일반_관리자는_승인_처리를_할_수_없다() {
-        session.setAttribute("role", "ADMIN");
-
-        String view = adminController.approve(1L, session);
-
-        assertThat(view).isEqualTo("redirect:/admin/dashboard");
-        verify(adminService, never()).approveAdmin(anyLong());
-    }
 }

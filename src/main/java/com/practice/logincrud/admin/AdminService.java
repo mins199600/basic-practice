@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -25,9 +26,11 @@ public class AdminService {
         adminDto.setEmail(email);
         adminDto.setPassword(passwordEncoder.encode(password));
         adminDto.setNickname(nickName);
-        adminDto.setRole(AdminRole.PENDING_ADMIN.getValue());
+        adminDto.setRole("PENDING_ADMIN");
+        adminDto.setEmpNo(null);
 
         int count = adminMapper.insertAdmin(adminDto);
+
         if (count != 1) {
             return false;
         }
@@ -36,17 +39,22 @@ public class AdminService {
         return true;
     }
 
-    //가입 신청이 들어왔음을 최고관리자(role=2) 전원에게 메일로 알림
-    private void notifySuperAdmins(String requesterEmail) {
-        List<String> superAdminEmails = adminMapper.findSuperAdminEmails();
-        if (superAdminEmails.isEmpty()) {
-            log.warn("관리자 승인 요청 알림 실패 - 등록된 최고관리자가 없음 requesterEmail={}", requesterEmail);
-            return;
-        }
-        for (String superAdminEmail : superAdminEmails) {
-            emailSender.sendAdminApprovalRequest(superAdminEmail, requesterEmail);
-        }
+    //사번 자동 생성 - EMP-2026-001 형식
+    public synchronized String generateEmpNo() {
+        String year = String.valueOf(LocalDate.now().getYear());
+        Integer lastSeq = adminMapper.getLastEmpNoSeq(year);
+        int nextSeq = (lastSeq == null ? 0 : lastSeq) + 1;
+        return String.format("EMP-%s-%03d",year,nextSeq);
     }
+
+
+    //관리자 승인 - ROLE 변경 및 사번 부여
+    public boolean approveAdmin(Long id) {
+        String empNo = generateEmpNo();
+        log.info("사번 자동 부여 id={}, empNo={}", id, empNo);
+        return adminMapper.approveAdmin(id, empNo) == 1;
+    }
+
 
     //이미 사용 중인 이메일인지 확인 (인증코드 발송 전 차단용)
     public boolean isEmailTaken(String email) {
@@ -58,15 +66,24 @@ public class AdminService {
         return adminMapper.findPendingAdmins();
     }
 
-    //관리자 승인 (최고관리자 전용) - 대상이 이미 처리됐으면 false
-    public boolean approveAdmin(Long id) {
-        return adminMapper.approveAdmin(id) == 1;
-    }
 
     //관리자 승인 거부 (최고관리자 전용) - 대상이 이미 처리됐으면 false
     public boolean rejectAdmin(Long id) {
         return adminMapper.rejectAdmin(id) == 1;
     }
+
+    // 가입 신청 알림 - 최고관리자 전원에게 메일 발송
+    private void notifySuperAdmins(String requesterEmail) {
+        List<String> superAdminEmails = adminMapper.findSuperAdminEmails();
+        if (superAdminEmails.isEmpty()) {
+            log.warn("관리자 승인 요청 알림 실패 - 등록된 최고관리자가 없음 requesterEmail={}", requesterEmail);
+            return;
+        }
+        for (String superAdminEmail : superAdminEmails) {
+            emailSender.sendAdminApprovalRequest(superAdminEmail, requesterEmail);
+        }
+    }
+
 
     //로그인 - 승인대기(PENDING_ADMIN) 상태는 비번이 맞아도 로그인시키지 않고 명확한 예외로 알린다
     public AdminDto adminAccess(String email, String password) {
@@ -98,8 +115,8 @@ public class AdminService {
     }
 
     //아이디 찾기
-    public String findEmail(String nickname) {
-        return adminMapper.findEmailByNickname(nickname);
+    public String findEmail(String empNo) {
+        return adminMapper.matchedEmail(empNo);
     }
 
     //비밀번호 찾기 - 본인 확인

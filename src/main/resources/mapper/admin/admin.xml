@@ -59,9 +59,10 @@
     </select>
 
     <!--관리자 승인 - 승인대기 상태일 때만 ADMIN으로 전환-->
-    <update id="approveAdmin" parameterType="Long">
+    <update id="approveAdmin">
         UPDATE member
-        SET role = 'ADMIN'
+        SET role = 'ADMIN',
+            emp_no = #{empNo}
         WHERE id = #{id}
           AND role = 'PENDING_ADMIN'
     </update>
@@ -82,11 +83,20 @@
           AND deleted = 0
     </select>
 
+    <!-- 올해 발급된 사번 중 마지막 순번 조회 -->
+    <select id="getLastEmpNoSeq" parameterType="String" resultType="Integer">
+        SELECT MAX(CAST(SUBSTRING_INDEX(emp_no, '-', -1) AS UNSIGNED))
+        FROM member
+        WHERE emp_no LIKE CONCAT('EMP-', #{year}, '-%')
+          AND deleted = 0
+    </select>
+
+
     <!--아이디 찾기 - 최고관리자도 자기 아이디를 찾을 수 있어야 하므로 ADMIN/2 둘 다 대상-->
-    <select id="findEmailByNickname" parameterType="String" resultType="String">
+    <select id="matchedEmail" parameterType="String" resultType="String">
         SELECT email
         FROM member
-        WHERE nickname = #{nickname}
+        WHERE emp_no = #{empNo}
             AND role IN ('ADMIN', '2')
             AND deleted = 0
     </select>

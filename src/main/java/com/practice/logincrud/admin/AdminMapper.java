@@ -15,8 +15,8 @@ public interface AdminMapper {
     //로그인 시도용 조회 - 승인대기 상태까지 포함해서 "비번 틀림"과 "승인 대기"를 구분한다
     AdminDto findAccountForLogin(String email);
 
-    //아이디 찾기 - 닉네임으로 이메일 조회
-    String findEmailByNickname(String nickname);
+    //아이디 찾기 - 사번 조회
+    String matchedEmail(String empNo);
 
     //비밀번호 찾기 - 이메일 + 닉네임으로 계정 확인
     AdminDto findByEmailAndNickname(@Param("email") String email, @Param("nickname") String nickname);
@@ -31,7 +31,7 @@ public interface AdminMapper {
     java.util.List<AdminDto> findPendingAdmins();
 
     //관리자 승인 - 영향받은 row 수(0이면 이미 처리됐거나 대상 없음)
-    int approveAdmin(Long id);
+    int approveAdmin(@Param("id") Long id, @Param("empNo") String empNo);
 
     //관리자 승인 거부(소프트 삭제) - 영향받은 row 수
     int rejectAdmin(Long id);
@@ -39,4 +39,6 @@ public interface AdminMapper {
     //최고관리자 이메일 목록 - 승인 요청 알림 발송용
     java.util.List<String> findSuperAdminEmails();
 
+    //올해 마지막 사번 조회
+    Integer getLastEmpNoSeq(String year);
 }

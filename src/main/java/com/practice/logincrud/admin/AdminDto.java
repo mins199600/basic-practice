@@ -9,6 +9,7 @@ public class AdminDto {
     private String nickname;
     private String password;
     private String role;
+    private String empNo;
     private String regDate;     //가입일자
     private String updateDate;  //수정일자
 

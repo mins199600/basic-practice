@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.HashMap;
 import java.util.List;
@@ -131,27 +132,31 @@ public class AdminController {
 
     //최고관리자 전용 - 관리자 승인
     @PostMapping("/admin/approvals/{id}/approve")
-    public String approve(@PathVariable Long id, HttpSession session) {
+    public String approve(@PathVariable Long id, RedirectAttributes redirectAttributes,HttpSession session) {
         if (!isSuperAdmin(session)) {
             return "redirect:/admin/dashboard";
         }
+
         adminService.approveAdmin(id);
-        log.info("관리자 승인 처리 id={}", id);
+        log.info("관리자 승인 처리 id={}" , id);
+        redirectAttributes.addFlashAttribute("message", "승인완료 및 사번이 자동 부여 되었습니다.");
         return "redirect:/admin/approvals";
     }
 
+
     //최고관리자 전용 - 관리자 승인 거부
     @PostMapping("/admin/approvals/{id}/reject")
-    public String reject(@PathVariable Long id, HttpSession session) {
+    public String reject(@PathVariable Long id, HttpSession session, RedirectAttributes redirectAttributes) {
         if (!isSuperAdmin(session)) {
             return "redirect:/admin/dashboard";
         }
         adminService.rejectAdmin(id);
         log.info("관리자 승인 거부 처리 id={}", id);
+        redirectAttributes.addFlashAttribute("message", "승인이 거부 되었습니다.");
         return "redirect:/admin/approvals";
     }
 
-    //세션의 role이 정확히 최고관리자(2)인지 확인 - AdminInterceptor는 ADMIN/2를 둘 다 통과시키므로 승인 화면은 컨트롤러에서 별도로 좁혀야 함
+    //세션의 role이 정확히 최고관리자(2)인지 확인
     private boolean isSuperAdmin(HttpSession session) {
         return AdminRole.fromRaw(session.getAttribute("role")) == AdminRole.SUPER_ADMIN;
     }
@@ -233,11 +238,11 @@ public class AdminController {
 
     //아이디 찾기
     @PostMapping("/admin/find-id")
-    public String findId(@RequestParam String nickname, Model model) {
-        String email = adminService.findEmail(nickname);
+    public String findId(@RequestParam String empNo, Model model) {
+        String adminId = adminService.findEmail(empNo);
 
-        if (email != null) {
-            model.addAttribute("foundEmail", email);
+        if (adminId != null) {
+            model.addAttribute("foundEmail", adminId);
         } else {
             model.addAttribute("error", "일치하는 계정이 없습니다.");
         }

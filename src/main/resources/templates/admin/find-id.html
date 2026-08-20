@@ -11,20 +11,20 @@
 <div class="login-page">
     <div class="login-card">
 
-        <h1 class="login-title">아이디 찾기</h1>
-        <p class="login-description">가입 시 등록한 닉네임을 입력하세요.</p>
+        <h1 class="login-title">이메일 찾기</h1>
+        <p class="login-description">사원번호를 입력하세요.</p>
 
-        <form class="login-form" action="/admin/find-id" method="post">
+        <form class="login-form" th:action="@{/admin/find-id}" method="post">
             <div class="login-input-group">
-                <label class="login-label" for="nickname">닉네임</label>
+                <label class="login-label" for="empNo">사번</label>
                 <input type="text"
-                       id="nickname"
-                       name="nickname"
+                       id="empNo"
+                       name="empNo"
                        class="login-input"
-                       placeholder="닉네임을 입력하세요">
+                       placeholder="사원번호를 입력하세요">
             </div>
 
-            <button type="submit" class="login-button">아이디 찾기</button>
+            <button type="submit" class="login-button">이메일 찾기</button>
         </form>
 
         <!-- 찾기 성공 -->
@@ -37,6 +37,7 @@
         <p class="error-message" th:if="${error}" th:text="${error}"></p>
 
         <a href="/admin" class="join-button">로그인으로 돌아가기</a>
+
 
     </div>
 </div>

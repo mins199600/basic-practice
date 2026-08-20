@@ -51,11 +51,11 @@
                     <div class="table-button-group">
                         <form th:action="@{/admin/approvals/{id}/approve(id=${admin.id})}" method="post"
                               onsubmit="return confirm('이 관리자를 승인하시겠습니까?');" style="display:inline;">
-                            <button type="submit" class="btn-save">승인</button>
+                            <button type="submit" class="btn-approve">승인</button>
                         </form>
                         <form th:action="@{/admin/approvals/{id}/reject(id=${admin.id})}" method="post"
                               onsubmit="return confirm('이 가입 신청을 거부하시겠습니까?');" style="display:inline;">
-                            <button type="submit" class="btn-delete-member">거부</button>
+                            <button type="submit" class="btn-reject">거부</button>
                         </form>
                     </div>
                 </td>

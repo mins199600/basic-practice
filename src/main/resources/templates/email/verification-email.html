@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head><meta charset="UTF-8"></head>
+<body style="margin:0;padding:0;background-color:#f0f4f8;font-family:'Apple SD Gothic Neo','Malgun Gothic',Arial,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f0f4f8;padding:40px 0;">
+    <tr><td align="center">
+        <table width="600" cellpadding="0" cellspacing="0"
+               style="background-color:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.10);">
+
+            <!-- 헤더 -->
+            <tr>
+                <td style="background:linear-gradient(135deg,#00c8b4,#0099a8);padding:40px 48px;text-align:center;">
+                    <div style="display:inline-block;background:rgba(255,255,255,0.2);border-radius:50%;width:72px;height:72px;line-height:72px;font-size:34px;margin-bottom:16px;">🛡️</div><br>
+                    <span style="color:#fff;font-size:26px;font-weight:800;letter-spacing:4px;display:block;margin-bottom:6px;">ADMIN MANAGER</span>
+                    <span style="color:rgba(255,255,255,0.85);font-size:13px;letter-spacing:2px;display:block;">SECURE AUTHENTICATION SYSTEM</span>
+                </td>
+            </tr>
+
+            <!-- 본문 -->
+            <tr>
+                <td style="padding:44px 48px 36px;">
+                    <p style="margin:0 0 8px;color:#00a896;font-size:13px;font-weight:700;letter-spacing:2px;">EMAIL VERIFICATION</p>
+                    <h1 style="margin:0 0 24px;color:#1a202c;font-size:24px;font-weight:800;">이메일 인증번호 안내</h1>
+                    <div style="height:2px;background:linear-gradient(90deg,#00c8b4,#f0f4f8);margin-bottom:28px;border-radius:2px;"></div>
+                    <p style="margin:0 0 32px;color:#4a5568;font-size:16px;line-height:1.9;">
+                        안녕하세요.<br>
+                        <strong style="color:#1a202c;">Admin Manager</strong> 이메일 인증 요청이 접수되었습니다.<br>
+                        아래 <strong style="color:#00a896;">인증번호</strong>를 5분 이내에 입력해주세요.
+                    </p>
+
+                    <!-- 인증번호 박스 -->
+                    <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:32px;">
+                        <tr>
+                            <td align="center" style="background-color:#f7fffe;border:2px solid #00c8b4;border-top:5px solid #00c8b4;border-radius:12px;padding:36px 24px;">
+                                <p style="margin:0 0 14px;color:#718096;font-size:13px;font-weight:700;letter-spacing:3px;">인증번호 · Verification Code</p>
+                                <span style="font-size:52px;font-weight:900;letter-spacing:16px;color:#00a896;font-family:'Courier New',monospace;display:block;margin-bottom:16px;">{{code}}</span>
+                                <p style="margin:0;color:#a0aec0;font-size:14px;">⏱ 이 코드는 발송 후 <strong style="color:#e67e22;font-size:15px;">5분간</strong> 유효합니다</p>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <!-- 보안 경고 -->
+                    <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:32px;">
+                        <tr>
+                            <td style="background-color:#fffbeb;border:1px solid #f6d860;border-left:4px solid #f59e0b;border-radius:8px;padding:16px 20px;">
+                                <p style="margin:0;color:#92400e;font-size:14px;line-height:1.8;">
+                                    ⚠️ <strong>보안 안내</strong><br>
+                                    본인이 요청하지 않은 경우 즉시 무시하고 관리자에게 문의하세요.<br>
+                                    인증번호는 절대 타인에게 공유하지 마세요.
+                                </p>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <!-- 요청 정보 -->
+                    <table width="100%" cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td style="background-color:#f7fafc;border:1px solid #e2e8f0;border-radius:10px;padding:20px 24px;">
+                                <p style="margin:0 0 14px;color:#a0aec0;font-size:12px;font-weight:700;letter-spacing:2px;">요청 정보 · REQUEST INFO</p>
+                                <table width="100%" cellpadding="0" cellspacing="0">
+                                    <tr>
+                                        <td style="color:#718096;font-size:14px;padding:5px 0;width:90px;font-weight:600;">수신 계정</td>
+                                        <td style="color:#2d3748;font-size:14px;padding:5px 0;font-weight:700;">{{email}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="color:#718096;font-size:14px;padding:5px 0;font-weight:600;">요청 일시</td>
+                                        <td style="color:#2d3748;font-size:14px;padding:5px 0;">{{datetime}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="color:#718096;font-size:14px;padding:5px 0;font-weight:600;">유효 시간</td>
+                                        <td style="color:#e67e22;font-size:14px;padding:5px 0;font-weight:800;">5분</td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+
+            <!-- 푸터 -->
+            <tr>
+                <td style="background-color:#f7fafc;border-top:1px solid #e2e8f0;padding:24px 48px;text-align:center;">
+                    <p style="margin:0 0 6px;color:#a0aec0;font-size:13px;">이 메일은 발신 전용입니다. 회신하지 마세요.</p>
+                    <p style="margin:0;color:#cbd5e0;font-size:12px;">© 2026 Admin Manager. All rights reserved.</p>
+                </td>
+            </tr>
+
+        </table>
+    </td></tr>
+</table>
+</body>
+</html>

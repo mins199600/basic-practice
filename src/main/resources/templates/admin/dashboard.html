@@ -33,15 +33,18 @@
             <button type="button" class="sidebar-menu-button active" data-tab="members">전체 회원 목록</button>
             <button type="button" class="sidebar-menu-button" data-tab="members">회원 수정/탈퇴</button>
         </div>
+
         <div class="sidebar-section">
             <div class="sidebar-title">게시글 관리</div>
             <button type="button" class="sidebar-menu-button" data-tab="posts">전체 게시글</button>
             <button type="button" class="sidebar-menu-button" data-tab="notices">공지사항 관리</button>
         </div>
+
         <div class="sidebar-section">
             <div class="sidebar-title">팝업 관리</div>
             <button type="button" class="sidebar-menu-button" data-tab="popups">팝업 등록/관리</button>
         </div>
+
         <div class="sidebar-section">
             <div class="sidebar-title">자격증 문제 관리</div>
             <a th:href="@{/admin/certification-questions}" class="sidebar-menu-button">문제 목록/등록/수정</a>
@@ -140,8 +143,8 @@
                         <th>관리</th>
                     </tr>
                     </thead>
+
                     <tbody>
-                    <!-- ✅ DB 연결: memberList 반복 -->
                     <tr th:each="member, stat : ${memberList}">
                         <td th:text="${stat.count}"></td>
                         <td th:text="${member.id}"></td>
@@ -203,7 +206,6 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <!-- ✅ DB 연결: boardList 반복 -->
                     <tr th:each="board, stat : ${boardList}">
                         <td th:text="${stat.count}"></td>
                         <td>
@@ -361,52 +363,52 @@
     </main>
 </div>
 
-<!-- 회원 수정 모달 -->
-<div id="memberEditModal" class="modal-background">
-    <div class="modal-box">
-        <div class="modal-header">
-            <h2 class="modal-title">회원 정보 수정</h2>
-            <button type="button" class="btn-modal-close">×</button>
-        </div>
-        <div class="modal-content">
-            <div class="warning-message">
-                비밀번호는 고객이 직접 변경해야 합니다. 관리자는 수정할 수 없습니다.
+    <!-- 회원 수정 모달 -->
+    <div id="memberEditModal" class="modal-background">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h2 class="modal-title">회원 정보 수정</h2>
+                <button type="button" class="btn-modal-close">×</button>
             </div>
-            <form action="/admin/member/update" method="post">
-                <div class="form-group">
-                    <label class="form-label">이름</label>
-                    <input type="text" id="memberEditName" class="form-input" name="name">
+            <div class="modal-content">
+                <div class="warning-message">
+                    비밀번호는 고객이 직접 변경해야 합니다. 관리자는 수정할 수 없습니다.
                 </div>
-                <div class="form-group">
-                    <label class="form-label">이메일</label>
-                    <input type="email" id="memberEditEmail" class="form-input" name="email">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">전화번호</label>
-                    <input type="text" id="memberEditPhone" class="form-input" name="phone">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">등급</label>
-                    <select class="form-input" name="role">
-                        <option value="USER">일반</option>
-                        <option value="ADMIN">관리자</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">상태</label>
-                    <select class="form-input" name="status">
-                        <option value="ACTIVE">활성</option>
-                        <option value="DISABLED">비활성</option>
-                    </select>
-                </div>
-                <div class="modal-button-area">
-                    <button type="button" class="btn-cancel">취소</button>
-                    <button type="submit" class="btn-save">저장</button>
-                </div>
-            </form>
+                <form action="/admin/member/update" method="post">
+                    <div class="form-group">
+                        <label class="form-label">이름</label>
+                        <input type="text" id="memberEditName" class="form-input" name="name">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">이메일</label>
+                        <input type="email" id="memberEditEmail" class="form-input" name="email">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">전화번호</label>
+                        <input type="text" id="memberEditPhone" class="form-input" name="phone">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">등급</label>
+                        <select class="form-input" name="role">
+                            <option value="USER">일반</option>
+                            <option value="ADMIN">관리자</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">상태</label>
+                        <select class="form-input" name="status">
+                            <option value="ACTIVE">활성</option>
+                            <option value="DISABLED">비활성</option>
+                        </select>
+                    </div>
+                    <div class="modal-button-area">
+                        <button type="button" class="btn-cancel">취소</button>
+                        <button type="submit" class="btn-save">저장</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-</div>
 
 <!-- 회원 탈퇴 모달 -->
 <div id="memberDeleteModal" class="modal-background">
