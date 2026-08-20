@@ -14,7 +14,7 @@
 - `email`: 로그인에 사용하는 이메일
 - `nickname`: 게시글 작성자명으로 표시되는 닉네임
 - `password`: 암호화된 비밀번호
-- `role`: 사용자 권한 구분 값 (`USER`, `ADMIN`)
+- `role`: 사용자 권한 구분 값 (`USER`, `ADMIN`, `2`)
 - `reg_date`: 회원가입일
 - `update_date`: 회원 정보 수정일
 - `address`, `detail_address`, `postcode`: 회원 주소 정보
