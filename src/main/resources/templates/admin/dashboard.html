@@ -109,7 +109,7 @@
                         <td th:text="${member.id}"></td>
                         <td th:text="${member.nickName}"></td>
                         <td th:text="${member.email}"></td>
-                        <td>-</td>
+                        <td th:text="${#temporals.format(member.regDate, 'yyyy-MM-dd HH:mm')}"></td>
                         <td>
                             <span th:if="${member.deleted == 0}" class="status-active">활성</span>
                             <span th:if="${member.deleted != 0}" class="status-disabled">비활성</span>
@@ -157,7 +157,7 @@
                         <td th:text="${member.id}"></td>
                         <td th:text="${member.nickName}"></td>
                         <td th:text="${member.email}"></td>
-                        <td>-</td>
+                        <td th:text="${#temporals.format(member.regDate, 'yyyy-MM-dd HH:mm')}"></td>
                         <td>
                             <span th:if="${member.deleted == 0}" class="status-active">활성</span>
                             <span th:if="${member.deleted != 0}" class="status-disabled">비활성</span>

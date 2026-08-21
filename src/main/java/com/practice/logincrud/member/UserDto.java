@@ -1,6 +1,7 @@
 package com.practice.logincrud.member;
 
 import lombok.*;
+import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
@@ -13,4 +14,5 @@ public class UserDto {
     private String password;
     private String profileImage;  // 프로필 사진 URL (예: /uploads/profile/xxx.jpg), 없으면 null
     private Integer deleted;
+    private LocalDateTime regDate;  // 가입일시
 }

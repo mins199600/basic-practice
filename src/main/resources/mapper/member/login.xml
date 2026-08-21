@@ -70,18 +70,18 @@
 
     <!-- 전체 회원 목록 -->
     <select id="getAllMembers" resultType="com.practice.logincrud.member.UserDto">
-        SELECT id, email, nickname AS nickName, role, deleted
+        SELECT id, email, nickname AS nickName, role, deleted, reg_date AS regDate
         FROM member
         WHERE deleted = 0
-        ORDER BY id DESC
+        ORDER BY reg_date DESC
     </select>
 
     <!-- 최근 가입 회원 5명 -->
     <select id="getRecentMembers" resultType="com.practice.logincrud.member.UserDto">
-        SELECT id, email, nickname AS nickName, role, deleted
+        SELECT id, email, nickname AS nickName, role, deleted, reg_date AS regDate
         FROM member
         WHERE deleted = 0
-        ORDER BY id DESC
+        ORDER BY reg_date DESC
         LIMIT 5
     </select>
 
