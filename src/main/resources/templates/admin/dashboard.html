@@ -22,6 +22,13 @@
         <a th:href="@{/admin/certification-questions}" class="main-menu-button">자격증 문제 관리</a>
         <a th:if="${session.role == '2'}" th:href="@{/admin/approvals}" class="main-menu-button">관리자 승인</a>
     </nav>
+
+    <!--로그아웃-->
+    <div class="admin-user-menu">
+        <span class="user-info" th:text="|${session.nickName} (${session.email})|"></span>
+        <a th:href="@{/admin/logout}" class="btn-logout">로그아웃</a>
+
+    </div>
 </header>
 
 <div class="admin-layout">

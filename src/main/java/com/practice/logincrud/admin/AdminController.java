@@ -230,6 +230,13 @@ public class AdminController {
         return "redirect:/admin/dashboard";
     }
 
+    //관리자 로그아웃
+    @GetMapping("/admin/logout")
+    public String logout(HttpSession httpSession) {
+        httpSession.invalidate();
+        return "redirect:/admin";
+    }
+
     //아이디 찾기
     @GetMapping("/admin/find-id")
     public String findIdForm() {
@@ -285,5 +292,13 @@ public class AdminController {
 
         adminService.updatePassword(email, newPassword);
         return "redirect:/admin?passwordChanged=true";
+    }
+
+    //관리자 로그아웃
+    @GetMapping("/admin/logout")
+    public String logout(HttpSession httpSession) {
+        httpSession.invalidate();
+        log.info("관리자 로그아웃");
+        return "redirect:/admin";
     }
 }

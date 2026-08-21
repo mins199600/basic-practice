@@ -18,17 +18,44 @@ body {
    상단 메뉴
 ========================= */
 
+/* 기존 .admin-top-menu 스타일 수정 */
 .admin-top-menu {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 200;
-    height: 48px;
-    background-color: #0f1420;
-    border-bottom: 2px solid #00c8b4;
     display: flex;
-    align-items: stretch;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background-color: #1a3a52;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* 새 스타일 추가 */
+.admin-user-menu {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.user-info {
+    font-size: 13px;
+    color: #ddd;
+    white-space: nowrap;
+}
+
+.btn-logout {
+    padding: 6px 14px;
+    background-color: #d9534f;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-logout:hover {
+    background-color: #c9302c;
 }
 
 .admin-logo {
